@@ -26,7 +26,7 @@ public sealed partial class BrevoEmailNotifier(HttpClient http, IOptions<EmailOp
         BookingMessage message = BookingMessage.For(notice, settings.PublicWebUrl);
         object body = new
         {
-            sender = new { name = settings.SenderName, email = settings.SenderEmail },
+            sender = new { name = message.SenderName, email = settings.SenderEmail },
             to = new[] { new { email, name = notice.Booking.Customer.Name } },
             subject = message.Subject,
             textContent = message.Text,
