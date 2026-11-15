@@ -60,3 +60,43 @@ export function formatDateRange(from: string, to: string): string {
   }
   return `${formatDate(from)} – ${formatDate(to)}`;
 }
+
+const businessZone = 'America/La_Paz';
+const isoDateLength = 10;
+const hourStart = 11;
+const hourEnd = 16;
+const msPerDay = 86_400_000;
+const todayFormatter = new Intl.DateTimeFormat('en-CA', {timeZone: businessZone, year: 'numeric', month: '2-digit', day: '2-digit'});
+const weekdayIndex: readonly Weekday[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+const longDateFormatter = new Intl.DateTimeFormat('es-BO', {weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC'});
+
+/** Devuelve la fecha de hoy en La Paz como "2026-11-14". */
+export function todayInBolivia(now: Date = new Date()): string {
+  return todayFormatter.format(now);
+}
+
+/** Suma días a una fecha "2026-11-14". */
+export function addDays(isoDate: string, days: number): string {
+  const date = new Date(`${isoDate}T00:00:00Z`);
+  return new Date(date.getTime() + days * msPerDay).toISOString().slice(0, isoDateLength);
+}
+
+/** Día de la semana de una fecha "2026-11-14". */
+export function weekdayOf(isoDate: string): Weekday {
+  return weekdayIndex[new Date(`${isoDate}T00:00:00Z`).getUTCDay()];
+}
+
+/** Hora "10:30" de un instante que la API ya manda en hora de La Paz ("2026-11-14T10:30:00-04:00"). */
+export function clockTime(localIso: string): string {
+  return localIso.slice(hourStart, hourEnd);
+}
+
+/** Fecha "2026-11-14" de un instante que la API manda en hora de La Paz. */
+export function dateOf(localIso: string): string {
+  return localIso.slice(0, isoDateLength);
+}
+
+/** Muestra una fecha como "sábado 14 de noviembre". */
+export function formatLongDate(isoDate: string): string {
+  return longDateFormatter.format(new Date(`${isoDate}T00:00:00Z`));
+}
