@@ -34,6 +34,20 @@ public sealed class BookingTests
         Assert.Equal(SchedulingErrors.TooLateToChange, booking.EnsureCustomerCanChange(OneHourBefore, TwoHours).Error);
     }
 
+    /// <summary>Tras el recordatorio no hace falta otro, pero si cambia la hora se vuelve a recordar.</summary>
+    [Fact]
+    public void Reminder_AfterRescheduleIsNeededAgain()
+    {
+        Booking booking = NewBooking();
+
+        booking.MarkReminded(ThreeHoursBefore);
+        bool afterReminder = booking.NeedsReminder;
+        booking.Reschedule(booking.BarberId, TimeRange.FromStart(Start.AddHours(1), FortyFive));
+
+        Assert.False(afterReminder);
+        Assert.True(booking.NeedsReminder);
+    }
+
     /// <summary>Un turno cancelado deja la agenda libre y no se puede cancelar ni mover otra vez.</summary>
     [Fact]
     public void Cancel_Twice_SecondFails()

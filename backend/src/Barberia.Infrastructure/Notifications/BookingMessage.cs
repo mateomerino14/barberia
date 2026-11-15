@@ -28,6 +28,10 @@ public sealed record BookingMessage(string Subject, string Text, string Html)
                 subject = $"Turno {number} cancelado";
                 lead = $"Tu turno N.º {number} quedó cancelado: {detail}";
                 break;
+            case BookingEvent.Reminder:
+                subject = $"Recordatorio: turno {number} a las {start.ToString("HH:mm", Spanish)}";
+                lead = $"Te recordamos tu turno N.º {number}: {detail}";
+                break;
             case BookingEvent.Rescheduled:
                 subject = $"Cambiamos la hora de tu turno {number}";
                 lead = $"Tu turno N.º {number} ahora es: {detail}";
