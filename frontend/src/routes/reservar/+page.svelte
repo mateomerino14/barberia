@@ -3,15 +3,18 @@
   import {goto} from '$app/navigation';
   import {resolve} from '$app/paths';
   import {onMount} from 'svelte';
+  import {theme} from '#lib/core/theme.svelte.ts';
   import {formatPrice} from '#lib/core/money.ts';
   import {clockTime, formatDuration, formatLongDate, fromApiTime, todayInBolivia, weekdayOf} from '#lib/core/time.ts';
   import {BookingFlow} from '#lib/features/booking/state.svelte.ts';
   import Button from '#lib/ui/atoms/Button.svelte';
+  import Checkbox from '#lib/ui/atoms/Checkbox.svelte';
   import Input from '#lib/ui/atoms/Input.svelte';
   import Notice from '#lib/ui/atoms/Notice.svelte';
   import PoleStripe from '#lib/ui/atoms/PoleStripe.svelte';
   import FormField from '#lib/ui/molecules/FormField.svelte';
   import StepTitle from '#lib/ui/molecules/StepTitle.svelte';
+  import ThemeToggle from '#lib/ui/molecules/ThemeToggle.svelte';
   import BarberPicker from '#lib/ui/organisms/BarberPicker.svelte';
   import DayStrip from '#lib/ui/organisms/DayStrip.svelte';
   import ServicePicker from '#lib/ui/organisms/ServicePicker.svelte';
@@ -59,6 +62,10 @@
 </svelte:head>
 
 <header class="header">
+  <nav class="bar">
+    <a class="back" href={resolve('/')}>← Inicio</a>
+    <ThemeToggle dark={theme.isDark} onToggle={() => theme.toggle()} />
+  </nav>
   {#if flow.shop?.address}
     <span class="kicker">{flow.shop.address}</span>
   {/if}
@@ -136,6 +143,7 @@
           bind:value={flow.customer.email}
         />
       </FormField>
+      <Checkbox bind:checked={flow.remember}>Recordar mis datos en este teléfono</Checkbox>
     </section>
   {/if}
 
@@ -164,11 +172,36 @@
 <style>
   .header {
     padding: var(--space-5) var(--space-5) var(--space-4);
-    background: var(--color-ink);
-    color: var(--color-paper);
+    background: var(--color-bar);
+    color: var(--color-on-bar);
     display: flex;
     flex-direction: column;
     gap: var(--space-1);
+  }
+
+  .bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-3);
+  }
+
+  .back {
+    min-height: var(--touch-min);
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--space-3);
+    border: var(--line-firm) solid var(--color-on-bar-soft);
+    color: var(--color-on-bar);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .back:hover {
+    border-color: var(--color-on-bar);
   }
 
   .kicker {
@@ -176,7 +209,7 @@
     font-size: var(--text-xs);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--color-rule);
+    color: var(--color-on-bar-soft);
   }
 
   .title {
@@ -190,7 +223,7 @@
 
   .hours {
     font-size: var(--text-sm);
-    color: var(--color-rule);
+    color: var(--color-on-bar-soft);
   }
 
   .page {
