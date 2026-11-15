@@ -74,6 +74,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Setup:OwnerEmail", OwnerEmail);
         builder.UseSetting("Setup:OwnerPassword", OwnerPassword);
         builder.UseSetting("RateLimits:PermitsPerMinute", UnlimitedPermits);
+        builder.UseSetting("RateLimits:LoginsPerMinute", UnlimitedPermits);
+        builder.UseSetting("RateLimits:ReadsPerMinute", UnlimitedPermits);
         builder.ConfigureTestServices(services =>
         {
             services.AddSingleton<IClock, FixedClock>();
