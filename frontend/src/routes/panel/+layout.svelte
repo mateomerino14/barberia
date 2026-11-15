@@ -20,9 +20,13 @@
     {href: '/panel/barberos', label: 'Barberos'},
     {href: '/panel/horarios', label: 'Horarios'},
     {href: '/panel/ajustes', label: 'Mi barbería'},
+    {href: '/panel/cuenta', label: 'Mi cuenta'},
   ];
-  const barberLinks = [{href: '/panel/agenda', label: 'Mi agenda'}];
-  const barberPages = ['/panel', '/panel/agenda'];
+  const barberLinks = [
+    {href: '/panel/agenda', label: 'Mi agenda'},
+    {href: '/panel/cuenta', label: 'Mi cuenta'},
+  ];
+  const barberPages = ['/panel', '/panel/agenda', '/panel/cuenta'];
 
   let shopName = $state('Barbería');
   let ready = $state(false);

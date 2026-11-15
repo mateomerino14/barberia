@@ -3,7 +3,16 @@ import {fromApiTime} from '#lib/core/time.ts';
 import {listAllServices} from '#lib/features/services/api.ts';
 import type {Service} from '#lib/features/services/types.ts';
 import type {Hours} from '#lib/features/shop/types.ts';
-import {addTimeOff, createBarber, listAllBarbers, removeTimeOff, setBarberSchedule, updateBarber} from './api.ts';
+import {
+  addTimeOff,
+  createBarber,
+  listAllBarbers,
+  listBarberAccess,
+  removeTimeOff,
+  setBarberAccess,
+  setBarberSchedule,
+  updateBarber,
+} from './api.ts';
 import type {Barber, BarberInput} from './types.ts';
 
 /** Estado de la página de barberos del panel. */
@@ -16,10 +25,19 @@ export class BarbersState {
   notice = $state<string | null>(null);
   selectedId = $state<string | null>(null);
   creating = $state(false);
+  access = $state<Record<string, string>>({});
 
   /** Barbero abierto, o null. */
   get selected(): Barber | null {
     return this.barbers.find((barber) => barber.id === this.selectedId) ?? null;
+  }
+
+  /** Correo con que entra al panel el barbero abierto, o null si no tiene acceso. */
+  get selectedEmail(): string | null {
+    if (!this.selectedId) {
+      return null;
+    }
+    return this.access[this.selectedId] ?? null;
   }
 
   /** Horario del barbero abierto, con las horas listas para editar. */
@@ -34,7 +52,11 @@ export class BarbersState {
   /** Trae el equipo y los servicios. */
   async load(): Promise<void> {
     this.loading = true;
-    const [barbers, services] = await Promise.all([listAllBarbers(session.token), listAllServices(session.token)]);
+    const [barbers, services, access] = await Promise.all([
+      listAllBarbers(session.token),
+      listAllServices(session.token),
+      listBarberAccess(session.token),
+    ]);
     this.loading = false;
     if (!barbers.ok) {
       this.error = barbers.error.message;
@@ -46,6 +68,9 @@ export class BarbersState {
     }
     this.barbers = barbers.data;
     this.services = services.data;
+    if (access.ok) {
+      this.access = Object.fromEntries(access.data.map((item) => [item.barberId, item.email]));
+    }
     this.error = null;
   }
 
@@ -65,6 +90,9 @@ export class BarbersState {
       return;
     }
     this.replace(result.data);
+    if (input.account) {
+      this.access = {...this.access, [result.data.id]: input.account.email.trim().toLowerCase()};
+    }
     this.creating = false;
     this.selectedId = result.data.id;
     this.succeed('Barbero guardado.');
@@ -116,6 +144,30 @@ export class BarbersState {
     }
     this.replace(result.data);
     this.succeed('Ausencia quitada.');
+  }
+
+  /** Da acceso al panel al barbero abierto o le pone una contraseña nueva. */
+  async saveAccess(email: string | null, password: string): Promise<boolean> {
+    const id = this.selectedId;
+    if (!id) {
+      return false;
+    }
+    this.saving = true;
+    const result = await setBarberAccess(id, email, password, session.token);
+    this.saving = false;
+    if (!result.ok) {
+      this.error = result.error.message;
+      return false;
+    }
+    const hadAccess = Boolean(this.access[id]);
+    this.access = {...this.access, [id]: result.data.email};
+    if (hadAccess) {
+      this.succeed('Contraseña cambiada. Su sesión abierta se cerró.');
+    }
+    else {
+      this.succeed('Ya puede entrar al panel.');
+    }
+    return true;
   }
 
   /** Abre el formulario para un barbero nuevo. */
