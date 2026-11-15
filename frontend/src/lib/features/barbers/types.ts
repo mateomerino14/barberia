@@ -16,6 +16,7 @@ export interface Barber {
   serviceIds: string[];
   schedule: Hours[];
   timeOff: TimeOff[];
+  photoImageId: string | null;
 }
 
 /** Datos de un barbero que se crea o edita. */

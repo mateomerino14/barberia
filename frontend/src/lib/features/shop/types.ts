@@ -31,6 +31,8 @@ export interface Shop {
   palette: Palette;
   openingHours: Hours[];
   closedDays: ClosedDay[];
+  logoImageId: string | null;
+  galleryImageIds: string[];
 }
 
 /** Datos que edita el dueño. */

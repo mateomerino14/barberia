@@ -27,3 +27,13 @@ export function addClosedDay(date: string, reason: string, token: string | null)
 export function removeClosedDay(date: string, token: string | null): Promise<ApiResult<Shop>> {
   return request<Shop>(`/api/shop/closed-days/${date}`, {method: 'DELETE', token});
 }
+
+/** Pone o quita el logo. */
+export function setLogo(imageId: string | null, token: string | null): Promise<ApiResult<Shop>> {
+  return request<Shop>('/api/shop/logo', {method: 'PUT', body: {imageId}, token});
+}
+
+/** Reemplaza las fotos del local. */
+export function setGallery(imageIds: string[], token: string | null): Promise<ApiResult<Shop>> {
+  return request<Shop>('/api/shop/gallery', {method: 'PUT', body: {imageIds}, token});
+}

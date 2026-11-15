@@ -1,5 +1,7 @@
+import {shrinkImage} from '#lib/core/image.ts';
 import {session} from '#lib/core/session.svelte.ts';
 import {fromApiTime} from '#lib/core/time.ts';
+import {uploadImage} from '#lib/features/media/api.ts';
 import {listAllServices} from '#lib/features/services/api.ts';
 import type {Service} from '#lib/features/services/types.ts';
 import type {Hours} from '#lib/features/shop/types.ts';
@@ -10,10 +12,13 @@ import {
   listBarberAccess,
   removeTimeOff,
   setBarberAccess,
+  setBarberPhoto,
   setBarberSchedule,
   updateBarber,
 } from './api.ts';
 import type {Barber, BarberInput} from './types.ts';
+
+const photoSide = 900;
 
 /** Estado de la página de barberos del panel. */
 export class BarbersState {
@@ -170,6 +175,40 @@ export class BarbersState {
     return true;
   }
 
+  /** Achica y sube la foto del barbero abierto. */
+  async uploadPhoto(file: File): Promise<void> {
+    const id = this.selectedId;
+    if (!id) {
+      return;
+    }
+    this.saving = true;
+    try {
+      const uploaded = await uploadImage(await shrinkImage(file, photoSide), session.token);
+      if (!uploaded.ok) {
+        this.error = uploaded.error.message;
+        return;
+      }
+      await this.applyPhoto(id, uploaded.data.id, 'Foto guardada.');
+    }
+    catch {
+      this.error = 'No pudimos leer esa imagen. Prueba con otra foto.';
+    }
+    finally {
+      this.saving = false;
+    }
+  }
+
+  /** Quita la foto del barbero abierto. */
+  async removePhoto(): Promise<void> {
+    const id = this.selectedId;
+    if (!id) {
+      return;
+    }
+    this.saving = true;
+    await this.applyPhoto(id, null, 'Foto quitada.');
+    this.saving = false;
+  }
+
   /** Abre el formulario para un barbero nuevo. */
   startCreate(): void {
     this.selectedId = null;
@@ -188,6 +227,17 @@ export class BarbersState {
   close(): void {
     this.creating = false;
     this.selectedId = null;
+  }
+
+  /** Guarda la foto en el barbero y actualiza la lista. */
+  private async applyPhoto(id: string, imageId: string | null, message: string): Promise<void> {
+    const result = await setBarberPhoto(id, imageId, session.token);
+    if (!result.ok) {
+      this.error = result.error.message;
+      return;
+    }
+    this.replace(result.data);
+    this.succeed(message);
   }
 
   /** Reemplaza o agrega un barbero en la lista. */

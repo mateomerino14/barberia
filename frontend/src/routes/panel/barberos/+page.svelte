@@ -8,6 +8,8 @@
   import Notice from '#lib/ui/atoms/Notice.svelte';
   import PageTitle from '#lib/ui/molecules/PageTitle.svelte';
   import BarberForm from '#lib/ui/organisms/BarberForm.svelte';
+  import {imageUrl} from '#lib/features/media/api.ts';
+  import ImagePicker from '#lib/ui/molecules/ImagePicker.svelte';
   import PanelAccessForm from '#lib/ui/organisms/PanelAccessForm.svelte';
   import DateEntriesEditor from '#lib/ui/organisms/DateEntriesEditor.svelte';
   import WeekHoursEditor from '#lib/ui/organisms/WeekHoursEditor.svelte';
@@ -25,6 +27,15 @@
       label: formatDateRange(item.from, item.to),
       reason: item.reason,
     }));
+  }
+
+  /** Dirección de la foto del barbero abierto, o null. */
+  function photoSrc(): string | null {
+    const id = team.selected?.photoImageId;
+    if (!id) {
+      return null;
+    }
+    return imageUrl(id);
   }
 
   /** Nombres de los servicios que hace un barbero. */
@@ -74,7 +85,11 @@
           type="button"
           onclick={() => team.open(barber.id)}
         >
-          <span class="initials" aria-hidden="true">{barber.name.slice(0, 2).toUpperCase()}</span>
+          {#if barber.photoImageId}
+            <img class="initials" src={imageUrl(barber.photoImageId)} alt="" />
+          {:else}
+            <span class="initials" aria-hidden="true">{barber.name.slice(0, 2).toUpperCase()}</span>
+          {/if}
           <span class="who">
             <strong>{barber.name}</strong>
             <span class="services">{serviceNames(barber.serviceIds) || 'Sin servicios'}</span>
@@ -101,6 +116,19 @@
           saving={team.saving}
           onSubmit={(values) => team.save(values)}
           onCancel={() => team.close()}
+        />
+      </section>
+      <section class="block">
+        <h2 class="subtitle">Foto</h2>
+        <ImagePicker
+          src={photoSrc()}
+          alt="Foto de {team.selected.name}"
+          emptyText="Sin foto"
+          pickLabel="Subir foto"
+          shape="portrait"
+          busy={team.saving}
+          onPick={(file) => team.uploadPhoto(file)}
+          onRemove={() => team.removePhoto()}
         />
       </section>
       <section class="block">
@@ -184,6 +212,10 @@
     background: var(--color-ink);
     color: var(--color-sheet);
     font-weight: 800;
+  }
+
+  img.initials {
+    object-fit: cover;
   }
 
   .who {

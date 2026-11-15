@@ -1,7 +1,8 @@
-<!-- El equipo de barberos, cada uno con sus iniciales en un retrato. -->
+<!-- El equipo de barberos, cada uno con su foto o, si no tiene, sus iniciales en un retrato. -->
 <script lang="ts">
   import type {PublicBarber} from '#lib/features/booking/types.ts';
   import {initials} from '#lib/features/landing/opening.ts';
+  import {imageUrl} from '#lib/features/media/api.ts';
 
   interface Props {
     barbers: PublicBarber[];
@@ -13,7 +14,11 @@
 <ul class="team">
   {#each barbers as barber (barber.id)}
     <li class="member">
-      <span class="portrait" aria-hidden="true">{initials(barber.name)}</span>
+      {#if barber.photoImageId}
+        <img class="portrait photo" src={imageUrl(barber.photoImageId)} alt="" loading="lazy" />
+      {:else}
+        <span class="portrait" aria-hidden="true">{initials(barber.name)}</span>
+      {/if}
       <span class="name">{barber.name}</span>
     </li>
   {/each}
@@ -46,6 +51,11 @@
     font-stretch: var(--stretch-display);
     color: var(--color-action);
     box-shadow: var(--space-2) var(--space-2) 0 var(--color-rule);
+  }
+
+  .photo {
+    width: 100%;
+    object-fit: cover;
   }
 
   .name {

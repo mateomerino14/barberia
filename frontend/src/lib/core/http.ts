@@ -19,6 +19,7 @@ export type ApiResult<T> = {ok: true; data: T} | {ok: false; error: ApiError};
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: unknown;
+  file?: Blob;
   token?: string | null;
   fetcher?: typeof fetch;
 }
@@ -36,10 +37,14 @@ export function apiUrl(): string {
 /** Llama a la API y convierte la respuesta en datos o en un error con mensaje en español. */
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<ApiResult<T>> {
   const headers: Record<string, string> = {};
-  let body: string | undefined;
+  let body: string | Blob | undefined;
   if (options.body !== undefined) {
     headers['Content-Type'] = 'application/json';
     body = JSON.stringify(options.body);
+  }
+  if (options.file) {
+    headers['Content-Type'] = options.file.type;
+    body = options.file;
   }
   if (options.token) {
     headers.Authorization = `Bearer ${options.token}`;

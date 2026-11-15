@@ -48,6 +48,8 @@ Barbería es un sistema de reservas para una barbería: los clientes sacan turno
 - **Estados del turno:** `booked` (reservado), `attended` (atendido), `no_show` (no vino) y `cancelled` (cancelado).
 - **Bloqueos:** el barbero marca horas en las que no atiende (almuerzo, un trámite).
 - **Recordar datos:** el cliente puede guardar su nombre y celular en su propio teléfono para la próxima reserva; no se crea ninguna cuenta.
+- **Fotos:** el dueño sube el logo, las fotos del local y la foto de cada barbero. La web las achica en el teléfono antes de subirlas y la API solo acepta JPG, PNG o WebP de hasta 2 MB, revisando el contenido real del archivo.
+- **Contraseñas:** cada uno cambia la suya en "Mi cuenta". Si un barbero olvida la suya, el dueño le pone una nueva desde "Barberos". Al cambiarla se cierran las sesiones abiertas.
 - **Colores:** el dueño elige entre cinco paletas y cada persona puede pasar a modo oscuro con el botón de sol o luna.
 - **Turnos sin reserva:** el panel anota a quien llega sin turno para que la agenda quede completa.
 - **Choques:** dos personas nunca pueden quedarse con la misma hora, aunque reserven al mismo tiempo. La base de datos lo garantiza con una restricción, no solo el código.
@@ -70,7 +72,8 @@ Barbería es un sistema de reservas para una barbería: los clientes sacan turno
 | Servicios | Dueño | Lista y edición de servicios |
 | Barberos | Dueño | Equipo, sus servicios, horarios y ausencias |
 | Horarios | Dueño | Horario de la barbería y días cerrados |
-| Mi barbería | Dueño | Datos de la barbería, reglas de reserva y paleta de colores |
+| Mi barbería | Dueño | Datos de la barbería, reglas de reserva, paleta, logo y hasta 6 fotos del local |
+| Mi cuenta | Dueño y barberos | Cambiar la propia contraseña |
 | Ingresar | Barbero y dueño | Inicio de sesión |
 
 ## Fuera de esta versión
