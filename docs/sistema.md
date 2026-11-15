@@ -25,6 +25,7 @@ Barbería es un sistema de reservas para una barbería: los clientes sacan turno
 - Horario de atención por día de la semana (puede haber días cerrados, como el lunes).
 - Días cerrados puntuales: feriados, vacaciones.
 - Reglas de reserva: cuánto antes se puede reservar como mínimo (por ejemplo, 1 hora), hasta cuántos días adelante (por ejemplo, 14) y hasta cuándo se puede cancelar (por ejemplo, 2 horas antes).
+- Intervalo de turnos: cada cuántos minutos puede empezar un turno (15, 20, 30 o 60). Cada turno ocupa la duración real de su servicio; el intervalo solo define las horas de inicio.
 
 ### 3. Servicios y barberos
 
@@ -41,7 +42,8 @@ Barbería es un sistema de reservas para una barbería: los clientes sacan turno
   - no choca con otro turno ni con un bloqueo;
   - respeta la anticipación mínima y el límite de días.
 
-  Las horas de inicio se ofrecen cada 15 minutos, así se aprovechan los huecos que dejan servicios de distinta duración.
+  Las horas de inicio se ofrecen según el intervalo que eligió la barbería (cada 15 minutos por defecto, así se aprovechan los huecos que dejan servicios de distinta duración).
+- **Días llenos:** la tira de días marca **Lleno** los días sin ninguna hora libre. Antes de elegir servicio se usa el más corto de cada barbero (si no entra ni ese, el día está lleno para todo); con servicio y barbero elegidos muestra cuántas horas le quedan a cada día. La API lo calcula para todos los días en una sola petición (`GET /api/availability/days`).
 - **Reservar:** el cliente deja nombre y celular (el correo es opcional). El turno recibe un número correlativo y un enlace secreto para cambiarlo o cancelarlo.
 - **"Cualquiera":** si el cliente no elige barbero, el turno va al barbero libre con menos turnos ese día.
 - **Cambiar y cancelar:** desde el enlace del cliente, dentro del plazo permitido, o desde el panel en cualquier momento.

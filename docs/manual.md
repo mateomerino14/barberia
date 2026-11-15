@@ -41,7 +41,12 @@ La reserva tiene cuatro pasos en una sola página. Abajo siempre se ve el resume
 
 1. **¿Qué te haces?** Se elige el servicio. Cada uno muestra cuánto dura y cuánto cuesta.
 2. **¿Con quién?** Se elige un barbero o **Cualquiera**. Con "Cualquiera" el turno va al barbero libre que tenga menos turnos ese día.
-3. **¿Cuándo?** Se elige el día en la tira de fechas y después la hora. Los días en que la barbería no abre aparecen tachados. Solo se muestran las horas en las que el servicio entra completo.
+3. **¿Cuándo?** Se elige el día en la tira de fechas y después la hora. Bajo cada día se ve su estado:
+   - **Cerrado** (tachado en gris): la barbería no abre ese día.
+   - **Lleno** (tachado en rojo): ya no queda ninguna hora. Se marca desde que se abre la página, sin elegir nada, si no entra ni el servicio más corto.
+   - **N libres**: una vez elegidos el servicio y el barbero, cuántas horas de inicio le quedan a ese día.
+
+   Si el día que estaba elegido se llena para el servicio que se eligió, la página pasa sola al primer día con lugar. Solo se muestran las horas en las que el servicio entra completo.
 4. **Tus datos.** Nombre y celular son obligatorios; el correo es opcional y sirve para recibir la confirmación y el recordatorio.
 
 Al tocar **Reservar turno** el turno queda guardado. Si justo otra persona tomó esa hora, la página lo avisa y muestra las horas que siguen libres.
@@ -148,7 +153,7 @@ El **horario de atención** de cada día de la semana y los **días cerrados**, 
 ![Datos de la barbería](manual/18_mi_barberia.webp)
 
 - **Lo que ve el cliente:** nombre, dirección, teléfono o WhatsApp y un mensaje de bienvenida.
-- **Reglas de reserva:** con cuánta anticipación se puede reservar, hasta qué fecha y hasta cuándo el cliente puede cambiar o cancelar.
+- **Reglas de reserva:** con cuánta anticipación se puede reservar, hasta qué fecha, hasta cuándo el cliente puede cambiar o cancelar y **cada cuánto empiezan los turnos** (cada 15, 20, 30 o 60 minutos). Cada turno ocupa lo que dura su servicio; el intervalo solo decide a qué horas puede empezar. Con servicios de 30 o 60 minutos, "cada 30 minutos" deja horas redondas (9:00, 9:30, 10:00…) sin perder tiempo entre turnos.
 - **Colores:** cinco paletas. Cada tarjeta muestra cómo se ve la página con esos colores. Se aplican a todas las páginas al tocar **Guardar cambios**.
 
 ![Paletas de colores](manual/19_colores.webp)
@@ -173,6 +178,6 @@ Cada uno cambia aquí su propia contraseña: la actual, la nueva y repetirla. Al
 
 **El dueño olvidó su contraseña.** Se cambia la variable `Setup__OwnerPassword` en el servidor solo la primera vez; después hay que pedir ayuda técnica para restablecerla. Por eso conviene cambiarla en Mi cuenta por una que se recuerde.
 
-**¿Por qué no aparece una hora?** Porque ya pasó o no cumple la anticipación mínima, porque está ocupada o bloqueada, porque el servicio no entra completo antes del cierre o porque el barbero está ausente ese día.
+**¿Por qué no aparece una hora?** Porque ya pasó o no cumple la anticipación mínima, porque está ocupada o bloqueada, porque el servicio no entra completo antes del siguiente turno o del cierre, porque no coincide con el intervalo de turnos que eligió la barbería o porque el barbero está ausente ese día.
 
 **No llegan los correos.** La barbería tiene que tener configurado el envío de correos (ver [Despliegue](despliegue.md)). Sin eso todo funciona igual, salvo los correos.
