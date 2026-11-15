@@ -31,9 +31,9 @@ csharp_using_directive_placement = outside_namespace:error
 dotnet_style_prefer_conditional_expression_over_assignment = false:none
 dotnet_style_prefer_conditional_expression_over_return = false:none
 
-# var solo cuando el tipo se ve en la misma línea
+# Sin var: el tipo siempre se escribe
 csharp_style_var_for_built_in_types = false:error
-csharp_style_var_when_type_is_apparent = true:error
+csharp_style_var_when_type_is_apparent = false:error
 csharp_style_var_elsewhere = false:error
 
 # Miembros de expresión solo para propiedades
@@ -87,6 +87,17 @@ dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 dotnet_naming_style.underscore_camel.capitalization = camel_case
 dotnet_naming_style.underscore_camel.required_prefix = _
 
+[src/**.cs]
+# Error es el nombre natural del tipo y el proyecto solo se usa desde C#
+dotnet_diagnostic.CA1716.severity = none
+# Result<T>.Success y Failure son fábricas estáticas a propósito
+dotnet_diagnostic.CA1000.severity = none
+
 [tests/**.cs]
 # Los nombres de pruebas usan guiones bajos: Metodo_Condicion_Resultado
 dotnet_diagnostic.CA1707.severity = none
+
+[**/Migrations/**.cs]
+# Las migraciones las genera EF Core y no se editan a mano
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
