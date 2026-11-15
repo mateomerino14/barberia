@@ -12,6 +12,20 @@ public static class BusinessTime
         return TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
     }
 
+    /// <summary>Devuelve en UTC el instante que corresponde a una fecha y hora locales de la barbería.</summary>
+    public static DateTimeOffset At(DateOnly date, TimeOnly time)
+    {
+        DateTime local = date.ToDateTime(time, DateTimeKind.Unspecified);
+        TimeSpan offset = Zone().GetUtcOffset(local);
+        return new DateTimeOffset(local, offset).ToUniversalTime();
+    }
+
+    /// <summary>Devuelve la fecha local de la barbería en la que cae un instante.</summary>
+    public static DateOnly DateOf(DateTimeOffset instant)
+    {
+        return DateOnly.FromDateTime(ToLocal(instant).DateTime);
+    }
+
     /// <summary>Convierte un instante a la hora local de la barbería.</summary>
     public static DateTimeOffset ToLocal(DateTimeOffset instant)
     {

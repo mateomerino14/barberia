@@ -4,13 +4,13 @@ Sistema de reservas para barberías: los clientes sacan turno desde el celular, 
 
 ## Estado
 
-Día 2 de 7: el dueño ya puede entrar al panel y configurar la barbería, los servicios y el equipo. Los módulos se suman en este orden:
+Día 3 de 7: el panel configura la barbería, los servicios y el equipo, y la API ya calcula horas libres y toma reservas. Los módulos se suman en este orden:
 
 | Entrega | Contenido | Estado |
 |---|---|---|
 | 1. Base | Documentos, reglas, esqueleto de API y web, CI | Lista |
 | 2. Barbería y equipo | Acceso, datos de la barbería, servicios y barberos | Lista |
-| 3. Horas libres | Cálculo de disponibilidad y reservas | Pendiente |
+| 3. Horas libres | Cálculo de disponibilidad y reservas | Lista: API |
 | 4. Reserva pública | Página para el cliente, cambiar y cancelar | Pendiente |
 | 5. Agenda | Panel del barbero y del dueño, bloqueos y avisos | Pendiente |
 | 6. Pulido | Detalles visuales, celular y datos de demostración | Pendiente |
