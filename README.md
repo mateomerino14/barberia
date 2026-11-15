@@ -2,9 +2,17 @@
 
 Sistema de reservas para barberías: los clientes sacan turno desde el celular, sin crear cuenta, y el equipo administra la agenda, los horarios y los servicios desde un panel.
 
+## Capturas
+
+| Reservar (celular) | Turno del cliente | Agenda del panel |
+|---|---|---|
+| ![Página de reservas](docs/capturas/reservar.png) | ![Turno del cliente](docs/capturas/turno.png) | ![Agenda del día](docs/capturas/agenda.png) |
+
+Más capturas en [`docs/capturas`](docs/capturas): ingresar, servicios, barberos y horarios.
+
 ## Estado
 
-Día 5 de 7: los clientes reservan desde el celular y manejan su turno con un enlace; el equipo maneja la agenda del día, anota turnos sin reserva, bloquea horas y recibe avisos. Los módulos se suman en este orden:
+Los siete días de trabajo están completos: los clientes reservan desde el celular y manejan su turno con un enlace, y el equipo maneja la agenda, los horarios, los servicios y los avisos desde el panel.
 
 | Entrega | Contenido | Estado |
 |---|---|---|
@@ -13,14 +21,15 @@ Día 5 de 7: los clientes reservan desde el celular y manejan su turno con un en
 | 3. Horas libres | Cálculo de disponibilidad y reservas | Lista |
 | 4. Reserva pública | Página para el cliente, cambiar y cancelar | Lista |
 | 5. Agenda | Panel del barbero y del dueño, bloqueos y avisos | Lista |
-| 6. Pulido | Detalles visuales, celular y datos de demostración | Pendiente |
-| 7. Publicación | Pruebas de punta a punta, despliegue y capturas | Pendiente |
+| 6. Pulido | Detalles visuales, celular y datos de demostración | Lista |
+| 7. Publicación | Pruebas de punta a punta, despliegue y capturas | Lista |
 
 ## Documentos
 
 - [Qué hace el sistema](docs/sistema.md)
 - [Arquitectura](docs/arquitectura.md)
 - [Reglas de desarrollo](reglas.md)
+- [Despliegue](docs/despliegue.md)
 
 ## Tecnologías
 
@@ -29,7 +38,7 @@ Día 5 de 7: los clientes reservan desde el celular y manejan su turno con un en
 | API | .NET 10, ASP.NET Core, EF Core |
 | Web | SvelteKit con TypeScript |
 | Base de datos | PostgreSQL (Supabase en producción) |
-| Pruebas | xUnit, NetArchTest, Testcontainers, Vitest y Testing Library |
+| Pruebas | xUnit, NetArchTest, Testcontainers, Vitest, Testing Library y Playwright |
 | Calidad | `dotnet format`, ESLint, knip y pruebas de arquitectura |
 
 ## Configuración
@@ -47,7 +56,9 @@ La API lee su configuración de `appsettings.json` o de variables de entorno (co
 | `Email__SenderEmail` y `Email__SenderName` | Remitente de los correos, verificado en Brevo |
 | `Email__PublicWebUrl` | Dirección pública de la web, para el enlace del turno en el correo |
 
-En desarrollo ya vienen valores locales en `appsettings.Development.json`: el dueño es `dueno@barberia.local` con la contraseña `barberia-local`.
+En desarrollo ya vienen valores locales en `appsettings.Development.json`: el dueño es `dueno@barberia.local` con la contraseña `barberia-local`. Para empezar con servicios, barberos y horarios de ejemplo, arranca la API con `Setup__DemoData=true`.
+
+Reservar, cambiar turnos e iniciar sesión tienen un límite de peticiones por dirección IP (`RateLimits__PermitsPerMinute`, 20 por minuto por defecto).
 
 ## Desarrollo
 
@@ -75,3 +86,4 @@ La web busca la API en `VITE_API_URL`; si no está definida usa `http://localhos
 | Formato y estilo | `dotnet format` | `npm run lint:fix` |
 | Código sin uso | se revisa al compilar | `npm run lint:deadcode` |
 | Tipos | `dotnet build` | `npm run check` |
+| Punta a punta | (con la API y la web levantadas) | `npm run test:e2e` |
