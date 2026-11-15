@@ -30,6 +30,7 @@ Los siete días de trabajo están completos: los clientes reservan desde el celu
 - [Arquitectura](docs/arquitectura.md)
 - [Reglas de desarrollo](reglas.md)
 - [Despliegue](docs/despliegue.md)
+- [Seguridad](docs/seguridad.md)
 
 ## Tecnologías
 

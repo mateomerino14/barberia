@@ -31,6 +31,7 @@ En el plan gratuito, Supabase pausa el proyecto si pasa una semana sin uso; se r
    | `Setup__OwnerEmail` | Correo del dueño |
    | `Setup__OwnerPassword` | Contraseña inicial del dueño (al menos 8 caracteres) |
    | `Cors__Origins__0` | La dirección de la web del paso 3, por ejemplo `https://barberia.vercel.app` |
+   | `Proxy__TrustForwardedHeaders` | `true` en Render, para que los límites de intentos cuenten por cliente y no por el proxy |
    | `Setup__DemoData` | `true` solo para una demostración: carga servicios, barberos y horarios de ejemplo |
 
 3. Comprueba que `https://TU-API.onrender.com/api/health` responda `{"status":"ok",...}`.
