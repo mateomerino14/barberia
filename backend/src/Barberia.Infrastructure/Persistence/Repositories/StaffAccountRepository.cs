@@ -25,6 +25,12 @@ public sealed class StaffAccountRepository(BarberiaDbContext context) : IStaffAc
         return context.StaffAccounts.FirstOrDefaultAsync(account => account.BarberId == barberId, cancellationToken);
     }
 
+    /// <summary>Lista las cuentas vinculadas a barberos.</summary>
+    public async Task<IReadOnlyList<StaffAccount>> ListBarberAccountsAsync(CancellationToken cancellationToken)
+    {
+        return await context.StaffAccounts.Where(account => account.BarberId != null).ToListAsync(cancellationToken);
+    }
+
     /// <summary>Indica si ya hay alguna cuenta de dueño.</summary>
     public Task<bool> AnyOwnerAsync(CancellationToken cancellationToken)
     {

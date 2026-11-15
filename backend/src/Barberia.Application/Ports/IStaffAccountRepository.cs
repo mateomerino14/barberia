@@ -14,6 +14,9 @@ public interface IStaffAccountRepository
     /// <summary>Busca la cuenta vinculada a un barbero.</summary>
     Task<StaffAccount?> FindByBarberAsync(Guid barberId, CancellationToken cancellationToken);
 
+    /// <summary>Lista las cuentas vinculadas a barberos.</summary>
+    Task<IReadOnlyList<StaffAccount>> ListBarberAccountsAsync(CancellationToken cancellationToken);
+
     /// <summary>Indica si ya hay alguna cuenta de dueño.</summary>
     Task<bool> AnyOwnerAsync(CancellationToken cancellationToken);
 

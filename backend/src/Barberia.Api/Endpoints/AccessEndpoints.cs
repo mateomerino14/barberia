@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Barberia.Api.Contracts;
 using Barberia.Api.Http;
 using Barberia.Application.Features.Access;
@@ -11,6 +12,9 @@ public static class AccessEndpoints
     public static IEndpointRouteBuilder MapAccessEndpoints(this IEndpointRouteBuilder routes)
     {
         routes.MapPost("/api/auth/login", LoginAsync).RequireRateLimiting(RateLimits.Login);
+        routes.MapPost("/api/auth/password", ChangePasswordAsync)
+            .RequireAuthorization(Policies.Staff)
+            .RequireRateLimiting(RateLimits.Login);
         return routes;
     }
 
@@ -19,11 +23,28 @@ public static class AccessEndpoints
     {
         return ApiResults.Ok(
             await handler.HandleAsync(new LoginCommand(request.Email, request.Password), cancellationToken),
-            login => new LoginResponse(
-                login.Token.Token,
-                login.Token.ExpiresAt,
-                login.Account.Email,
-                login.Account.Role.ToString(),
-                login.Account.BarberId));
+            ToResponse);
+    }
+
+    /// <summary>Cambia la contraseña propia y devuelve un pase nuevo; las otras sesiones se cierran.</summary>
+    private static async Task<IResult> ChangePasswordAsync(
+        ChangePasswordRequest request,
+        ClaimsPrincipal user,
+        ChangePasswordHandler handler,
+        CancellationToken cancellationToken)
+    {
+        ChangePasswordCommand command = new(user.AccountId(), request.CurrentPassword, request.NewPassword);
+        return ApiResults.Ok(await handler.HandleAsync(command, cancellationToken), ToResponse);
+    }
+
+    /// <summary>Convierte la sesión abierta en la respuesta de la API.</summary>
+    private static LoginResponse ToResponse(LoginResult login)
+    {
+        return new LoginResponse(
+            login.Token.Token,
+            login.Token.ExpiresAt,
+            login.Account.Email,
+            login.Account.Role.ToString(),
+            login.Account.BarberId);
     }
 }
