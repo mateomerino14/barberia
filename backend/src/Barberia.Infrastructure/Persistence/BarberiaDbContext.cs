@@ -14,8 +14,6 @@ namespace Barberia.Infrastructure.Persistence;
 /// <summary>Contexto de EF Core sobre PostgreSQL; también confirma los cambios de cada caso de uso.</summary>
 public sealed class BarberiaDbContext(DbContextOptions<BarberiaDbContext> options) : DbContext(options), IUnitOfWork
 {
-    /// <summary>Nombre de la restricción que impide dos turnos activos del mismo barbero a la misma hora.</summary>
-    public const string NoOverlapConstraint = "ex_bookings_no_overlap";
     /// <summary>La barbería de esta instalación.</summary>
     public DbSet<Shop> Shops => Set<Shop>();
 

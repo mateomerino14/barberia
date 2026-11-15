@@ -1,9 +1,13 @@
 <!-- Portada de la barbería: nombre grande, si está abierta, el poste en 3D y el botón para reservar. -->
 <script lang="ts">
-  import type {OpenStatus} from '#lib/features/landing/opening.ts';
   import Button from '#lib/ui/atoms/Button.svelte';
   import ThemeToggle from '#lib/ui/molecules/ThemeToggle.svelte';
   import BarberPole3D from './BarberPole3D.svelte';
+
+  interface OpenStatus {
+    open: boolean;
+    text: string;
+  }
 
   interface Props {
     name: string;

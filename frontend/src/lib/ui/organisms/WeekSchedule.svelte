@@ -1,7 +1,12 @@
 <!-- Horario de la semana con el día de hoy resaltado y los días cerrados tachados. -->
 <script lang="ts">
-  import {fromApiTime, weekdayName} from '#lib/core/time.ts';
-  import type {ScheduleRow} from '#lib/features/landing/opening.ts';
+  import {fromApiTime, weekdayName, type Weekday} from '#lib/core/time.ts';
+
+  interface ScheduleRow {
+    day: Weekday;
+    hours: {opens: string; closes: string} | null;
+    today: boolean;
+  }
 
   interface Props {
     rows: ScheduleRow[];

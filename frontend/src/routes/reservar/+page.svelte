@@ -36,7 +36,7 @@
     if (!hours || closed) {
       return 'Hoy no abrimos';
     }
-    return `Abierto hoy de ${fromApiTime(hours.opens)} a ${fromApiTime(hours.closes)}`;
+    return `Hoy atiende de ${fromApiTime(hours.opens)} a ${fromApiTime(hours.closes)}`;
   }
 
   /** Texto cuando no hay horas libres. */

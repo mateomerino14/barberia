@@ -16,6 +16,7 @@ public sealed class AccessTests
     private const string OwnerPassword = "contrasena-segura";
     private const string BarberEmail = "marco@barberia.bo";
     private const string BarberPassword = "barbero-seguro";
+    private const string NewPassword = "nueva-contrasena";
 
     private readonly InMemoryStore _store = new();
     private readonly FakePasswordHasher _hasher = new();
@@ -102,6 +103,40 @@ public sealed class AccessTests
         bool open = await check.HandleAsync(account.Id, account.SessionStamp, TestContext.Current.CancellationToken);
 
         Assert.False(open);
+    }
+
+    /// <summary>Con la contraseña actual se cambia y llega un pase nuevo; sin ella, no.</summary>
+    [Fact]
+    public async Task ChangePassword_NeedsCurrentPassword()
+    {
+        StaffAccount account = await CreateBarberAsync(isActive: true);
+        ChangePasswordHandler handler = new(_store, _hasher, new FakeTokenIssuer(), _store);
+
+        Result<LoginResult> wrong = await handler.HandleAsync(new ChangePasswordCommand(account.Id, "otra-cosa", NewPassword), TestContext.Current.CancellationToken);
+        Result<LoginResult> weak = await handler.HandleAsync(new ChangePasswordCommand(account.Id, BarberPassword, "corta"), TestContext.Current.CancellationToken);
+        Result<LoginResult> changed = await handler.HandleAsync(new ChangePasswordCommand(account.Id, BarberPassword, NewPassword), TestContext.Current.CancellationToken);
+
+        Assert.Equal(AccessErrors.WrongCurrentPassword, wrong.Error);
+        Assert.Equal(AccessErrors.WeakPassword, weak.Error);
+        Assert.True(changed.IsSuccess);
+        Assert.True(_hasher.Verify(account.PasswordHash, NewPassword));
+    }
+
+    /// <summary>El dueño le da acceso a un barbero sin cuenta y después le renueva la contraseña.</summary>
+    [Fact]
+    public async Task BarberAccess_CreateThenReset()
+    {
+        Barber barber = (await new CreateBarberHandler(_store, _store, _store, _hasher, _store)
+            .HandleAsync(new SaveBarberCommand("Rodri", true, []), null, TestContext.Current.CancellationToken)).Value;
+        BarberAccessHandler handler = new(_store, _store, _hasher, _store);
+
+        Result<StaffAccount> created = await handler.HandleAsync(new BarberAccessCommand(barber.Id, BarberEmail, BarberPassword), TestContext.Current.CancellationToken);
+        Result<StaffAccount> reset = await handler.HandleAsync(new BarberAccessCommand(barber.Id, null, NewPassword), TestContext.Current.CancellationToken);
+        IReadOnlyList<StaffAccount> listed = await new ListBarberAccessHandler(_store).HandleAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(created.Value.Id, reset.Value.Id);
+        Assert.True(_hasher.Verify(reset.Value.PasswordHash, NewPassword));
+        Assert.Equal(BarberEmail, Assert.Single(listed).Email);
     }
 
     /// <summary>Crea un barbero con cuenta, activo o dado de baja.</summary>
