@@ -7,6 +7,18 @@
 		<meta name="description" content="Reserva tu turno en la barbería desde el celular: elige servicio, barbero y hora." />
 		<meta name="theme-color" content="#1c1b19" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
+		<script>
+			// Aplica el modo y la paleta guardados antes de dibujar, para que la página no parpadee.
+			try {
+				const mode = localStorage.getItem('barberia.theme');
+				const dark = mode === 'dark' || (mode !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+				document.documentElement.dataset.theme = 'light';
+				if (dark) {
+					document.documentElement.dataset.theme = 'dark';
+				}
+				document.documentElement.dataset.palette = localStorage.getItem('barberia.palette') || 'classic';
+			} catch {}
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

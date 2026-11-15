@@ -5,6 +5,7 @@
   import {page} from '$app/state';
   import {onMount} from 'svelte';
   import {session} from '#lib/core/session.svelte.ts';
+  import {theme} from '#lib/core/theme.svelte.ts';
   import {getShop} from '#lib/features/shop/api.ts';
   import PanelHeader from '#lib/ui/organisms/PanelHeader.svelte';
   import PanelLayout from '#lib/ui/templates/PanelLayout.svelte';
@@ -61,6 +62,8 @@
         links={links()}
         currentPath={page.url.pathname}
         userLabel={session.current?.email ?? ''}
+        dark={theme.isDark}
+        onToggleTheme={() => theme.toggle()}
         onLogout={logout}
       />
     {/snippet}
