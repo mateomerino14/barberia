@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Barberia.Api/Barberia.Api.csproj" />
+    <Project Path="src/Barberia.Application/Barberia.Application.csproj" />
+    <Project Path="src/Barberia.Domain/Barberia.Domain.csproj" />
+    <Project Path="src/Barberia.Infrastructure/Barberia.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Barberia.Api.Tests/Barberia.Api.Tests.csproj" />
+    <Project Path="tests/Barberia.Architecture.Tests/Barberia.Architecture.Tests.csproj" />
+    <Project Path="tests/Barberia.Domain.Tests/Barberia.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

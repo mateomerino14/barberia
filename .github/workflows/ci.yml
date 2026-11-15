@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+jobs:
+  backend:
+    name: API (.NET)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: backend/global.json
+      - name: Restaurar
+        run: dotnet restore
+      - name: Formato
+        run: dotnet format --verify-no-changes --no-restore
+      - name: Compilar
+        run: dotnet build --no-restore
+      - name: Pruebas
+        run: dotnet test --no-build
+
+  frontend:
+    name: Web (SvelteKit)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Instalar
+        run: npm ci
+      - name: Tipos
+        run: npm run check
+      - name: Estilo
+        run: npm run lint
+      - name: Código sin uso
+        run: npm run lint:deadcode
+      - name: Pruebas
+        run: npm test
+      - name: Compilar
+        run: npm run build

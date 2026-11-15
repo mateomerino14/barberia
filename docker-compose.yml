@@ -1,0 +1,15 @@
+# PostgreSQL para desarrollo local; en producción se usa Supabase.
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: barberia
+      POSTGRES_USER: barberia
+      POSTGRES_PASSWORD: barberia
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
