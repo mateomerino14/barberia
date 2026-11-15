@@ -1,9 +1,51 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Barberia.Api.Endpoints;
+using Barberia.Api.Http;
+using Barberia.Application;
+using Barberia.Application.Features.Shops;
+using Barberia.Domain.Common;
 using Barberia.Infrastructure;
 
+const string CorsPolicy = "web";
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddInfrastructure();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddPanelPolicies();
+builder.Services.AddProblemDetails();
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+});
+string[] origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [];
+builder.Services.AddCors(options => options.AddPolicy(CorsPolicy, policy =>
+    policy.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod()));
 
 WebApplication app = builder.Build();
+app.UseExceptionHandler();
+app.UseCors(CorsPolicy);
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapHealthEndpoints();
-app.Run();
+app.MapAccessEndpoints();
+app.MapShopEndpoints();
+app.MapCatalogEndpoints();
+app.MapStaffEndpoints();
+
+await app.Services.MigrateDatabaseAsync(CancellationToken.None);
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    InitializeShopHandler initialize = scope.ServiceProvider.GetRequiredService<InitializeShopHandler>();
+    IConfigurationSection setup = app.Configuration.GetSection("Setup");
+    Result initialized = await initialize.HandleAsync(
+        new InitializeShopCommand(setup["ShopName"], setup["OwnerEmail"], setup["OwnerPassword"]),
+        CancellationToken.None);
+    if (initialized.IsFailure)
+    {
+        throw new InvalidOperationException($"No se pudo preparar la barbería: {initialized.Error!.Message}");
+    }
+}
+
+await app.RunAsync();

@@ -87,7 +87,7 @@ public IReadOnlyList<TimeRange> FreeSlots(Service service, Barber barber, DateOn
 - **Sin operadores ternarios**, ni en C# ni en TypeScript ni en las plantillas de Svelte. Se usan bloques `if`/`else` o `{#if}`.
 - **Llaves siempre**, incluso en bloques de una línea. En C# van en línea nueva (Allman); en TypeScript, `else` y `catch` van en línea nueva después de la llave de cierre.
 - **Sin valores mágicos:** los números y textos con significado se declaran como constantes con nombre. En las pruebas también.
-- **Tipado estricto:** `Nullable` activado en C# y `strict` en TypeScript. En C#, `var` solo cuando el tipo se ve en la misma línea.
+- **Tipado estricto:** `Nullable` activado en C# y `strict` en TypeScript. En C# no se usa `var`: el tipo siempre se escribe.
 - **Sin código muerto:** nada sin uso, ni privados, ni parámetros, ni `using`, ni exportaciones, ni dependencias.
 
 ```csharp
@@ -127,7 +127,7 @@ const payload = {name, phone};
 
 La estructura y las reglas de dependencia están en [docs/arquitectura.md](docs/arquitectura.md).
 
-- Un caso de uso por manejador: `CreateBookingCommand` + `CreateBookingHandler` en `Features/Bookings/CreateBooking/`.
+- Un caso de uso por manejador, con su comando en el mismo archivo: `CreateBookingCommand` + `CreateBookingHandler` en `Features/Bookings/CreateBooking.cs`. Los casos que son uno el inverso del otro (agregar y quitar) pueden compartir archivo.
 - Los errores de negocio previstos se devuelven como `Result`, nunca como excepción. Las excepciones quedan para fallas reales.
 - Las entidades se crean con métodos de fábrica que validan (`Booking.Create(...)`); no tienen constructores públicos ni setters públicos.
 - Las rutas HTTP se agrupan por módulo en `Api/Endpoints/` y solo traducen la petición al caso de uso y el resultado a la respuesta.

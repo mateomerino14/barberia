@@ -67,10 +67,11 @@ Barberia.Domain/
 Barberia.Application/
 ├── Ports/
 └── Features/
-    └── Bookings/
-        ├── CreateBooking/   CreateBookingCommand, CreateBookingHandler
-        ├── CancelBooking/
-        └── ...
+    ├── Access/      Login
+    ├── Shops/       InitializeShop, GetShop, UpdateShop, SetOpeningHours, ClosedDays
+    ├── Catalog/     ListServices, SaveService
+    ├── Staff/       ListBarbers, SaveBarber, SetBarberSchedule, TimeOffChanges
+    └── Bookings/    CreateBooking, CancelBooking…
 ```
 
 ### Patrones

@@ -11,7 +11,7 @@ public sealed class CodeStyleTests
     private const string SummaryOpen = "<summary>";
     private const string SummaryClose = "</summary>";
     private static readonly string[] SourceFolders = ["src", "tests"];
-    private static readonly string[] IgnoredFolders = ["bin", "obj"];
+    private static readonly string[] IgnoredFolders = ["bin", "obj", "Migrations"];
 
     /// <summary>No hay operadores ternarios: las decisiones se escriben con if y else.</summary>
     [Fact]
@@ -97,7 +97,7 @@ public sealed class CodeStyleTests
         }
     }
 
-    /// <summary>Indica si el archivo está dentro de una carpeta de compilación.</summary>
+    /// <summary>Indica si el archivo es generado: compilación o migraciones de EF Core.</summary>
     private static bool IsGenerated(string file)
     {
         string[] parts = file.Split(Path.DirectorySeparatorChar);
