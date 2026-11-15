@@ -1,4 +1,5 @@
 using Barberia.Domain.Common;
+using Barberia.Domain.Media;
 
 namespace Barberia.Domain.Shops;
 
@@ -7,6 +8,10 @@ public sealed class Shop : Entity
 {
     private readonly List<DailyHours> _openingHours = [];
     private readonly List<ClosedDay> _closedDays = [];
+    private readonly List<Guid> _galleryImageIds = [];
+
+    /// <summary>Cuántas fotos del local se muestran como máximo.</summary>
+    public const int MaxGalleryPhotos = 6;
 
     /// <summary>Constructor para la base de datos.</summary>
     private Shop()
@@ -30,6 +35,12 @@ public sealed class Shop : Entity
 
     /// <summary>Paleta de colores elegida.</summary>
     public ShopPalette Palette { get; private set; } = ShopPalette.Classic;
+
+    /// <summary>Imagen del logo, si el dueño subió una.</summary>
+    public Guid? LogoImageId { get; private set; }
+
+    /// <summary>Fotos del local en el orden en que se muestran.</summary>
+    public IReadOnlyList<Guid> GalleryImageIds => _galleryImageIds;
 
     /// <summary>Horario de atención por día de la semana; un día sin horario está cerrado.</summary>
     public IReadOnlyList<DailyHours> OpeningHours => _openingHours;
@@ -134,5 +145,28 @@ public sealed class Shop : Entity
         }
 
         return _openingHours.FirstOrDefault(hours => hours.Day == date.DayOfWeek);
+    }
+
+    /// <summary>Cambia o quita el logo; devuelve el anterior para poder borrarlo.</summary>
+    public Guid? ChangeLogo(Guid? imageId)
+    {
+        Guid? previous = LogoImageId;
+        LogoImageId = imageId;
+        return previous;
+    }
+
+    /// <summary>Reemplaza las fotos del local; devuelve las que salieron para poder borrarlas.</summary>
+    public Result<IReadOnlyList<Guid>> ChangeGallery(IReadOnlyList<Guid> imageIds)
+    {
+        List<Guid> unique = [.. imageIds.Distinct()];
+        if (unique.Count > MaxGalleryPhotos)
+        {
+            return MediaErrors.TooManyPhotos;
+        }
+
+        List<Guid> removed = [.. _galleryImageIds.Except(unique)];
+        _galleryImageIds.Clear();
+        _galleryImageIds.AddRange(unique);
+        return removed;
     }
 }

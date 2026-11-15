@@ -1,6 +1,7 @@
 using Barberia.Api.Contracts;
 using Barberia.Api.Http;
 using Barberia.Application.Features.Access;
+using Barberia.Application.Features.Media;
 using Barberia.Application.Features.Staff;
 using Barberia.Domain.Access;
 using Barberia.Domain.Staff;
@@ -18,6 +19,7 @@ public static class StaffEndpoints
         RouteGroupBuilder owner = routes.MapGroup("/api/barbers").RequireAuthorization(Policies.Owner);
         owner.MapGet("/access", ListAccessAsync);
         owner.MapPut("/{id:guid}/access", SetAccessAsync);
+        owner.MapPut("/{id:guid}/photo", SetPhotoAsync);
         owner.MapPost("/", CreateAsync);
         owner.MapPut("/{id:guid}", UpdateAsync);
         owner.MapPut("/{id:guid}/schedule", SetScheduleAsync);
@@ -54,6 +56,12 @@ public static class StaffEndpoints
         return ApiResults.Ok(
             await handler.HandleAsync(command, cancellationToken),
             account => new BarberAccessResponse(id, account.Email));
+    }
+
+    /// <summary>Pone o quita la foto de un barbero.</summary>
+    private static async Task<IResult> SetPhotoAsync(Guid id, SetPhotoRequest request, BarberPhotoHandler handler, CancellationToken cancellationToken)
+    {
+        return ApiResults.Ok(await handler.HandleAsync(id, request.ImageId, cancellationToken), BarberResponse.From);
     }
 
     /// <summary>Crea un barbero y, si se pide, su cuenta del panel.</summary>
