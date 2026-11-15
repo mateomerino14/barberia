@@ -12,7 +12,7 @@ const shop: Shop = {
   address: 'Av. 20 de Octubre 2150, La Paz',
   phone: '70000000',
   welcomeMessage: '',
-  rules: {minLeadMinutes: 60, maxDaysAhead: 14, cancelLimitMinutes: 120},
+  rules: {minLeadMinutes: 60, maxDaysAhead: 14, cancelLimitMinutes: 120, slotStepMinutes: 15},
   palette: 'classic',
   openingHours: [
     {day: 'monday', opens: '09:00:00', closes: '20:00:00'},

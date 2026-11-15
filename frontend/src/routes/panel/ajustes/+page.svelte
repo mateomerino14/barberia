@@ -3,7 +3,7 @@
   import {onMount} from 'svelte';
   import {theme, type Palette} from '#lib/core/theme.svelte.ts';
   import {paletteOptions} from '#lib/features/shop/palette-options.ts';
-  import {aheadOptions, cancelOptions, leadOptions} from '#lib/features/shop/rule-options.ts';
+  import {aheadOptions, cancelOptions, leadOptions, stepOptions} from '#lib/features/shop/rule-options.ts';
   import {ShopState} from '#lib/features/shop/state.svelte.ts';
   import Button from '#lib/ui/atoms/Button.svelte';
   import Input from '#lib/ui/atoms/Input.svelte';
@@ -30,6 +30,7 @@
   let minLead = $state('60');
   let maxDays = $state('14');
   let cancelLimit = $state('120');
+  let slotStep = $state('15');
   let palette = $state<Palette>('classic');
 
   onMount(() => {
@@ -42,6 +43,7 @@
         minLead = String(settings.shop.rules.minLeadMinutes);
         maxDays = String(settings.shop.rules.maxDaysAhead);
         cancelLimit = String(settings.shop.rules.cancelLimitMinutes);
+        slotStep = String(settings.shop.rules.slotStepMinutes);
         palette = settings.shop.palette;
       }
     });
@@ -69,7 +71,12 @@
       address,
       phone,
       welcomeMessage,
-      rules: {minLeadMinutes: Number(minLead), maxDaysAhead: Number(maxDays), cancelLimitMinutes: Number(cancelLimit)},
+      rules: {
+        minLeadMinutes: Number(minLead),
+        maxDaysAhead: Number(maxDays),
+        cancelLimitMinutes: Number(cancelLimit),
+        slotStepMinutes: Number(slotStep),
+      },
       palette,
     }).then(() => theme.setPalette(palette));
   }
@@ -118,6 +125,13 @@
       hint="Después de ese plazo tiene que llamar a la barbería"
     >
       <Select id="rules-cancel" options={cancelOptions(Number(cancelLimit))} bind:value={cancelLimit} />
+    </FormField>
+    <FormField
+      label="¿Cada cuánto empiezan los turnos?"
+      id="rules-step"
+      hint="Con servicios de 30 o 60 minutos, cada 30 minutos deja horas redondas sin perder tiempo"
+    >
+      <Select id="rules-step" options={stepOptions()} bind:value={slotStep} />
     </FormField>
   </fieldset>
   <fieldset class="group">

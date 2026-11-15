@@ -55,3 +55,10 @@ export interface CustomerBooking {
   end: string;
   changeUntil: string;
 }
+
+/** Día que se puede reservar, con cuántas horas libres le quedan. */
+export interface DaySummary {
+  date: string;
+  open: boolean;
+  freeStarts: number;
+}

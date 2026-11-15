@@ -1,5 +1,13 @@
 import {request, type ApiResult} from '#lib/core/http.ts';
-import type {BookingConfirmation, CustomerBooking, CustomerInput, PublicBarber, PublicService, Slot} from './types.ts';
+import type {
+  BookingConfirmation,
+  CustomerBooking,
+  CustomerInput,
+  DaySummary,
+  PublicBarber,
+  PublicService,
+  Slot,
+} from './types.ts';
 
 /** Trae los servicios que se pueden reservar. */
 export function listServices(): Promise<ApiResult<PublicService[]>> {
@@ -18,6 +26,18 @@ export function getAvailability(date: string, serviceId: string, barberId: strin
     params.set('barberId', barberId);
   }
   return request<Slot[]>(`/api/availability?${params}`);
+}
+
+/** Resume los días que se pueden reservar, con o sin servicio y barbero elegidos. */
+export function getDaySummary(serviceId: string | null, barberId: string | null): Promise<ApiResult<DaySummary[]>> {
+  const params = new URLSearchParams();
+  if (serviceId) {
+    params.set('serviceId', serviceId);
+  }
+  if (barberId) {
+    params.set('barberId', barberId);
+  }
+  return request<DaySummary[]>(`/api/availability/days?${params}`);
 }
 
 /** Reserva un turno. */
