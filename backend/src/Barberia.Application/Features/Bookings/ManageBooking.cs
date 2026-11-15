@@ -35,7 +35,12 @@ public sealed class GetBookingHandler(IBookingRepository bookings, IBarberReposi
 }
 
 /// <summary>Cancela un turno desde el enlace del cliente, dentro del plazo.</summary>
-public sealed class CancelBookingHandler(IBookingRepository bookings, IShopRepository shops, IUnitOfWork unitOfWork, IClock clock)
+public sealed class CancelBookingHandler(
+    IBookingRepository bookings,
+    IShopRepository shops,
+    IUnitOfWork unitOfWork,
+    IClock clock,
+    BookingNotifications notifications)
 {
     /// <summary>Cancela el turno si todavía se puede.</summary>
     public async Task<Result<Booking>> HandleAsync(string token, CancellationToken cancellationToken)
@@ -55,6 +60,7 @@ public sealed class CancelBookingHandler(IBookingRepository bookings, IShopRepos
 
         booking.Cancel();
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        await notifications.SendAsync(BookingEvent.Cancelled, booking, cancellationToken);
         return booking;
     }
 }
@@ -70,7 +76,8 @@ public sealed class RescheduleBookingHandler(
     IBarberRepository barbers,
     ScheduleReader schedule,
     IUnitOfWork unitOfWork,
-    IClock clock)
+    IClock clock,
+    BookingNotifications notifications)
 {
     /// <summary>Mueve el turno o explica por qué no se pudo.</summary>
     public async Task<Result<Booking>> HandleAsync(string token, RescheduleBookingCommand command, CancellationToken cancellationToken)
@@ -109,6 +116,7 @@ public sealed class RescheduleBookingHandler(
             return saved.Error!;
         }
 
+        await notifications.SendAsync(BookingEvent.Rescheduled, booking, cancellationToken);
         return booking;
     }
 }

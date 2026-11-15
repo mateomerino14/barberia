@@ -53,8 +53,15 @@ public static class AvailabilityCalculator
         return FreeStarts(shop, barber, date, durationMinutes, busy, now).Contains(start.ToUniversalTime());
     }
 
-    /// <summary>Devuelve el horario de trabajo del barbero en la fecha, recortado al de la barbería.</summary>
-    private static TimeRange? Workday(Shop shop, Barber barber, DateOnly date)
+    /// <summary>Indica si un turno anotado por la barbería cabe en el día del barbero sin chocar, sin reglas de anticipación.</summary>
+    public static bool FitsWorkday(Shop shop, Barber barber, TimeRange range, IEnumerable<TimeRange> busy)
+    {
+        TimeRange? workday = Workday(shop, barber, BusinessTime.DateOf(range.Start));
+        return workday is not null && range.IsWithin(workday) && !busy.Any(item => item.Overlaps(range));
+    }
+
+    /// <summary>Devuelve el horario de trabajo del barbero en la fecha, recortado al de la barbería, o null si no trabaja.</summary>
+    public static TimeRange? Workday(Shop shop, Barber barber, DateOnly date)
     {
         DailyHours? shopHours = shop.HoursOn(date);
         DailyHours? barberHours = barber.HoursOn(date);

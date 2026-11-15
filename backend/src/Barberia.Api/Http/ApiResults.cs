@@ -47,6 +47,8 @@ public static class ApiResults
                 return StatusCodes.Status409Conflict;
             case ErrorKind.Unauthorized:
                 return StatusCodes.Status401Unauthorized;
+            case ErrorKind.Forbidden:
+                return StatusCodes.Status403Forbidden;
             default:
                 return StatusCodes.Status400BadRequest;
         }

@@ -21,6 +21,12 @@ public sealed record Error(ErrorKind Kind, string Code, string Message)
         return new Error(ErrorKind.Conflict, code, message);
     }
 
+    /// <summary>Crea un error de falta de permiso.</summary>
+    public static Error Forbidden(string code, string message)
+    {
+        return new Error(ErrorKind.Forbidden, code, message);
+    }
+
     /// <summary>Crea un error de credenciales inválidas.</summary>
     public static Error Unauthorized(string code, string message)
     {

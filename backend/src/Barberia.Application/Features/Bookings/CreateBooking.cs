@@ -24,7 +24,8 @@ public sealed class CreateBookingHandler(
     IBookingRepository bookings,
     ScheduleReader schedule,
     IUnitOfWork unitOfWork,
-    IClock clock)
+    IClock clock,
+    BookingNotifications notifications)
 {
     /// <summary>Crea el turno o explica por qué no se pudo.</summary>
     public async Task<Result<Booking>> HandleAsync(CreateBookingCommand command, CancellationToken cancellationToken)
@@ -62,6 +63,7 @@ public sealed class CreateBookingHandler(
             return saved.Error!;
         }
 
+        await notifications.SendAsync(BookingEvent.Confirmed, booking, cancellationToken);
         return booking;
     }
 

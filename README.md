@@ -4,7 +4,7 @@ Sistema de reservas para barberías: los clientes sacan turno desde el celular, 
 
 ## Estado
 
-Día 4 de 7: los clientes ya reservan desde el celular y manejan su turno con un enlace; el dueño configura todo desde el panel. Los módulos se suman en este orden:
+Día 5 de 7: los clientes reservan desde el celular y manejan su turno con un enlace; el equipo maneja la agenda del día, anota turnos sin reserva, bloquea horas y recibe avisos. Los módulos se suman en este orden:
 
 | Entrega | Contenido | Estado |
 |---|---|---|
@@ -12,7 +12,7 @@ Día 4 de 7: los clientes ya reservan desde el celular y manejan su turno con un
 | 2. Barbería y equipo | Acceso, datos de la barbería, servicios y barberos | Lista |
 | 3. Horas libres | Cálculo de disponibilidad y reservas | Lista |
 | 4. Reserva pública | Página para el cliente, cambiar y cancelar | Lista |
-| 5. Agenda | Panel del barbero y del dueño, bloqueos y avisos | Pendiente |
+| 5. Agenda | Panel del barbero y del dueño, bloqueos y avisos | Lista |
 | 6. Pulido | Detalles visuales, celular y datos de demostración | Pendiente |
 | 7. Publicación | Pruebas de punta a punta, despliegue y capturas | Pendiente |
 
@@ -43,6 +43,9 @@ La API lee su configuración de `appsettings.json` o de variables de entorno (co
 | `Setup__ShopName` | Nombre de la barbería al arrancar por primera vez |
 | `Setup__OwnerEmail` y `Setup__OwnerPassword` | Cuenta del dueño que se crea al primer arranque |
 | `Cors__Origins__0` | Dirección de la web que puede llamar a la API |
+| `Email__BrevoApiKey` | Clave de Brevo para mandar las confirmaciones por correo; sin ella no se envían correos |
+| `Email__SenderEmail` y `Email__SenderName` | Remitente de los correos, verificado en Brevo |
+| `Email__PublicWebUrl` | Dirección pública de la web, para el enlace del turno en el correo |
 
 En desarrollo ya vienen valores locales en `appsettings.Development.json`: el dueño es `dueno@barberia.local` con la contraseña `barberia-local`.
 

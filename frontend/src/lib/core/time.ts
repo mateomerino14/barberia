@@ -100,3 +100,29 @@ export function dateOf(localIso: string): string {
 export function formatLongDate(isoDate: string): string {
   return longDateFormatter.format(new Date(`${isoDate}T00:00:00Z`));
 }
+
+/** Convierte "10:30" en minutos desde la medianoche. */
+export function toMinutes(clock: string): number {
+  const [hours, minutes] = clock.split(':').map(Number);
+  return hours * minutesPerHour + minutes;
+}
+
+/** Convierte minutos desde la medianoche en "10:30". */
+export function fromMinutes(total: number): string {
+  const hours = Math.floor(total / minutesPerHour);
+  const minutes = total % minutesPerHour;
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+const boliviaOffset = '-04:00';
+const clockFormatter = new Intl.DateTimeFormat('en-GB', {timeZone: businessZone, hour: '2-digit', minute: '2-digit', hour12: false});
+
+/** Arma el instante en hora de Bolivia, "2026-11-14T10:30:00-04:00", para enviarlo a la API. */
+export function localIso(isoDate: string, clock: string): string {
+  return `${isoDate}T${fromApiTime(clock)}:00${boliviaOffset}`;
+}
+
+/** Hora actual en La Paz, como "10:40". */
+export function nowClockInBolivia(now: Date = new Date()): string {
+  return clockFormatter.format(now);
+}

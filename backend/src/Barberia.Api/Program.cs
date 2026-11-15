@@ -34,6 +34,7 @@ app.MapShopEndpoints();
 app.MapCatalogEndpoints();
 app.MapStaffEndpoints();
 app.MapBookingEndpoints();
+app.MapAgendaEndpoints();
 
 await app.Services.MigrateDatabaseAsync(CancellationToken.None);
 using (IServiceScope scope = app.Services.CreateScope())
