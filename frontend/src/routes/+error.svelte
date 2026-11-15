@@ -1,6 +1,7 @@
 <!-- Página de error: dirección que no existe o algo que falló. -->
 <script lang="ts">
   import {page} from '$app/state';
+  import Button from '#lib/ui/atoms/Button.svelte';
   import PoleStripe from '#lib/ui/atoms/PoleStripe.svelte';
 
   const notFound = 404;
@@ -20,7 +21,9 @@
     <h1 class="title">Algo salió mal</h1>
     <p>Intenta de nuevo en un momento.</p>
   {/if}
-  <a class="link" href="/">Ir a reservar un turno</a>
+  <div>
+    <Button href="/">Ir a reservar un turno</Button>
+  </div>
 </main>
 
 <style>
@@ -52,8 +55,4 @@
     color: var(--color-ink-soft);
   }
 
-  .link {
-    color: var(--color-action);
-    font-weight: 700;
-  }
 </style>

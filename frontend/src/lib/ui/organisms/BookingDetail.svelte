@@ -40,7 +40,16 @@
     <Badge>Sin reserva</Badge>
   {/if}
   {#if whatsappLink}
-    <a class="whatsapp" href={whatsappLink} target="_blank" rel="noopener">Recordarle por WhatsApp</a>
+    <div class="row">
+      <Button
+        variant="secondary"
+        wide
+        href={whatsappLink}
+        target="_blank"
+        rel="noopener"
+      >
+        Recordarle por WhatsApp</Button>
+    </div>
   {/if}
   {#if detail.status === 'Booked'}
     <div class="pair">
@@ -90,16 +99,6 @@
     font-size: var(--text-sm);
   }
 
-  .whatsapp {
-    align-self: stretch;
-    min-height: var(--touch-min);
-    display: grid;
-    place-items: center;
-    border: var(--line-firm) solid var(--color-ink);
-    color: var(--color-ink);
-    font-weight: 700;
-    text-decoration: none;
-  }
 
   .pair {
     align-self: stretch;

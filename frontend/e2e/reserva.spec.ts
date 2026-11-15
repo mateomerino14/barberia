@@ -34,7 +34,7 @@ test('un cliente reserva desde el celular, ve su ticket y lo cancela', async ({p
   await expect(page.getByText('TURNO N.º')).toBeVisible();
   await expect(page.getByRole('heading', {name: /Te esperamos/})).toBeVisible();
 
-  await page.getByRole('button', {name: 'Cancelar', exact: true}).click();
+  await page.getByRole('button', {name: 'Cancelar turno'}).click();
   await page.getByRole('button', {name: 'Sí, cancelar'}).click();
   await expect(page.getByRole('heading', {name: 'Turno cancelado'})).toBeVisible();
 });
