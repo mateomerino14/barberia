@@ -2,6 +2,7 @@
 <script lang="ts">
   import Button from '#lib/ui/atoms/Button.svelte';
   import Input from '#lib/ui/atoms/Input.svelte';
+  import Select from '#lib/ui/atoms/Select.svelte';
   import FormField from '#lib/ui/molecules/FormField.svelte';
 
   interface Option {
@@ -31,6 +32,11 @@
   let to = $state('14:00');
   let reason = $state('Almuerzo');
 
+  /** Convierte la lista en opciones de la lista desplegable. */
+  function toOptions(list: Option[]) {
+    return list.map((item) => ({value: item.id, label: item.name}));
+  }
+
   /** Envía el bloqueo. */
   function submit(event: SubmitEvent): void {
     event.preventDefault();
@@ -41,11 +47,7 @@
 <form class="form" onsubmit={submit}>
   <div class="grid">
     <FormField label="Barbero" id="block-barber">
-      <select id="block-barber" class="select" bind:value={barberId} required>
-        {#each barbers as barber (barber.id)}
-          <option value={barber.id}>{barber.name}</option>
-        {/each}
-      </select>
+      <Select id="block-barber" options={toOptions(barbers)} required bind:value={barberId} />
     </FormField>
     <FormField label="Desde" id="block-from">
       <Input id="block-from" type="time" mono required bind:value={from} />
@@ -76,15 +78,6 @@
     gap: var(--space-3);
   }
 
-  .select {
-    min-height: var(--touch-min);
-    padding: 0 var(--space-2);
-    border: var(--line-thin) solid var(--color-ink);
-    border-radius: 0;
-    background: var(--color-sheet);
-    font-family: var(--font-sans);
-    font-size: var(--text-md);
-  }
 
   .actions {
     display: flex;

@@ -1,10 +1,12 @@
-<!-- Datos de la barbería y reglas de reserva. -->
+<!-- Mi barbería: los datos que ve el cliente y las reglas para reservar. -->
 <script lang="ts">
   import {onMount} from 'svelte';
+  import {aheadOptions, cancelOptions, leadOptions} from '#lib/features/shop/rule-options.ts';
   import {ShopState} from '#lib/features/shop/state.svelte.ts';
   import Button from '#lib/ui/atoms/Button.svelte';
   import Input from '#lib/ui/atoms/Input.svelte';
   import Notice from '#lib/ui/atoms/Notice.svelte';
+  import Select from '#lib/ui/atoms/Select.svelte';
   import FormField from '#lib/ui/molecules/FormField.svelte';
   import PageTitle from '#lib/ui/molecules/PageTitle.svelte';
 
@@ -13,9 +15,6 @@
   const addressMaxLength = 160;
   const phoneMaxLength = 20;
   const welcomeMaxLength = 280;
-  const maxDaysLimit = 90;
-  const maxLeadMinutes = 1440;
-  const maxCancelMinutes = 2880;
 
   let name = $state('');
   let address = $state('');
@@ -53,10 +52,10 @@
 </script>
 
 <svelte:head>
-  <title>Ajustes · Barbería</title>
+  <title>Mi barbería · Panel</title>
 </svelte:head>
 
-<PageTitle kicker="La barbería" title="Ajustes" />
+<PageTitle kicker="Datos y reglas" title="Mi barbería" />
 
 {#if settings.error}
   <Notice>{settings.error}</Notice>
@@ -83,22 +82,22 @@
   </fieldset>
   <fieldset class="group">
     <legend>Reglas de reserva</legend>
-    <FormField label="Anticipación mínima (minutos)" id="rules-lead" hint="Cuánto antes como mínimo se puede reservar">
-      <Input id="rules-lead" type="number" mono min="0" max={maxLeadMinutes} required bind:value={minLead} />
+    <FormField label="¿Con cuánta anticipación se puede reservar?" id="rules-lead">
+      <Select id="rules-lead" options={leadOptions(Number(minLead))} bind:value={minLead} />
     </FormField>
-    <FormField label="Días hacia adelante" id="rules-days" hint="Hasta cuántos días adelante se puede reservar">
-      <Input id="rules-days" type="number" mono min="1" max={maxDaysLimit} required bind:value={maxDays} />
+    <FormField label="¿Hasta qué fecha se puede reservar?" id="rules-days">
+      <Select id="rules-days" options={aheadOptions(Number(maxDays))} bind:value={maxDays} />
     </FormField>
     <FormField
-      label="Plazo para cancelar (minutos)"
+      label="¿Hasta cuándo puede el cliente cambiar o cancelar?"
       id="rules-cancel"
-      hint="Hasta cuánto antes el cliente puede cancelar o cambiar"
+      hint="Después de ese plazo tiene que llamar a la barbería"
     >
-      <Input id="rules-cancel" type="number" mono min="0" max={maxCancelMinutes} required bind:value={cancelLimit} />
+      <Select id="rules-cancel" options={cancelOptions(Number(cancelLimit))} bind:value={cancelLimit} />
     </FormField>
   </fieldset>
   <div>
-    <Button type="submit" disabled={settings.saving}>Guardar ajustes</Button>
+    <Button type="submit" disabled={settings.saving}>Guardar cambios</Button>
   </div>
 </form>
 

@@ -60,7 +60,7 @@
         <li class="item">
           <span class="date">{entry.label}</span>
           <span class="reason">{entry.reason}</span>
-          <button class="remove" type="button" disabled={busy} onclick={() => onRemove(entry.key)}>Quitar</button>
+          <Button variant="danger" disabled={busy} onclick={() => onRemove(entry.key)}>Quitar</Button>
         </li>
       {/each}
     </ul>
@@ -70,17 +70,18 @@
       <Input id="{idPrefix}-from" type="date" mono required bind:value={from} />
     </FormField>
     {#if range}
-      <FormField label="Hasta" id="{idPrefix}-to" hint="Vacío si es un solo día">
+      <FormField label="Hasta" id="{idPrefix}-to">
         <Input id="{idPrefix}-to" type="date" mono min={from} bind:value={to} />
       </FormField>
     {/if}
     <FormField label="Motivo" id="{idPrefix}-reason">
       <Input id="{idPrefix}-reason" maxlength={reasonMaxLength} placeholder={reasonPlaceholder} bind:value={reason} />
     </FormField>
-    <div class="submit">
-      <Button type="submit" variant="secondary" disabled={busy || !from}>Agregar</Button>
-    </div>
+    <Button type="submit" variant="secondary" disabled={busy || !from}>Agregar</Button>
   </form>
+  {#if range}
+    <p class="note">Si es un solo día, deja «Hasta» vacío.</p>
+  {/if}
 </div>
 
 <style>
@@ -120,15 +121,6 @@
     color: var(--color-ink-soft);
   }
 
-  .remove {
-    min-height: var(--touch-min);
-    padding: 0 var(--space-3);
-    border: var(--line-thin) solid var(--color-action);
-    background: transparent;
-    color: var(--color-action);
-    font-family: var(--font-sans);
-    cursor: pointer;
-  }
 
   .add {
     display: grid;
@@ -137,7 +129,10 @@
     align-items: end;
   }
 
-  .submit {
-    padding-bottom: var(--space-1);
+  .note {
+    margin: calc(var(--space-2) * -1) 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
   }
+
 </style>

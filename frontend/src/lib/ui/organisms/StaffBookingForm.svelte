@@ -3,6 +3,7 @@
   import Button from '#lib/ui/atoms/Button.svelte';
   import Checkbox from '#lib/ui/atoms/Checkbox.svelte';
   import Input from '#lib/ui/atoms/Input.svelte';
+  import Select from '#lib/ui/atoms/Select.svelte';
   import FormField from '#lib/ui/molecules/FormField.svelte';
 
   interface Option {
@@ -44,6 +45,11 @@
     time = defaultTime;
   });
 
+  /** Convierte la lista en opciones de la lista desplegable. */
+  function toOptions(list: Option[]) {
+    return list.map((item) => ({value: item.id, label: item.name}));
+  }
+
   /** Envía el turno nuevo. */
   function submit(event: SubmitEvent): void {
     event.preventDefault();
@@ -54,18 +60,10 @@
 <form class="form" onsubmit={submit}>
   <div class="grid">
     <FormField label="Servicio" id="staff-service">
-      <select id="staff-service" class="select" bind:value={serviceId} required>
-        {#each services as service (service.id)}
-          <option value={service.id}>{service.name}</option>
-        {/each}
-      </select>
+      <Select id="staff-service" options={toOptions(services)} required bind:value={serviceId} />
     </FormField>
     <FormField label="Barbero" id="staff-barber">
-      <select id="staff-barber" class="select" bind:value={barberId} required>
-        {#each barbers as barber (barber.id)}
-          <option value={barber.id}>{barber.name}</option>
-        {/each}
-      </select>
+      <Select id="staff-barber" options={toOptions(barbers)} required bind:value={barberId} />
     </FormField>
     <FormField label="Hora" id="staff-time">
       <Input id="staff-time" type="time" mono required bind:value={time} />
@@ -97,15 +95,6 @@
     gap: var(--space-3);
   }
 
-  .select {
-    min-height: var(--touch-min);
-    padding: 0 var(--space-2);
-    border: var(--line-thin) solid var(--color-ink);
-    border-radius: 0;
-    background: var(--color-sheet);
-    font-family: var(--font-sans);
-    font-size: var(--text-md);
-  }
 
   .actions {
     display: flex;

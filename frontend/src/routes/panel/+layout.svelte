@@ -17,7 +17,7 @@
     {href: '/panel/servicios', label: 'Servicios'},
     {href: '/panel/barberos', label: 'Barberos'},
     {href: '/panel/horarios', label: 'Horarios'},
-    {href: '/panel/ajustes', label: 'Ajustes'},
+    {href: '/panel/ajustes', label: 'Mi barbería'},
   ];
   const barberLinks = [{href: '/panel/agenda', label: 'Mi agenda'}];
 

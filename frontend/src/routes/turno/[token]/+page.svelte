@@ -93,25 +93,17 @@
         <a class="primary-link" href={calendarLink()} download="turno.ics">Agregar a mi calendario</a>
         {#if ticket.canChange}
           <div class="pair">
-            <Button
-              variant="secondary"
-              onclick={() => ticket.startChange(dateOf(ticket.booking?.start ?? ''))}
-            >
-              Cambiar hora</Button>
-            <button
-              class="cancel"
-              type="button"
-              disabled={ticket.busy}
-              onclick={() => (confirming = true)}
-            >
-              Cancelar</button>
+            <Button variant="secondary" wide onclick={() => ticket.startChange(dateOf(ticket.booking?.start ?? ''))}>
+              Cambiar hora
+            </Button>
+            <Button variant="danger" wide disabled={ticket.busy} onclick={() => (confirming = true)}>Cancelar</Button>
           </div>
           {#if confirming}
             <div class="confirm" role="alertdialog" aria-label="Confirmar cancelación">
               <p>¿Seguro que quieres cancelar tu turno? La hora queda libre para otra persona.</p>
               <div class="pair">
-                <button class="cancel" type="button" disabled={ticket.busy} onclick={cancel}>Sí, cancelar</button>
-                <Button variant="secondary" onclick={() => (confirming = false)}>No, mantener</Button>
+                <Button wide disabled={ticket.busy} onclick={cancel}>Sí, cancelar</Button>
+                <Button variant="secondary" wide onclick={() => (confirming = false)}>No, mantener</Button>
               </div>
             </div>
           {/if}
@@ -214,18 +206,6 @@
     gap: var(--space-2);
   }
 
-  .cancel {
-    min-height: var(--touch-min);
-    border: var(--line-firm) solid var(--color-action);
-    background: transparent;
-    color: var(--color-action);
-    font-family: var(--font-sans);
-    font-size: var(--text-lg);
-    font-weight: 800;
-    font-stretch: var(--stretch-button);
-    text-transform: uppercase;
-    cursor: pointer;
-  }
 
   .link {
     color: var(--color-action);
