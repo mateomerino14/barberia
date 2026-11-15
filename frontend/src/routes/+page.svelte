@@ -4,6 +4,7 @@
   import {onMount} from 'svelte';
   import {theme} from '#lib/core/theme.svelte.ts';
   import {LandingState} from '#lib/features/landing/state.svelte.ts';
+  import {imageUrl} from '#lib/features/media/api.ts';
   import Button from '#lib/ui/atoms/Button.svelte';
   import Notice from '#lib/ui/atoms/Notice.svelte';
   import PoleStripe from '#lib/ui/atoms/PoleStripe.svelte';
@@ -11,6 +12,7 @@
   import LandingHero from '#lib/ui/organisms/LandingHero.svelte';
   import LocationCard from '#lib/ui/organisms/LocationCard.svelte';
   import PriceList from '#lib/ui/organisms/PriceList.svelte';
+  import ShopGallery from '#lib/ui/organisms/ShopGallery.svelte';
   import TeamGrid from '#lib/ui/organisms/TeamGrid.svelte';
   import WeekSchedule from '#lib/ui/organisms/WeekSchedule.svelte';
 
@@ -20,6 +22,40 @@
   onMount(() => {
     landing.load();
   });
+
+  type Section = 'prices' | 'team' | 'place' | 'hours' | 'map';
+
+  /** Secciones que se muestran, en orden; el equipo y el local solo si hay qué mostrar. */
+  function sections(): Section[] {
+    const shown: Section[] = ['prices'];
+    if (landing.barbers.length > 0) {
+      shown.push('team');
+    }
+    if (photos().length > 0) {
+      shown.push('place');
+    }
+    shown.push('hours', 'map');
+    return shown;
+  }
+
+  /** Número de la sección como "01", según las que se muestran. */
+  function step(section: Section): string {
+    return String(sections().indexOf(section) + 1).padStart(2, '0');
+  }
+
+  /** Fotos del local. */
+  function photos(): string[] {
+    return (landing.shop?.galleryImageIds ?? []).map(imageUrl);
+  }
+
+  /** Logo de la barbería, o null. */
+  function logo(): string | null {
+    const id = landing.shop?.logoImageId;
+    if (!id) {
+      return null;
+    }
+    return imageUrl(id);
+  }
 </script>
 
 <svelte:head>
@@ -28,6 +64,7 @@
 
 <LandingHero
   name={landing.shop?.name ?? 'Barbería'}
+  logoSrc={logo()}
   place={landing.shop?.address ?? ''}
   welcome={landing.shop?.welcomeMessage ?? ''}
   status={landing.status}
@@ -44,24 +81,31 @@
 
   {#if landing.shop}
     <section class="section" id="precios">
-      <StepTitle step="01" title="Servicios y precios" />
+      <StepTitle step={step('prices')} title="Servicios y precios" />
       <PriceList services={landing.services} />
     </section>
 
     {#if landing.barbers.length > 0}
       <section class="section">
-        <StepTitle step="02" title="El equipo" />
+        <StepTitle step={step('team')} title="El equipo" />
         <TeamGrid barbers={landing.barbers} />
       </section>
     {/if}
 
+    {#if photos().length > 0}
+      <section class="section">
+        <StepTitle step={step('place')} title="El local" />
+        <ShopGallery sources={photos()} shopName={landing.shop.name} />
+      </section>
+    {/if}
+
     <section class="section">
-      <StepTitle step="03" title="Horario" />
+      <StepTitle step={step('hours')} title="Horario" />
       <WeekSchedule rows={landing.schedule} />
     </section>
 
     <section class="section">
-      <StepTitle step="04" title="Dónde estamos" />
+      <StepTitle step={step('map')} title="Dónde estamos" />
       <LocationCard name={landing.shop.name} address={landing.shop.address} phone={landing.shop.phone} />
     </section>
   {:else if landing.loading}

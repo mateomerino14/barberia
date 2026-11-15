@@ -20,6 +20,7 @@ public sealed class ShopConfiguration : IEntityTypeConfiguration<Shop>
         builder.Property(shop => shop.Phone).HasMaxLength(Limits.PhoneMaxLength);
         builder.Property(shop => shop.WelcomeMessage).HasMaxLength(Limits.WelcomeMaxLength);
         builder.Property(shop => shop.Palette).HasConversion<string>().HasMaxLength(PaletteMaxLength).HasDefaultValue(ShopPalette.Classic);
+        builder.PrimitiveCollection(shop => shop.GalleryImageIds).HasField("_galleryImageIds");
         builder.OwnsOne(shop => shop.Rules, rules =>
         {
             rules.Property(item => item.MinLeadMinutes).HasColumnName("min_lead_minutes");

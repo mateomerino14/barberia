@@ -2,6 +2,7 @@ using Barberia.Application.Ports;
 using Barberia.Domain.Access;
 using Barberia.Domain.Catalog;
 using Barberia.Domain.Common;
+using Barberia.Domain.Media;
 using Barberia.Domain.Scheduling;
 using Barberia.Domain.Shops;
 using Barberia.Domain.Staff;
@@ -32,6 +33,9 @@ public sealed class BarberiaDbContext(DbContextOptions<BarberiaDbContext> option
 
     /// <summary>Bloqueos de la agenda.</summary>
     public DbSet<Block> Blocks => Set<Block>();
+
+    /// <summary>Imágenes subidas por el dueño.</summary>
+    public DbSet<StoredImage> Images => Set<StoredImage>();
 
     /// <summary>Guarda todos los cambios pendientes.</summary>
     async Task IUnitOfWork.SaveChangesAsync(CancellationToken cancellationToken)

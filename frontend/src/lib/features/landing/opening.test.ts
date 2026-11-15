@@ -19,6 +19,8 @@ const shop: Shop = {
     {day: 'tuesday', opens: '09:00:00', closes: '20:00:00'},
   ],
   closedDays: [{date: tuesday, reason: 'Feriado'}],
+  logoImageId: null,
+  galleryImageIds: [],
 };
 
 describe('openStatus', () => {

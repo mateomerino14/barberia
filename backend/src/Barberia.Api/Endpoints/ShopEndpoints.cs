@@ -1,5 +1,6 @@
 using Barberia.Api.Contracts;
 using Barberia.Api.Http;
+using Barberia.Application.Features.Media;
 using Barberia.Application.Features.Shops;
 
 namespace Barberia.Api.Endpoints;
@@ -14,6 +15,8 @@ public static class ShopEndpoints
         RouteGroupBuilder owner = routes.MapGroup("/api/shop").RequireAuthorization(Policies.Owner);
         owner.MapPut("/", UpdateAsync);
         owner.MapPut("/hours", SetHoursAsync);
+        owner.MapPut("/logo", SetLogoAsync);
+        owner.MapPut("/gallery", SetGalleryAsync);
         owner.MapPost("/closed-days", AddClosedDayAsync);
         owner.MapDelete("/closed-days/{date}", RemoveClosedDayAsync);
         return routes;
@@ -23,6 +26,18 @@ public static class ShopEndpoints
     private static async Task<IResult> GetAsync(GetShopHandler handler, CancellationToken cancellationToken)
     {
         return ApiResults.Ok(await handler.HandleAsync(cancellationToken), ShopResponse.From);
+    }
+
+    /// <summary>Pone o quita el logo.</summary>
+    private static async Task<IResult> SetLogoAsync(SetLogoRequest request, ShopImagesHandler handler, CancellationToken cancellationToken)
+    {
+        return ApiResults.Ok(await handler.SetLogoAsync(request.ImageId, cancellationToken), ShopResponse.From);
+    }
+
+    /// <summary>Reemplaza las fotos del local.</summary>
+    private static async Task<IResult> SetGalleryAsync(SetGalleryRequest request, ShopImagesHandler handler, CancellationToken cancellationToken)
+    {
+        return ApiResults.Ok(await handler.SetGalleryAsync(request.ImageIds, cancellationToken), ShopResponse.From);
     }
 
     /// <summary>Actualiza los datos y las reglas de reserva.</summary>

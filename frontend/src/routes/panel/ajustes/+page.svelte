@@ -11,9 +11,13 @@
   import Select from '#lib/ui/atoms/Select.svelte';
   import FormField from '#lib/ui/molecules/FormField.svelte';
   import PageTitle from '#lib/ui/molecules/PageTitle.svelte';
+  import {imageUrl} from '#lib/features/media/api.ts';
+  import ImagePicker from '#lib/ui/molecules/ImagePicker.svelte';
+  import GalleryEditor from '#lib/ui/organisms/GalleryEditor.svelte';
   import PalettePicker from '#lib/ui/organisms/PalettePicker.svelte';
 
   const settings = new ShopState();
+  const maxPhotos = 6;
   const nameMaxLength = 80;
   const addressMaxLength = 160;
   const phoneMaxLength = 20;
@@ -42,6 +46,20 @@
       }
     });
   });
+
+  /** Dirección del logo actual, o null. */
+  function logoSrc(): string | null {
+    const id = settings.shop?.logoImageId;
+    if (!id) {
+      return null;
+    }
+    return imageUrl(id);
+  }
+
+  /** Fotos del local con su dirección. */
+  function galleryPhotos() {
+    return (settings.shop?.galleryImageIds ?? []).map((id) => ({id, src: imageUrl(id)}));
+  }
 
   /** Guarda los datos y las reglas. */
   function submit(event: SubmitEvent): void {
@@ -120,7 +138,48 @@
   </div>
 </form>
 
+<section class="group images" aria-labelledby="images-title">
+  <h2 class="group-title" id="images-title">Logo y fotos</h2>
+  <p class="help">Se guardan al elegirlas. Las achicamos en tu teléfono para que la página cargue rápido.</p>
+  <h3 class="label">Logo</h3>
+  <ImagePicker
+    src={logoSrc()}
+    alt="Logo de {name || 'la barbería'}"
+    emptyText="Sin logo"
+    pickLabel="Subir logo"
+    busy={settings.saving}
+    onPick={(file) => settings.uploadLogo(file)}
+    onRemove={() => settings.removeLogo()}
+  />
+  <h3 class="label">Fotos del local</h3>
+  <GalleryEditor
+    photos={galleryPhotos()}
+    max={maxPhotos}
+    busy={settings.saving}
+    onAdd={(file) => settings.addPhoto(file)}
+    onRemove={(id) => settings.removePhoto(id)}
+  />
+</section>
+
 <style>
+  .images {
+    max-width: 60rem;
+    margin-top: var(--space-5);
+  }
+
+  .group-title {
+    margin: 0;
+    font-size: var(--text-md);
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .label {
+    margin: var(--space-2) 0 0;
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+
   .form {
     display: flex;
     flex-direction: column;

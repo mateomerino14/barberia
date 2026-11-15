@@ -7,6 +7,7 @@
 
   interface Props {
     name: string;
+    logoSrc: string | null;
     place: string;
     welcome: string;
     status: OpenStatus | null;
@@ -15,12 +16,17 @@
     onToggleTheme: () => void;
   }
 
-  const {name, place, welcome, status, reserveHref, dark, onToggleTheme}: Props = $props();
+  const {name, logoSrc, place, welcome, status, reserveHref, dark, onToggleTheme}: Props = $props();
 </script>
 
 <section class="hero">
   <div class="top">
-    <span class="kicker">{place}</span>
+    <span class="brand">
+      {#if logoSrc}
+        <img class="logo" src={logoSrc} alt="Logo de {name}" />
+      {/if}
+      <span class="kicker">{place}</span>
+    </span>
     <ThemeToggle {dark} onToggle={onToggleTheme} />
   </div>
   <div class="body">
@@ -57,6 +63,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .logo {
+    width: 3.5rem;
+    height: 3.5rem;
+    object-fit: contain;
+    background: var(--color-on-bar);
+    border: var(--line-firm) solid var(--color-on-bar-soft);
   }
 
   .kicker {

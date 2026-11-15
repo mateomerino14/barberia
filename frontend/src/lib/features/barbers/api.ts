@@ -54,3 +54,8 @@ export function setBarberAccess(
 ): Promise<ApiResult<BarberAccess>> {
   return request<BarberAccess>(`/api/barbers/${id}/access`, {method: 'PUT', body: {email, password}, token});
 }
+
+/** Pone o quita la foto de un barbero. */
+export function setBarberPhoto(id: string, imageId: string | null, token: string | null): Promise<ApiResult<Barber>> {
+  return request<Barber>(`/api/barbers/${id}/photo`, {method: 'PUT', body: {imageId}, token});
+}
