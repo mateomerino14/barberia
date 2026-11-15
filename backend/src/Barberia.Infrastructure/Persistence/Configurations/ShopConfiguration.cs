@@ -8,6 +8,8 @@ namespace Barberia.Infrastructure.Persistence.Configurations;
 /// <summary>Tablas de la barbería, su horario y sus días cerrados.</summary>
 public sealed class ShopConfiguration : IEntityTypeConfiguration<Shop>
 {
+    private const int PaletteMaxLength = 20;
+
     /// <summary>Configura la tabla de la barbería y sus colecciones.</summary>
     public void Configure(EntityTypeBuilder<Shop> builder)
     {
@@ -17,6 +19,8 @@ public sealed class ShopConfiguration : IEntityTypeConfiguration<Shop>
         builder.Property(shop => shop.Address).HasMaxLength(Limits.AddressMaxLength);
         builder.Property(shop => shop.Phone).HasMaxLength(Limits.PhoneMaxLength);
         builder.Property(shop => shop.WelcomeMessage).HasMaxLength(Limits.WelcomeMaxLength);
+        builder.Property(shop => shop.Palette).HasConversion<string>().HasMaxLength(PaletteMaxLength).HasDefaultValue(ShopPalette.Classic);
+        builder.PrimitiveCollection(shop => shop.GalleryImageIds).HasField("_galleryImageIds");
         builder.OwnsOne(shop => shop.Rules, rules =>
         {
             rules.Property(item => item.MinLeadMinutes).HasColumnName("min_lead_minutes");

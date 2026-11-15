@@ -1,3 +1,4 @@
+using Barberia.Application.Features.Access;
 using Barberia.Application.Ports;
 using Barberia.Infrastructure.Notifications;
 using Barberia.Infrastructure.Persistence;
@@ -31,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IStaffAccountRepository, StaffAccountRepository>();
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<IBlockRepository, BlockRepository>();
+        services.AddScoped<IImageRepository, ImageRepository>();
 
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IClock, SystemClock>();
@@ -38,6 +40,7 @@ public static class DependencyInjection
         services.AddSingleton<ITokenIssuer, TokenIssuer>();
         services.AddPanelAuthentication(configuration);
         services.AddEmailNotifications(configuration);
+        services.AddReminders(configuration);
         return services;
     }
 
@@ -53,6 +56,20 @@ public static class DependencyInjection
 
         services.Configure<EmailOptions>(section);
         services.AddHttpClient<INotifier, BrevoEmailNotifier>();
+    }
+
+    /// <summary>Activa los recordatorios si Reminders:HoursBefore es mayor que cero.</summary>
+    private static void AddReminders(this IServiceCollection services, IConfiguration configuration)
+    {
+        IConfigurationSection section = configuration.GetSection(ReminderOptions.Section);
+        ReminderOptions settings = section.Get<ReminderOptions>() ?? new ReminderOptions();
+        if (settings.HoursBefore <= 0 || settings.IntervalMinutes <= 0)
+        {
+            return;
+        }
+
+        services.Configure<ReminderOptions>(section);
+        services.AddHostedService<ReminderWorker>();
     }
 
     /// <summary>Configura la lectura del pase de sesión en cada petición.</summary>
@@ -77,7 +94,20 @@ public static class DependencyInjection
                 RoleClaimType = StaffClaims.Role,
                 NameClaimType = StaffClaims.Email,
             };
+            options.Events = new JwtBearerEvents { OnTokenValidated = RejectClosedSessionAsync };
         });
+    }
+
+    /// <summary>Rechaza el pase si la cuenta ya no existe, cambió su contraseña o fue dada de baja.</summary>
+    private static async Task RejectClosedSessionAsync(TokenValidatedContext context)
+    {
+        string? accountId = context.Principal?.FindFirst(StaffClaims.AccountId)?.Value;
+        string? stamp = context.Principal?.FindFirst(StaffClaims.Stamp)?.Value;
+        CheckSessionHandler check = context.HttpContext.RequestServices.GetRequiredService<CheckSessionHandler>();
+        if (!Guid.TryParse(accountId, out Guid id) || !await check.HandleAsync(id, stamp, context.HttpContext.RequestAborted))
+        {
+            context.Fail("La sesión ya no es válida.");
+        }
     }
 
     /// <summary>Aplica las migraciones pendientes de la base de datos.</summary>

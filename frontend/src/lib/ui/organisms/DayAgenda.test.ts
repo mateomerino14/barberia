@@ -31,7 +31,7 @@ const base = {columns, items, blocks, nowTime: null, selectedId: null};
 
 describe('DayAgenda', () => {
   it('muestra las columnas, el horario y quién no trabaja', () => {
-    render(DayAgenda, {...base, onSelect: vi.fn(), onRemoveBlock: vi.fn()});
+    render(DayAgenda, {...base, onSelect: vi.fn(), onSelectBlock: vi.fn()});
 
     expect(screen.getByText('09:00 – 19:00')).toBeInTheDocument();
     expect(screen.getByText('No trabaja')).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe('DayAgenda', () => {
 
   it('ubica el turno en su fila y avisa al elegirlo', async () => {
     const onSelect = vi.fn();
-    render(DayAgenda, {...base, onSelect, onRemoveBlock: vi.fn()});
+    render(DayAgenda, {...base, onSelect, onSelectBlock: vi.fn()});
 
     const booking = screen.getByRole('button', {name: /Degradado/});
     expect(booking.style.gridRow).toBe('5 / span 3');
@@ -50,7 +50,7 @@ describe('DayAgenda', () => {
   });
 
   it('dibuja la hora actual solo si cae en el día mostrado', () => {
-    const props = {columns, items, blocks, selectedId: null, onSelect: vi.fn(), onRemoveBlock: vi.fn()};
+    const props = {columns, items, blocks, selectedId: null, onSelect: vi.fn(), onSelectBlock: vi.fn()};
     const {unmount} = render(DayAgenda, {...props, nowTime: '10:40'});
     expect(screen.getByRole('img', {name: 'Hora actual 10:40'})).toBeInTheDocument();
     unmount();
@@ -59,11 +59,11 @@ describe('DayAgenda', () => {
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
   });
 
-  it('permite quitar un bloqueo', async () => {
-    const onRemoveBlock = vi.fn();
-    render(DayAgenda, {...base, onSelect: vi.fn(), onRemoveBlock});
+  it('avisa qué bloqueo se eligió para verlo o quitarlo', async () => {
+    const onSelectBlock = vi.fn();
+    render(DayAgenda, {...base, onSelect: vi.fn(), onSelectBlock});
 
-    await fireEvent.click(screen.getByRole('button', {name: /Quitar bloqueo/}));
-    expect(onRemoveBlock).toHaveBeenCalledWith('k');
+    await fireEvent.click(screen.getByRole('button', {name: /Almuerzo/}));
+    expect(onSelectBlock).toHaveBeenCalledWith('k');
   });
 });

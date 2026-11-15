@@ -17,6 +17,7 @@ export interface PublicBarber {
   id: string;
   name: string;
   serviceIds: string[];
+  photoImageId: string | null;
 }
 
 /** Datos que deja el cliente. */

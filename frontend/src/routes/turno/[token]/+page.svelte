@@ -1,5 +1,6 @@
 <!-- Turno del cliente: el talón, agregar al calendario, cambiar la hora y cancelar. -->
 <script lang="ts">
+  import {resolve} from '$app/paths';
   import {page} from '$app/state';
   import {onMount} from 'svelte';
   import {icsHref} from '#lib/core/calendar.ts';
@@ -63,7 +64,7 @@
   {:else if !ticket.booking}
     <h1 class="title">No encontramos ese turno</h1>
     <p class="muted">Revisa que el enlace esté completo, o reserva uno nuevo.</p>
-    <a class="link" href="/">Reservar un turno</a>
+    <Button href={resolve('/reservar')}>Reservar un turno</Button>
   {:else}
     <div class="intro">
       <span class="kicker">{ticket.shop?.name ?? 'Barbería'}</span>
@@ -90,36 +91,41 @@
 
     {#if ticket.booking.status === 'Booked'}
       <div class="actions">
-        <a class="primary-link" href={calendarLink()} download="turno.ics">Agregar a mi calendario</a>
+        <Button variant="dark" wide href={calendarLink()} download="turno.ics">Agregar a mi calendario</Button>
         {#if ticket.canChange}
-          <div class="pair">
-            <Button
-              variant="secondary"
-              onclick={() => ticket.startChange(dateOf(ticket.booking?.start ?? ''))}
-            >
-              Cambiar hora</Button>
-            <button
-              class="cancel"
-              type="button"
-              disabled={ticket.busy}
-              onclick={() => (confirming = true)}
-            >
-              Cancelar</button>
-          </div>
-          {#if confirming}
-            <div class="confirm" role="alertdialog" aria-label="Confirmar cancelación">
-              <p>¿Seguro que quieres cancelar tu turno? La hora queda libre para otra persona.</p>
-              <div class="pair">
-                <button class="cancel" type="button" disabled={ticket.busy} onclick={cancel}>Sí, cancelar</button>
-                <Button variant="secondary" onclick={() => (confirming = false)}>No, mantener</Button>
-              </div>
-            </div>
-          {/if}
+          <Button variant="secondary" wide onclick={() => ticket.startChange(dateOf(ticket.booking?.start ?? ''))}>
+            Cambiar hora
+          </Button>
         {:else}
           <p class="muted">Ya pasó el plazo para cambiar por aquí. Si necesitas algo, escríbele a la barbería.</p>
         {/if}
         {#if contactLink()}
-          <a class="link" href={contactLink()} target="_blank" rel="noopener">Escribir a la barbería por WhatsApp</a>
+          <Button
+            variant="secondary"
+            wide
+            href={contactLink()}
+            target="_blank"
+            rel="noopener"
+          >
+            Escribir por WhatsApp</Button>
+        {/if}
+        {#if ticket.canChange}
+          <Button
+            variant="danger"
+            wide
+            disabled={ticket.busy}
+            onclick={() => (confirming = true)}
+          >
+            Cancelar turno</Button>
+          {#if confirming}
+            <div class="confirm" role="alertdialog" aria-label="Confirmar cancelación">
+              <p>¿Seguro que quieres cancelar tu turno? La hora queda libre para otra persona.</p>
+              <div class="pair">
+                <Button wide disabled={ticket.busy} onclick={cancel}>Sí, cancelar</Button>
+                <Button variant="secondary" wide onclick={() => (confirming = false)}>No, mantener</Button>
+              </div>
+            </div>
+          {/if}
         {/if}
       </div>
     {/if}
@@ -194,19 +200,6 @@
     gap: var(--space-3);
   }
 
-  .primary-link {
-    min-height: var(--touch-min);
-    display: grid;
-    place-items: center;
-    background: var(--color-ink);
-    color: var(--color-sheet);
-    font-size: var(--text-lg);
-    font-weight: 800;
-    font-stretch: var(--stretch-button);
-    letter-spacing: 0.04em;
-    text-decoration: none;
-    text-transform: uppercase;
-  }
 
   .pair {
     display: grid;
@@ -214,23 +207,7 @@
     gap: var(--space-2);
   }
 
-  .cancel {
-    min-height: var(--touch-min);
-    border: var(--line-firm) solid var(--color-action);
-    background: transparent;
-    color: var(--color-action);
-    font-family: var(--font-sans);
-    font-size: var(--text-lg);
-    font-weight: 800;
-    font-stretch: var(--stretch-button);
-    text-transform: uppercase;
-    cursor: pointer;
-  }
 
-  .link {
-    color: var(--color-action);
-    font-weight: 600;
-  }
 
   .confirm {
     padding: var(--space-4);

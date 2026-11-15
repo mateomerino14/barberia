@@ -4,7 +4,9 @@
   import {resolve} from '$app/paths';
   import {page} from '$app/state';
   import {onMount} from 'svelte';
+  import {onSessionEnded} from '#lib/core/http.ts';
   import {session} from '#lib/core/session.svelte.ts';
+  import {theme} from '#lib/core/theme.svelte.ts';
   import {getShop} from '#lib/features/shop/api.ts';
   import PanelHeader from '#lib/ui/organisms/PanelHeader.svelte';
   import PanelLayout from '#lib/ui/templates/PanelLayout.svelte';
@@ -17,9 +19,14 @@
     {href: '/panel/servicios', label: 'Servicios'},
     {href: '/panel/barberos', label: 'Barberos'},
     {href: '/panel/horarios', label: 'Horarios'},
-    {href: '/panel/ajustes', label: 'Ajustes'},
+    {href: '/panel/ajustes', label: 'Mi barbería'},
+    {href: '/panel/cuenta', label: 'Mi cuenta'},
   ];
-  const barberLinks = [{href: '/panel/agenda', label: 'Mi agenda'}];
+  const barberLinks = [
+    {href: '/panel/agenda', label: 'Mi agenda'},
+    {href: '/panel/cuenta', label: 'Mi cuenta'},
+  ];
+  const barberPages = ['/panel', '/panel/agenda', '/panel/cuenta'];
 
   let shopName = $state('Barbería');
   let ready = $state(false);
@@ -30,12 +37,21 @@
       goto(resolve('/ingresar'));
       return;
     }
+    onSessionEnded(logout);
     ready = true;
     getShop().then((result) => {
       if (result.ok) {
         shopName = result.data.name;
       }
     });
+    return () => onSessionEnded(null);
+  });
+
+  // Un barbero solo tiene su agenda: si escribe a mano otra dirección del panel, vuelve a ella.
+  $effect(() => {
+    if (ready && !session.isOwner && !barberPages.includes(page.url.pathname)) {
+      goto(resolve('/panel/agenda'), {replace: true});
+    }
   });
 
   /** Menú que corresponde al rol de la sesión. */
@@ -61,6 +77,8 @@
         links={links()}
         currentPath={page.url.pathname}
         userLabel={session.current?.email ?? ''}
+        dark={theme.isDark}
+        onToggleTheme={() => theme.toggle()}
         onLogout={logout}
       />
     {/snippet}

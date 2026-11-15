@@ -23,6 +23,9 @@ public sealed class Barber : Entity
     /// <summary>Servicios que hace.</summary>
     public IReadOnlyList<Guid> ServiceIds => _serviceIds;
 
+    /// <summary>Foto del barbero, si el dueño subió una.</summary>
+    public Guid? PhotoImageId { get; private set; }
+
     /// <summary>Horario semanal; un día sin horario no trabaja.</summary>
     public IReadOnlyList<DailyHours> Schedule => _schedule;
 
@@ -127,5 +130,13 @@ public sealed class Barber : Entity
         }
 
         return _schedule.FirstOrDefault(hours => hours.Day == date.DayOfWeek);
+    }
+
+    /// <summary>Cambia o quita la foto; devuelve la anterior para poder borrarla.</summary>
+    public Guid? ChangePhoto(Guid? imageId)
+    {
+        Guid? previous = PhotoImageId;
+        PhotoImageId = imageId;
+        return previous;
     }
 }

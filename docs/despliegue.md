@@ -31,6 +31,7 @@ En el plan gratuito, Supabase pausa el proyecto si pasa una semana sin uso; se r
    | `Setup__OwnerEmail` | Correo del dueño |
    | `Setup__OwnerPassword` | Contraseña inicial del dueño (al menos 8 caracteres) |
    | `Cors__Origins__0` | La dirección de la web del paso 3, por ejemplo `https://barberia.vercel.app` |
+   | `Proxy__TrustForwardedHeaders` | `true` en Render, para que los límites de intentos cuenten por cliente y no por el proxy |
    | `Setup__DemoData` | `true` solo para una demostración: carga servicios, barberos y horarios de ejemplo |
 
 3. Comprueba que `https://TU-API.onrender.com/api/health` responda `{"status":"ok",...}`.
@@ -41,7 +42,7 @@ En el plan gratuito, Render duerme el servicio tras unos minutos sin visitas y l
 
 1. En Vercel, importa el repositorio con **Root Directory** `frontend`. Detecta SvelteKit solo.
 2. Agrega la variable `VITE_API_URL` con la dirección de la API, por ejemplo `https://TU-API.onrender.com`.
-3. Publica. La página de reservas queda en la raíz y el panel en `/ingresar`.
+3. Publica. La presentación de la barbería queda en la raíz, la reserva en `/reservar` y el panel en `/ingresar`.
 
 Si cambias `VITE_API_URL`, vuelve a publicar: la dirección queda fija al compilar.
 
@@ -57,6 +58,9 @@ Si cambias `VITE_API_URL`, vuelve a publicar: la dirección queda fija al compil
    | `Email__SenderEmail` | El remitente verificado |
    | `Email__SenderName` | Nombre de la barbería |
    | `Email__PublicWebUrl` | La dirección de la web, para el enlace del turno |
+   | `Reminders__HoursBefore` | Opcional. Horas antes del turno en que llega el recordatorio (por defecto 3; 0 lo apaga) |
+
+   **Recordatorios en el plan gratis de Render:** la API se duerme tras 15 minutos sin visitas y, dormida, no manda recordatorios. Para que lleguen siempre, usa un plan pago o un monitor gratuito (por ejemplo UptimeRobot) que visite `/api/health` cada 10 minutos.
 
 Sin estas variables el sistema funciona igual; solo no envía correos. Los recordatorios por WhatsApp salen desde la agenda con un botón y no necesitan configuración.
 

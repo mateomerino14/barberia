@@ -1,3 +1,4 @@
+import type {Palette} from '#lib/core/theme.svelte.ts';
 import type {Weekday} from '#lib/core/time.ts';
 
 /** Horario de un día. */
@@ -27,8 +28,11 @@ export interface Shop {
   phone: string;
   welcomeMessage: string;
   rules: BookingRules;
+  palette: Palette;
   openingHours: Hours[];
   closedDays: ClosedDay[];
+  logoImageId: string | null;
+  galleryImageIds: string[];
 }
 
 /** Datos que edita el dueño. */
@@ -38,4 +42,5 @@ export interface ShopProfileInput {
   phone: string;
   welcomeMessage: string;
   rules: BookingRules;
+  palette: Palette;
 }

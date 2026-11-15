@@ -4,7 +4,7 @@ import {addDays, todayInBolivia} from '#lib/core/time.ts';
 import {listAllServices} from '#lib/features/services/api.ts';
 import type {Service} from '#lib/features/services/types.ts';
 import {addBlock, cancelStaffBooking, createStaffBooking, getAgenda, removeBlock, setBookingStatus} from './api.ts';
-import type {Agenda, AgendaBooking, AgendaStatus, BlockInput, StaffBookingInput} from './types.ts';
+import type {Agenda, AgendaBlock, AgendaBooking, AgendaStatus, BlockInput, StaffBookingInput} from './types.ts';
 
 /** Formulario abierto en la agenda. */
 export type AgendaForm = 'none' | 'booking' | 'block';
@@ -15,6 +15,7 @@ export class AgendaState {
   agenda = $state<Agenda | null>(null);
   services = $state<Service[]>([]);
   selectedId = $state<string | null>(null);
+  selectedBlockId = $state<string | null>(null);
   form = $state<AgendaForm>('none');
   loading = $state(true);
   busy = $state(false);
@@ -29,6 +30,11 @@ export class AgendaState {
     }
     const now = Date.now();
     return bookings.find((booking) => booking.status === 'Booked' && Date.parse(booking.end) > now) ?? null;
+  }
+
+  /** Bloqueo elegido, o null. */
+  get selectedBlock(): AgendaBlock | null {
+    return this.agenda?.blocks.find((block) => block.id === this.selectedBlockId) ?? null;
   }
 
   /** Nombre del barbero de un turno. */
@@ -71,12 +77,20 @@ export class AgendaState {
       this.date = addDays(this.date, days);
     }
     this.selectedId = null;
+    this.selectedBlockId = null;
     return this.load();
   }
 
   /** Elige un turno para ver sus datos. */
   select(id: string): void {
+    this.selectedBlockId = null;
     this.selectedId = id;
+  }
+
+  /** Elige un bloqueo para verlo o quitarlo, o null para cerrarlo. */
+  selectBlock(id: string | null): void {
+    this.selectedId = null;
+    this.selectedBlockId = id;
   }
 
   /** Abre o cierra un formulario. */
@@ -104,9 +118,10 @@ export class AgendaState {
     return this.run(addBlock(input, session.token));
   }
 
-  /** Quita un bloqueo. */
-  unblock(id: string): Promise<void> {
-    return this.run(removeBlock(id, session.token));
+  /** Quita un bloqueo y cierra su ficha. */
+  async unblock(id: string): Promise<void> {
+    await this.run(removeBlock(id, session.token));
+    this.selectedBlockId = null;
   }
 
   /** Espera la llamada, cierra el formulario si salió bien y recarga el día. */

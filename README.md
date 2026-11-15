@@ -1,6 +1,6 @@
 # Barbería
 
-Sistema de reservas para barberías: los clientes sacan turno desde el celular, sin crear cuenta, y el equipo administra la agenda, los horarios y los servicios desde un panel.
+Sistema de reservas para barberías: los clientes conocen la barbería en una portada con un poste en 3D y sacan turno desde el celular, sin crear cuenta, y el equipo administra la agenda, los horarios y los servicios desde un panel.
 
 ## Capturas
 
@@ -30,6 +30,7 @@ Los siete días de trabajo están completos: los clientes reservan desde el celu
 - [Arquitectura](docs/arquitectura.md)
 - [Reglas de desarrollo](reglas.md)
 - [Despliegue](docs/despliegue.md)
+- [Seguridad](docs/seguridad.md)
 
 ## Tecnologías
 

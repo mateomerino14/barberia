@@ -1,5 +1,5 @@
 import {describe, expect, it, vi} from 'vitest';
-import {request} from './http.ts';
+import {onSessionEnded, request} from './http.ts';
 
 /** Arma un fetch falso que responde siempre lo mismo. */
 function fakeFetch(status: number, body: unknown) {
@@ -36,5 +36,16 @@ describe('request', () => {
     const result = await request('/api/shop', {fetcher});
 
     expect(result.ok).toBe(false);
+  });
+
+  it('avisa que la sesión terminó cuando la API rechaza el pase', async () => {
+    const ended = vi.fn();
+    onSessionEnded(ended);
+
+    await request('/api/agenda', {token: 'vencido', fetcher: fakeFetch(401, {})});
+    await request('/api/auth/login', {method: 'POST', body: {}, fetcher: fakeFetch(401, {})});
+    onSessionEnded(null);
+
+    expect(ended).toHaveBeenCalledTimes(1);
   });
 });

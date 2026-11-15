@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-  <title>Horarios · Barbería</title>
+  <title>Horarios · Panel</title>
 </svelte:head>
 
 <PageTitle kicker="La barbería" title="Horarios" />

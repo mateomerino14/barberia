@@ -1,7 +1,7 @@
 import {request, type ApiResult} from '#lib/core/http.ts';
 import {toApiTime} from '#lib/core/time.ts';
 import type {Hours} from '#lib/features/shop/types.ts';
-import type {Barber, BarberInput} from './types.ts';
+import type {Barber, BarberAccess, BarberInput} from './types.ts';
 
 /** Trae todo el equipo para el panel. */
 export function listAllBarbers(token: string | null): Promise<ApiResult<Barber[]>> {
@@ -38,4 +38,24 @@ export function addTimeOff(
 /** Quita una ausencia. */
 export function removeTimeOff(id: string, timeOffId: string, token: string | null): Promise<ApiResult<Barber>> {
   return request<Barber>(`/api/barbers/${id}/time-off/${timeOffId}`, {method: 'DELETE', token});
+}
+
+/** Correo con el que entra al panel cada barbero que tiene acceso. */
+export function listBarberAccess(token: string | null): Promise<ApiResult<BarberAccess[]>> {
+  return request<BarberAccess[]>('/api/barbers/access', {token});
+}
+
+/** Da acceso al panel a un barbero o le pone una contraseña nueva. */
+export function setBarberAccess(
+  id: string,
+  email: string | null,
+  password: string,
+  token: string | null,
+): Promise<ApiResult<BarberAccess>> {
+  return request<BarberAccess>(`/api/barbers/${id}/access`, {method: 'PUT', body: {email, password}, token});
+}
+
+/** Pone o quita la foto de un barbero. */
+export function setBarberPhoto(id: string, imageId: string | null, token: string | null): Promise<ApiResult<Barber>> {
+  return request<Barber>(`/api/barbers/${id}/photo`, {method: 'PUT', body: {imageId}, token});
 }

@@ -47,12 +47,17 @@ Barbería es un sistema de reservas para una barbería: los clientes sacan turno
 - **Cambiar y cancelar:** desde el enlace del cliente, dentro del plazo permitido, o desde el panel en cualquier momento.
 - **Estados del turno:** `booked` (reservado), `attended` (atendido), `no_show` (no vino) y `cancelled` (cancelado).
 - **Bloqueos:** el barbero marca horas en las que no atiende (almuerzo, un trámite).
+- **Recordar datos:** el cliente puede guardar su nombre y celular en su propio teléfono para la próxima reserva; no se crea ninguna cuenta.
+- **Fotos:** el dueño sube el logo, las fotos del local y la foto de cada barbero. La web las achica en el teléfono antes de subirlas y la API solo acepta JPG, PNG o WebP de hasta 2 MB, revisando el contenido real del archivo.
+- **Contraseñas:** cada uno cambia la suya en "Mi cuenta". Si un barbero olvida la suya, el dueño le pone una nueva desde "Barberos". Al cambiarla se cierran las sesiones abiertas.
+- **Colores:** el dueño elige entre cinco paletas y cada persona puede pasar a modo oscuro con el botón de sol o luna.
 - **Turnos sin reserva:** el panel anota a quien llega sin turno para que la agenda quede completa.
 - **Choques:** dos personas nunca pueden quedarse con la misma hora, aunque reserven al mismo tiempo. La base de datos lo garantiza con una restricción, no solo el código.
 
 ### 5. Avisos
 
 - Confirmación por correo al reservar, cambiar o cancelar, si el cliente dejó correo.
+- Recordatorio por correo unas horas antes del turno (3 por defecto), una sola vez; si cambia la hora, se vuelve a recordar.
 - Botón de WhatsApp en la agenda que abre el chat con el recordatorio listo.
 - Si un aviso falla (por ejemplo, el servicio de correo no responde), la reserva igual se guarda y el error queda registrado.
 - Los canales son intercambiables: más adelante se puede sumar la API de WhatsApp Business sin tocar la agenda.
@@ -61,13 +66,15 @@ Barbería es un sistema de reservas para una barbería: los clientes sacan turno
 
 | Pantalla | Quién | Qué muestra |
 |---|---|---|
+| Presentación | Cliente | Portada con el poste en 3D, precios, equipo, horario y ubicación, en `/` |
 | Reservar | Cliente | Servicio, barbero, día y hora, datos y confirmación |
 | Mi turno | Cliente | El turno como talón de ticket, con cambiar, cancelar y agregar al calendario |
 | Agenda | Barbero y dueño | El día por columnas de barbero, la hora actual y el siguiente turno |
 | Servicios | Dueño | Lista y edición de servicios |
 | Barberos | Dueño | Equipo, sus servicios, horarios y ausencias |
 | Horarios | Dueño | Horario de la barbería y días cerrados |
-| Ajustes | Dueño | Datos de la barbería y reglas de reserva |
+| Mi barbería | Dueño | Datos de la barbería, reglas de reserva, paleta, logo y hasta 6 fotos del local |
+| Mi cuenta | Dueño y barberos | Cambiar la propia contraseña |
 | Ingresar | Barbero y dueño | Inicio de sesión |
 
 ## Fuera de esta versión

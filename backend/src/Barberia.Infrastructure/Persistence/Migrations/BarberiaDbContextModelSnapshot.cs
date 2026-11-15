@@ -97,6 +97,30 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                     b.ToTable("services", (string)null);
                 });
 
+            modelBuilder.Entity("Barberia.Domain.Media.StoredImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("content_type");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("data");
+
+                    b.HasKey("Id")
+                        .HasName("pk_images");
+
+                    b.ToTable("images", (string)null);
+                });
+
             modelBuilder.Entity("Barberia.Domain.Scheduling.Block", b =>
                 {
                     b.Property<Guid>("Id")
@@ -158,6 +182,10 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("price_cents");
 
+                    b.Property<DateTimeOffset?>("RemindedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("reminded_at");
+
                     b.Property<Guid>("ServiceId")
                         .HasColumnType("uuid")
                         .HasColumnName("service_id");
@@ -204,11 +232,28 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(160)")
                         .HasColumnName("address");
 
+                    b.PrimitiveCollection<Guid[]>("GalleryImageIds")
+                        .IsRequired()
+                        .HasColumnType("uuid[]")
+                        .HasColumnName("gallery_image_ids");
+
+                    b.Property<Guid?>("LogoImageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("logo_image_id");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(80)
                         .HasColumnType("character varying(80)")
                         .HasColumnName("name");
+
+                    b.Property<string>("Palette")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Classic")
+                        .HasColumnName("palette");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -244,6 +289,10 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                         .HasMaxLength(80)
                         .HasColumnType("character varying(80)")
                         .HasColumnName("name");
+
+                    b.Property<Guid?>("PhotoImageId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_image_id");
 
                     b.PrimitiveCollection<Guid[]>("ServiceIds")
                         .IsRequired()

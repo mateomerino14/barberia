@@ -1,6 +1,9 @@
 const defaultApiUrl = 'http://localhost:5000';
 const noContent = 204;
 const networkStatus = 0;
+const unauthorized = 401;
+
+let sessionEnded: (() => void) | null = null;
 
 /** Error de la API tal como lo muestra la interfaz. */
 export interface ApiError {
@@ -16,8 +19,14 @@ export type ApiResult<T> = {ok: true; data: T} | {ok: false; error: ApiError};
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: unknown;
+  file?: Blob;
   token?: string | null;
   fetcher?: typeof fetch;
+}
+
+/** Registra qué hacer cuando la API rechaza la sesión: vencida, cerrada o dada de baja. */
+export function onSessionEnded(handler: (() => void) | null): void {
+  sessionEnded = handler;
 }
 
 /** Devuelve la dirección base de la API. */
@@ -28,10 +37,14 @@ export function apiUrl(): string {
 /** Llama a la API y convierte la respuesta en datos o en un error con mensaje en español. */
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<ApiResult<T>> {
   const headers: Record<string, string> = {};
-  let body: string | undefined;
+  let body: string | Blob | undefined;
   if (options.body !== undefined) {
     headers['Content-Type'] = 'application/json';
     body = JSON.stringify(options.body);
+  }
+  if (options.file) {
+    headers['Content-Type'] = options.file.type;
+    body = options.file;
   }
   if (options.token) {
     headers.Authorization = `Bearer ${options.token}`;
@@ -49,6 +62,9 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     return {ok: false, error: {status: networkStatus, code: 'network', message: 'No pudimos conectarnos. Revisa tu internet.'}};
   }
   if (!response.ok) {
+    if (response.status === unauthorized && options.token) {
+      sessionEnded?.();
+    }
     return {ok: false, error: await readProblem(response)};
   }
   if (response.status === noContent) {

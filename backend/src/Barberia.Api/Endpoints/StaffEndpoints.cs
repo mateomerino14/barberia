@@ -1,6 +1,9 @@
 using Barberia.Api.Contracts;
 using Barberia.Api.Http;
+using Barberia.Application.Features.Access;
+using Barberia.Application.Features.Media;
 using Barberia.Application.Features.Staff;
+using Barberia.Domain.Access;
 using Barberia.Domain.Staff;
 
 namespace Barberia.Api.Endpoints;
@@ -14,6 +17,9 @@ public static class StaffEndpoints
         routes.MapGet("/api/barbers", ListActiveAsync);
         routes.MapGet("/api/barbers/all", ListAllAsync).RequireAuthorization(Policies.Staff);
         RouteGroupBuilder owner = routes.MapGroup("/api/barbers").RequireAuthorization(Policies.Owner);
+        owner.MapGet("/access", ListAccessAsync);
+        owner.MapPut("/{id:guid}/access", SetAccessAsync);
+        owner.MapPut("/{id:guid}/photo", SetPhotoAsync);
         owner.MapPost("/", CreateAsync);
         owner.MapPut("/{id:guid}", UpdateAsync);
         owner.MapPut("/{id:guid}/schedule", SetScheduleAsync);
@@ -34,6 +40,28 @@ public static class StaffEndpoints
     {
         IReadOnlyList<Barber> barbers = await handler.HandleAsync(false, cancellationToken);
         return Results.Ok(barbers.Select(BarberResponse.From));
+    }
+
+    /// <summary>Lista qué barberos pueden entrar al panel y con qué correo.</summary>
+    private static async Task<IResult> ListAccessAsync(ListBarberAccessHandler handler, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<StaffAccount> accounts = await handler.HandleAsync(cancellationToken);
+        return Results.Ok(accounts.Select(account => new BarberAccessResponse(account.BarberId!.Value, account.Email)));
+    }
+
+    /// <summary>Da acceso al panel a un barbero o le pone una contraseña nueva.</summary>
+    private static async Task<IResult> SetAccessAsync(Guid id, BarberAccessRequest request, BarberAccessHandler handler, CancellationToken cancellationToken)
+    {
+        BarberAccessCommand command = new(id, request.Email, request.Password);
+        return ApiResults.Ok(
+            await handler.HandleAsync(command, cancellationToken),
+            account => new BarberAccessResponse(id, account.Email));
+    }
+
+    /// <summary>Pone o quita la foto de un barbero.</summary>
+    private static async Task<IResult> SetPhotoAsync(Guid id, SetPhotoRequest request, BarberPhotoHandler handler, CancellationToken cancellationToken)
+    {
+        return ApiResults.Ok(await handler.HandleAsync(id, request.ImageId, cancellationToken), BarberResponse.From);
     }
 
     /// <summary>Crea un barbero y, si se pide, su cuenta del panel.</summary>

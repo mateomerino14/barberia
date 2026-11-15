@@ -1,252 +1,158 @@
-<!-- Página pública de reservas: servicio, barbero, día y hora, y los datos del cliente. -->
+<!-- Presentación de la barbería para el cliente: portada con el poste en 3D, precios, equipo, horario y ubicación. -->
 <script lang="ts">
-  import {goto} from '$app/navigation';
   import {resolve} from '$app/paths';
   import {onMount} from 'svelte';
-  import {formatPrice} from '#lib/core/money.ts';
-  import {clockTime, formatDuration, formatLongDate, fromApiTime, todayInBolivia, weekdayOf} from '#lib/core/time.ts';
-  import {BookingFlow} from '#lib/features/booking/state.svelte.ts';
+  import {theme} from '#lib/core/theme.svelte.ts';
+  import {LandingState} from '#lib/features/landing/state.svelte.ts';
+  import {imageUrl} from '#lib/features/media/api.ts';
   import Button from '#lib/ui/atoms/Button.svelte';
-  import Input from '#lib/ui/atoms/Input.svelte';
   import Notice from '#lib/ui/atoms/Notice.svelte';
   import PoleStripe from '#lib/ui/atoms/PoleStripe.svelte';
-  import FormField from '#lib/ui/molecules/FormField.svelte';
   import StepTitle from '#lib/ui/molecules/StepTitle.svelte';
-  import BarberPicker from '#lib/ui/organisms/BarberPicker.svelte';
-  import DayStrip from '#lib/ui/organisms/DayStrip.svelte';
-  import ServicePicker from '#lib/ui/organisms/ServicePicker.svelte';
-  import SlotGrid from '#lib/ui/organisms/SlotGrid.svelte';
+  import LandingHero from '#lib/ui/organisms/LandingHero.svelte';
+  import LocationCard from '#lib/ui/organisms/LocationCard.svelte';
+  import PriceList from '#lib/ui/organisms/PriceList.svelte';
+  import ShopGallery from '#lib/ui/organisms/ShopGallery.svelte';
+  import TeamGrid from '#lib/ui/organisms/TeamGrid.svelte';
+  import WeekSchedule from '#lib/ui/organisms/WeekSchedule.svelte';
 
-  const flow = new BookingFlow();
-  const nameMaxLength = 80;
-  const phoneMaxLength = 20;
+  const landing = new LandingState();
+  const reserveHref = resolve('/reservar');
 
   onMount(() => {
-    flow.load();
+    landing.load();
   });
 
-  /** Texto del horario de hoy para la cabecera. */
-  function todayHours(): string {
-    const today = todayInBolivia();
-    const hours = flow.shop?.openingHours.find((item) => item.day === weekdayOf(today));
-    const closed = flow.shop?.closedDays.some((day) => day.date === today);
-    if (!hours || closed) {
-      return 'Hoy no abrimos';
+  type Section = 'prices' | 'team' | 'place' | 'hours' | 'map';
+
+  /** Secciones que se muestran, en orden; el equipo y el local solo si hay qué mostrar. */
+  function sections(): Section[] {
+    const shown: Section[] = ['prices'];
+    if (landing.barbers.length > 0) {
+      shown.push('team');
     }
-    return `Abierto hoy de ${fromApiTime(hours.opens)} a ${fromApiTime(hours.closes)}`;
+    if (photos().length > 0) {
+      shown.push('place');
+    }
+    shown.push('hours', 'map');
+    return shown;
   }
 
-  /** Texto cuando no hay horas libres. */
-  function emptySlotsText(): string {
-    if (!flow.serviceId) {
-      return 'Elige primero un servicio.';
-    }
-    return 'No quedan horas libres ese día. Prueba con otro día o con cualquier barbero.';
+  /** Número de la sección como "01", según las que se muestran. */
+  function step(section: Section): string {
+    return String(sections().indexOf(section) + 1).padStart(2, '0');
   }
 
-  /** Envía la reserva y lleva al cliente a su turno. */
-  async function submit(event: SubmitEvent): Promise<void> {
-    event.preventDefault();
-    const confirmation = await flow.submit();
-    if (confirmation) {
-      await goto(resolve('/turno/[token]', {token: confirmation.token}));
+  /** Fotos del local. */
+  function photos(): string[] {
+    return (landing.shop?.galleryImageIds ?? []).map(imageUrl);
+  }
+
+  /** Logo de la barbería, o null. */
+  function logo(): string | null {
+    const id = landing.shop?.logoImageId;
+    if (!id) {
+      return null;
     }
+    return imageUrl(id);
   }
 </script>
 
 <svelte:head>
-  <title>{flow.shop?.name ?? 'Barbería'} · Reserva tu turno</title>
+  <title>{landing.shop?.name ?? 'Barbería'}</title>
 </svelte:head>
 
-<header class="header">
-  {#if flow.shop?.address}
-    <span class="kicker">{flow.shop.address}</span>
-  {/if}
-  <h1 class="title">{flow.shop?.name ?? 'Barbería'}</h1>
-  {#if flow.shop}
-    <span class="hours">{todayHours()}</span>
-  {/if}
-</header>
-<PoleStripe />
+<LandingHero
+  name={landing.shop?.name ?? 'Barbería'}
+  logoSrc={logo()}
+  place={landing.shop?.address ?? ''}
+  welcome={landing.shop?.welcomeMessage ?? ''}
+  status={landing.status}
+  {reserveHref}
+  dark={theme.isDark}
+  onToggleTheme={() => theme.toggle()}
+/>
+<PoleStripe size="thick" />
 
-<form class="page" onsubmit={submit}>
-  {#if flow.shop?.welcomeMessage}
-    <p class="welcome">{flow.shop.welcomeMessage}</p>
+<main class="page">
+  {#if landing.error}
+    <Notice>{landing.error}</Notice>
   {/if}
 
-  {#if flow.loading}
+  {#if landing.shop}
+    <section class="section" id="precios">
+      <StepTitle step={step('prices')} title="Servicios y precios" />
+      <PriceList services={landing.services} />
+    </section>
+
+    {#if landing.barbers.length > 0}
+      <section class="section">
+        <StepTitle step={step('team')} title="El equipo" />
+        <TeamGrid barbers={landing.barbers} />
+      </section>
+    {/if}
+
+    {#if photos().length > 0}
+      <section class="section">
+        <StepTitle step={step('place')} title="El local" />
+        <ShopGallery sources={photos()} shopName={landing.shop.name} />
+      </section>
+    {/if}
+
+    <section class="section">
+      <StepTitle step={step('hours')} title="Horario" />
+      <WeekSchedule rows={landing.schedule} />
+    </section>
+
+    <section class="section">
+      <StepTitle step={step('map')} title="Dónde estamos" />
+      <LocationCard name={landing.shop.name} address={landing.shop.address} phone={landing.shop.phone} />
+    </section>
+  {:else if landing.loading}
     <p class="muted">Cargando…</p>
-  {:else}
-    <section class="step">
-      <StepTitle step="01" title="¿Qué te haces?" />
-      <ServicePicker services={flow.services} selectedId={flow.serviceId} onSelect={(id) => flow.chooseService(id)} />
-    </section>
-
-    <section class="step">
-      <StepTitle step="02" title="¿Con quién?" />
-      <BarberPicker
-        barbers={flow.availableBarbers}
-        selectedId={flow.barberId}
-        onSelect={(id) => flow.chooseBarber(id)}
-      />
-    </section>
-
-    <section class="step">
-      <StepTitle step="03" title="¿Cuándo?" />
-      <DayStrip days={flow.days} selected={flow.date} onSelect={(date) => flow.chooseDate(date)} />
-      <p class="muted date">{formatLongDate(flow.date)}</p>
-      <SlotGrid
-        slots={flow.slots}
-        selected={flow.start}
-        loading={flow.loadingSlots}
-        emptyText={emptySlotsText()}
-        onSelect={(start) => flow.chooseStart(start)}
-      />
-    </section>
-
-    <section class="step">
-      <StepTitle step="04" title="Tus datos" />
-      <FormField label="Nombre" id="customer-name">
-        <Input
-          id="customer-name"
-          autocomplete="given-name"
-          required
-          maxlength={nameMaxLength}
-          bind:value={flow.customer.name}
-        />
-      </FormField>
-      <FormField label="Celular" id="customer-phone" hint="Para avisarte si algo cambia">
-        <Input
-          id="customer-phone"
-          type="tel"
-          inputmode="tel"
-          autocomplete="tel"
-          mono
-          required
-          maxlength={phoneMaxLength}
-          bind:value={flow.customer.phone}
-        />
-      </FormField>
-      <FormField label="Correo (opcional)" id="customer-email" hint="Te mandamos ahí la confirmación">
-        <Input
-          id="customer-email"
-          type="email"
-          autocomplete="email"
-          placeholder="tucorreo@ejemplo.com"
-          bind:value={flow.customer.email}
-        />
-      </FormField>
-    </section>
   {/if}
+</main>
 
-  <footer class="summary">
-    {#if flow.error}
-      <Notice>{flow.error}</Notice>
-    {/if}
-    {#if flow.service}
-      <div class="line">
-        <span><strong>{flow.service.name}</strong> con {flow.barberName}</span>
-        {#if flow.start}
-          <span class="mono">{clockTime(flow.start)} · {formatPrice(flow.service.priceCents)}</span>
-        {/if}
-      </div>
-    {/if}
-    <Button type="submit" disabled={!flow.ready || flow.sending}>Reservar turno</Button>
-    {#if flow.shop}
-      <span class="muted small">
-        Pagas en la barbería. Puedes cambiar o cancelar hasta
-        {formatDuration(flow.shop.rules.cancelLimitMinutes)} antes.
-      </span>
-    {/if}
-  </footer>
-</form>
+<footer class="cta">
+  <span class="cta-text">Elige servicio, barbero y hora en un minuto.</span>
+  <Button href={reserveHref}>Reservar</Button>
+</footer>
 
 <style>
-  .header {
-    padding: var(--space-5) var(--space-5) var(--space-4);
-    background: var(--color-ink);
-    color: var(--color-paper);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .kicker {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-rule);
-  }
-
-  .title {
-    margin: 0;
-    font-size: var(--text-display);
-    font-weight: 900;
-    font-stretch: var(--stretch-display);
-    line-height: 0.95;
-    text-transform: uppercase;
-  }
-
-  .hours {
-    font-size: var(--text-sm);
-    color: var(--color-rule);
-  }
-
   .page {
-    max-width: 36rem;
+    max-width: var(--content-max);
     margin: 0 auto;
-    padding: var(--space-5) var(--space-5) 0;
+    padding: var(--space-6) var(--space-5);
     display: flex;
     flex-direction: column;
     gap: var(--space-6);
   }
 
-  .welcome {
-    margin: 0;
-    font-size: var(--text-lg);
-  }
-
-  .step {
+  .section {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-4);
+    scroll-margin-top: var(--space-5);
   }
 
   .muted {
-    margin: 0;
     color: var(--color-ink-soft);
   }
 
-  .date::first-letter {
-    text-transform: uppercase;
-  }
-
-  .small {
-    font-size: var(--text-sm);
-    text-align: center;
-  }
-
-  .summary {
+  .cta {
     position: sticky;
     bottom: 0;
-    margin: 0 calc(var(--space-5) * -1);
-    padding: var(--space-4) var(--space-5) var(--space-5);
-    border-top: var(--line-bold) solid var(--color-ink);
-    background: var(--color-sheet);
     display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  .line {
-    display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
-    gap: var(--space-2);
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    background: var(--color-sheet);
+    border-top: var(--line-bold) solid var(--color-ink);
   }
 
-  .mono {
-    font-family: var(--font-mono);
+  .cta-text {
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
   }
 </style>

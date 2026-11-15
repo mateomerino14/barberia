@@ -23,6 +23,7 @@ public sealed record StaffActor(StaffRole Role, Guid? BarberId)
             return requested;
         }
 
-        return BarberId;
+        // Un barbero sin ficha no ve ninguna agenda, nunca la de todos.
+        return BarberId ?? Guid.Empty;
     }
 }

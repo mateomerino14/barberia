@@ -16,6 +16,7 @@ export interface Barber {
   serviceIds: string[];
   schedule: Hours[];
   timeOff: TimeOff[];
+  photoImageId: string | null;
 }
 
 /** Datos de un barbero que se crea o edita. */
@@ -24,4 +25,10 @@ export interface BarberInput {
   isActive: boolean;
   serviceIds: string[];
   account?: {email: string; password: string} | null;
+}
+
+/** Barbero con acceso al panel y el correo con que entra. */
+export interface BarberAccess {
+  barberId: string;
+  email: string;
 }

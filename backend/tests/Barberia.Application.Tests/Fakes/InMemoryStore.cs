@@ -87,7 +87,19 @@ public sealed class InMemoryStore : IShopRepository, IServiceRepository, IBarber
         return Task.FromResult(Accounts.FirstOrDefault(account => account.Email == email));
     }
 
-    /// <summary>Busca la cuenta de un barbero.</summary>
+    /// <summary>Busca una cuenta por su id.</summary>
+    Task<StaffAccount?> IStaffAccountRepository.GetAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(Accounts.FirstOrDefault(account => account.Id == id));
+    }
+
+    /// <summary>Lista las cuentas vinculadas a barberos.</summary>
+    public Task<IReadOnlyList<StaffAccount>> ListBarberAccountsAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IReadOnlyList<StaffAccount>>([.. Accounts.Where(account => account.BarberId is not null)]);
+    }
+
+    /// <summary>Busca la cuenta vinculada a un barbero.</summary>
     public Task<StaffAccount?> FindByBarberAsync(Guid barberId, CancellationToken cancellationToken)
     {
         return Task.FromResult(Accounts.FirstOrDefault(account => account.BarberId == barberId));

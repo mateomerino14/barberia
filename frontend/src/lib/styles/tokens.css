@@ -9,6 +9,12 @@
   --color-action: #b3261e;
   --color-action-dark: #8a1c16;
   --color-selected: #1e3a7b;
+  --color-on-accent: #fbf9f4;
+  --color-bar: #1c1b19;
+  --color-on-bar: #f2ede3;
+  --color-on-bar-soft: #cfc6b5;
+  --color-pole-light: #fbf9f4;
+  --color-open: #2f7d3b;
 
   --font-sans: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
@@ -34,12 +40,147 @@
   --line-bold: 2px;
   --touch-min: 2.75rem;
   --content-max: 72rem;
+}
 
+/* Las franjas se recalculan en cada elemento con paleta para tomar sus propios colores. */
+:root,
+[data-palette] {
   --pole-stripes: repeating-linear-gradient(
     135deg,
     var(--color-action) 0 8px,
-    var(--color-sheet) 8px 16px,
+    var(--color-pole-light) 8px 16px,
     var(--color-selected) 16px 24px,
-    var(--color-sheet) 24px 32px
+    var(--color-pole-light) 24px 32px
   );
+}
+
+/* Paletas que el dueño elige en «Mi barbería». La clásica es la de :root. */
+:root[data-palette='bottleGreen'],
+[data-palette='bottleGreen'] {
+  --color-paper: #efede4;
+  --color-sheet: #fafaf5;
+  --color-ink: #17201b;
+  --color-ink-soft: #55605a;
+  --color-rule: #c9cdc3;
+  --color-action: #1f5a3d;
+  --color-action-dark: #154029;
+  --color-selected: #8a5f0f;
+  --color-bar: #17201b;
+  --color-on-bar: #efede4;
+  --color-on-bar-soft: #c9cdc3;
+}
+
+:root[data-palette='wine'],
+[data-palette='wine'] {
+  --color-paper: #f3ece8;
+  --color-sheet: #fbf8f6;
+  --color-ink: #1e1517;
+  --color-ink-soft: #62545a;
+  --color-rule: #d6c9c4;
+  --color-action: #7a1f2b;
+  --color-action-dark: #5c1520;
+  --color-selected: #2f4858;
+  --color-bar: #1e1517;
+  --color-on-bar: #f3ece8;
+  --color-on-bar-soft: #d6c9c4;
+}
+
+:root[data-palette='mustard'],
+[data-palette='mustard'] {
+  --color-paper: #f4eedf;
+  --color-sheet: #fcf9f1;
+  --color-ink: #1b1a16;
+  --color-ink-soft: #5d584b;
+  --color-rule: #d8ceb5;
+  --color-action: #8a6312;
+  --color-action-dark: #6b4c0c;
+  --color-selected: #22313f;
+  --color-bar: #1b1a16;
+  --color-on-bar: #f4eedf;
+  --color-on-bar-soft: #d8ceb5;
+}
+
+:root[data-palette='graphite'],
+[data-palette='graphite'] {
+  --color-paper: #eef0f2;
+  --color-sheet: #f9fafb;
+  --color-ink: #14171a;
+  --color-ink-soft: #525a63;
+  --color-rule: #c8ccd2;
+  --color-action: #c2410c;
+  --color-action-dark: #9a3409;
+  --color-selected: #334155;
+  --color-bar: #14171a;
+  --color-on-bar: #eef0f2;
+  --color-on-bar-soft: #c8ccd2;
+}
+
+
+/* La clásica también como bloque, para mostrar su vista previa dentro de otra paleta. */
+[data-palette='classic'] {
+  --color-paper: #f2ede3;
+  --color-sheet: #fbf9f4;
+  --color-ink: #1c1b19;
+  --color-ink-soft: #5c574f;
+  --color-rule: #cfc6b5;
+  --color-action: #b3261e;
+  --color-action-dark: #8a1c16;
+  --color-selected: #1e3a7b;
+  --color-bar: #1c1b19;
+  --color-on-bar: #f2ede3;
+  --color-on-bar-soft: #cfc6b5;
+}
+
+/* Modo oscuro: mismos nombres, valores para fondo oscuro. */
+:root[data-theme='dark'],
+:root[data-theme='dark'] [data-palette] {
+  color-scheme: dark;
+  --color-paper: #151412;
+  --color-sheet: #1f1e1b;
+  --color-ink: #ede7da;
+  --color-ink-soft: #a69f92;
+  --color-rule: #3a372f;
+  --color-disabled: #6e685e;
+  --color-on-accent: #151412;
+  --color-bar: #0e0d0c;
+  --color-on-bar: #ede7da;
+  --color-on-bar-soft: #a69f92;
+  --color-open: #6fbf73;
+  --color-action: #e5554a;
+  --color-action-dark: #f07a70;
+  --color-selected: #7b9be8;
+}
+
+:root[data-theme='dark'] [data-palette='classic'] {
+  --color-action: #e5554a;
+  --color-action-dark: #f07a70;
+  --color-selected: #7b9be8;
+}
+
+:root[data-theme='dark'][data-palette='bottleGreen'],
+:root[data-theme='dark'] [data-palette='bottleGreen'] {
+  --color-action: #4fae7f;
+  --color-action-dark: #6fc79b;
+  --color-selected: #e0b45a;
+}
+
+:root[data-theme='dark'][data-palette='wine'],
+:root[data-theme='dark'] [data-palette='wine'] {
+  --color-action: #d9576a;
+  --color-action-dark: #e77b8b;
+  --color-selected: #7fa6bd;
+}
+
+:root[data-theme='dark'][data-palette='mustard'],
+:root[data-theme='dark'] [data-palette='mustard'] {
+  --color-action: #e0b04a;
+  --color-action-dark: #ebc56f;
+  --color-selected: #8aa4bf;
+}
+
+:root[data-theme='dark'][data-palette='graphite'],
+:root[data-theme='dark'] [data-palette='graphite'] {
+  --color-action: #f2793f;
+  --color-action-dark: #f69866;
+  --color-selected: #94a3b8;
 }

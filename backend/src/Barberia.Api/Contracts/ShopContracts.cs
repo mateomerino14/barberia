@@ -33,8 +33,11 @@ public sealed record ShopResponse(
     string Phone,
     string WelcomeMessage,
     BookingRulesDto Rules,
+    ShopPalette Palette,
     IReadOnlyList<HoursDto> OpeningHours,
-    IReadOnlyList<ClosedDayDto> ClosedDays)
+    IReadOnlyList<ClosedDayDto> ClosedDays,
+    Guid? LogoImageId,
+    IReadOnlyList<Guid> GalleryImageIds)
 {
     /// <summary>Convierte la barbería del dominio.</summary>
     public static ShopResponse From(Shop shop)
@@ -45,8 +48,11 @@ public sealed record ShopResponse(
             shop.Phone,
             shop.WelcomeMessage,
             new BookingRulesDto(shop.Rules.MinLeadMinutes, shop.Rules.MaxDaysAhead, shop.Rules.CancelLimitMinutes),
+            shop.Palette,
             [.. shop.OpeningHours.Select(HoursDto.From)],
-            [.. shop.ClosedDays.OrderBy(day => day.Date).Select(day => new ClosedDayDto(day.Date, day.Reason))]);
+            [.. shop.ClosedDays.OrderBy(day => day.Date).Select(day => new ClosedDayDto(day.Date, day.Reason))],
+            shop.LogoImageId,
+            shop.GalleryImageIds);
     }
 }
 
@@ -56,10 +62,17 @@ public sealed record UpdateShopRequest(
     string? Address,
     string? Phone,
     string? WelcomeMessage,
-    BookingRulesDto Rules);
+    BookingRulesDto Rules,
+    ShopPalette Palette = ShopPalette.Classic);
 
 /// <summary>Horario semanal nuevo.</summary>
 public sealed record SetHoursRequest(IReadOnlyList<HoursDto> Hours);
 
 /// <summary>Día cerrado nuevo.</summary>
 public sealed record AddClosedDayRequest(DateOnly Date, string? Reason);
+
+/// <summary>Logo nuevo, o null para quitarlo.</summary>
+public sealed record SetLogoRequest(Guid? ImageId);
+
+/// <summary>Fotos del local en el orden en que se muestran.</summary>
+public sealed record SetGalleryRequest(IReadOnlyList<Guid> ImageIds);
