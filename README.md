@@ -4,12 +4,12 @@ Sistema de reservas para barberías: los clientes sacan turno desde el celular, 
 
 ## Estado
 
-Día 1 de 7: documentación, identidad visual, estructura del proyecto y CI. Los módulos se suman en este orden:
+Día 2 de 7: el dueño ya puede entrar al panel y configurar la barbería, los servicios y el equipo. Los módulos se suman en este orden:
 
 | Entrega | Contenido | Estado |
 |---|---|---|
 | 1. Base | Documentos, reglas, esqueleto de API y web, CI | Lista |
-| 2. Barbería y equipo | Acceso, datos de la barbería, servicios y barberos | En curso: API lista |
+| 2. Barbería y equipo | Acceso, datos de la barbería, servicios y barberos | Lista |
 | 3. Horas libres | Cálculo de disponibilidad y reservas | Pendiente |
 | 4. Reserva pública | Página para el cliente, cambiar y cancelar | Pendiente |
 | 5. Agenda | Panel del barbero y del dueño, bloqueos y avisos | Pendiente |
@@ -58,11 +58,13 @@ docker compose up -d
 cd backend
 dotnet run --project src/Barberia.Api
 
-# Web en http://localhost:5173
+# Web en http://localhost:5173 (panel en /ingresar)
 cd frontend
 npm install
 npm run dev
 ```
+
+La web busca la API en `VITE_API_URL`; si no está definida usa `http://localhost:5000`.
 
 | Tarea | Backend (`backend/`) | Frontend (`frontend/`) |
 |---|---|---|

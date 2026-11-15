@@ -24,7 +24,8 @@ export default ts.config(
       '@stylistic/comma-dangle': ['error', 'always-multiline'],
       '@stylistic/max-len': ['error', {code: 120, ignoreStrings: true, ignoreUrls: true}],
       'curly': ['error', 'all'],
-      'prefer-const': 'error',
+      'prefer-const': ['error', {destructuring: 'all'}],
+      'svelte/no-navigation-without-resolve': ['error', {ignoreLinks: true}],
       'no-ternary': 'error',
       'no-console': 'error',
       '@typescript-eslint/no-magic-numbers': ['error', {
