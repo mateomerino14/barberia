@@ -1,5 +1,6 @@
 <!-- Página de error: dirección que no existe o algo que falló. -->
 <script lang="ts">
+  import {resolve} from '$app/paths';
   import {page} from '$app/state';
   import Button from '#lib/ui/atoms/Button.svelte';
   import PoleStripe from '#lib/ui/atoms/PoleStripe.svelte';
@@ -22,7 +23,7 @@
     <p>Intenta de nuevo en un momento.</p>
   {/if}
   <div>
-    <Button href="/">Ir a reservar un turno</Button>
+    <Button href={resolve('/')}>Volver al inicio</Button>
   </div>
 </main>
 

@@ -28,6 +28,9 @@ public sealed class Shop : Entity
     /// <summary>Reglas de reserva vigentes.</summary>
     public BookingRules Rules { get; private set; } = BookingRules.Default;
 
+    /// <summary>Paleta de colores elegida.</summary>
+    public ShopPalette Palette { get; private set; } = ShopPalette.Classic;
+
     /// <summary>Horario de atención por día de la semana; un día sin horario está cerrado.</summary>
     public IReadOnlyList<DailyHours> OpeningHours => _openingHours;
 
@@ -108,6 +111,12 @@ public sealed class Shop : Entity
         }
 
         return Result.Success();
+    }
+
+    /// <summary>Cambia la paleta de colores.</summary>
+    public void ChangePalette(ShopPalette palette)
+    {
+        Palette = palette;
     }
 
     /// <summary>Cambia las reglas de reserva.</summary>

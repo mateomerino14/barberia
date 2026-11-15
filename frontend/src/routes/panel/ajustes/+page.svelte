@@ -1,6 +1,8 @@
 <!-- Mi barbería: los datos que ve el cliente y las reglas para reservar. -->
 <script lang="ts">
   import {onMount} from 'svelte';
+  import {theme, type Palette} from '#lib/core/theme.svelte.ts';
+  import {paletteOptions} from '#lib/features/shop/palette-options.ts';
   import {aheadOptions, cancelOptions, leadOptions} from '#lib/features/shop/rule-options.ts';
   import {ShopState} from '#lib/features/shop/state.svelte.ts';
   import Button from '#lib/ui/atoms/Button.svelte';
@@ -9,6 +11,7 @@
   import Select from '#lib/ui/atoms/Select.svelte';
   import FormField from '#lib/ui/molecules/FormField.svelte';
   import PageTitle from '#lib/ui/molecules/PageTitle.svelte';
+  import PalettePicker from '#lib/ui/organisms/PalettePicker.svelte';
 
   const settings = new ShopState();
   const nameMaxLength = 80;
@@ -23,6 +26,7 @@
   let minLead = $state('60');
   let maxDays = $state('14');
   let cancelLimit = $state('120');
+  let palette = $state<Palette>('classic');
 
   onMount(() => {
     settings.load().then(() => {
@@ -34,6 +38,7 @@
         minLead = String(settings.shop.rules.minLeadMinutes);
         maxDays = String(settings.shop.rules.maxDaysAhead);
         cancelLimit = String(settings.shop.rules.cancelLimitMinutes);
+        palette = settings.shop.palette;
       }
     });
   });
@@ -47,7 +52,8 @@
       phone,
       welcomeMessage,
       rules: {minLeadMinutes: Number(minLead), maxDaysAhead: Number(maxDays), cancelLimitMinutes: Number(cancelLimit)},
-    });
+      palette,
+    }).then(() => theme.setPalette(palette));
   }
 </script>
 
@@ -96,6 +102,19 @@
       <Select id="rules-cancel" options={cancelOptions(Number(cancelLimit))} bind:value={cancelLimit} />
     </FormField>
   </fieldset>
+  <fieldset class="group">
+    <legend>Colores</legend>
+    <p class="help">
+      Se aplican a la presentación, la reserva, el turno del cliente y este panel.
+      El modo oscuro lo elige cada persona con el botón de sol o luna.
+    </p>
+    <PalettePicker
+      options={paletteOptions}
+      selected={palette}
+      shopName={name || 'Barbería'}
+      onSelect={(id) => (palette = id as Palette)}
+    />
+  </fieldset>
   <div>
     <Button type="submit" disabled={settings.saving}>Guardar cambios</Button>
   </div>
@@ -106,7 +125,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-5);
-    max-width: 40rem;
+    max-width: 60rem;
   }
 
   .group {
@@ -117,6 +136,12 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+  }
+
+  .help {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink-soft);
   }
 
   legend {

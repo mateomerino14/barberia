@@ -18,8 +18,16 @@ async function chooseFirstDayWithSlots(page: Page): Promise<boolean> {
   return false;
 }
 
-test('un cliente reserva desde el celular, ve su ticket y lo cancela', async ({page}) => {
+test('la presentación muestra la barbería y lleva a reservar', async ({page}) => {
   await page.goto('/');
+  await expect(page.getByRole('heading', {level: 1})).toBeVisible();
+  await expect(page.getByText('Servicios y precios')).toBeVisible();
+  await page.getByRole('link', {name: 'Reservar turno'}).click();
+  await expect(page).toHaveURL(/\/reservar$/);
+});
+
+test('un cliente reserva desde el celular, ve su ticket y lo cancela', async ({page}) => {
+  await page.goto('/reservar');
   await expect(page.getByRole('heading', {level: 1})).toBeVisible();
 
   await page.getByRole('radio', {name: /Degradado/}).first().check();

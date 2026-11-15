@@ -1,9 +1,9 @@
-<!-- Botón o enlace con forma de botón: rojo para lo principal, tinta para confirmar, contorno para lo demás. -->
+<!-- Botón o enlace con forma de botón: rojo lo principal, tinta para confirmar, contorno lo demás. -->
 <script lang="ts">
   import type {Snippet} from 'svelte';
   import type {HTMLButtonAttributes} from 'svelte/elements';
 
-  type Variant = 'primary' | 'dark' | 'secondary' | 'danger';
+  type Variant = 'primary' | 'dark' | 'secondary' | 'danger' | 'onBar';
 
   interface Props extends HTMLButtonAttributes {
     variant?: Variant;
@@ -87,6 +87,16 @@
 
   .danger:hover {
     background: var(--color-sheet);
+  }
+
+  .onBar {
+    border-color: var(--color-on-bar-soft);
+    background: transparent;
+    color: var(--color-on-bar);
+  }
+
+  .onBar:hover {
+    border-color: var(--color-on-bar);
   }
 
   .button:disabled {

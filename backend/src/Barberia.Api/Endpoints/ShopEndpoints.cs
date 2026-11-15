@@ -35,7 +35,8 @@ public static class ShopEndpoints
             request.WelcomeMessage,
             request.Rules.MinLeadMinutes,
             request.Rules.MaxDaysAhead,
-            request.Rules.CancelLimitMinutes);
+            request.Rules.CancelLimitMinutes,
+            request.Palette);
         return ApiResults.Ok(await handler.HandleAsync(command, cancellationToken), ShopResponse.From);
     }
 

@@ -1,5 +1,6 @@
 <!-- Turno del cliente: el talón, agregar al calendario, cambiar la hora y cancelar. -->
 <script lang="ts">
+  import {resolve} from '$app/paths';
   import {page} from '$app/state';
   import {onMount} from 'svelte';
   import {icsHref} from '#lib/core/calendar.ts';
@@ -63,7 +64,7 @@
   {:else if !ticket.booking}
     <h1 class="title">No encontramos ese turno</h1>
     <p class="muted">Revisa que el enlace esté completo, o reserva uno nuevo.</p>
-    <Button href="/">Reservar un turno</Button>
+    <Button href={resolve('/reservar')}>Reservar un turno</Button>
   {:else}
     <div class="intro">
       <span class="kicker">{ticket.shop?.name ?? 'Barbería'}</span>

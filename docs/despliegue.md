@@ -41,7 +41,7 @@ En el plan gratuito, Render duerme el servicio tras unos minutos sin visitas y l
 
 1. En Vercel, importa el repositorio con **Root Directory** `frontend`. Detecta SvelteKit solo.
 2. Agrega la variable `VITE_API_URL` con la dirección de la API, por ejemplo `https://TU-API.onrender.com`.
-3. Publica. La página de reservas queda en la raíz y el panel en `/ingresar`.
+3. Publica. La presentación de la barbería queda en la raíz, la reserva en `/reservar` y el panel en `/ingresar`.
 
 Si cambias `VITE_API_URL`, vuelve a publicar: la dirección queda fija al compilar.
 
