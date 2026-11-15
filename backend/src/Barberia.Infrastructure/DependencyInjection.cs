@@ -40,6 +40,7 @@ public static class DependencyInjection
         services.AddSingleton<ITokenIssuer, TokenIssuer>();
         services.AddPanelAuthentication(configuration);
         services.AddEmailNotifications(configuration);
+        services.AddReminders(configuration);
         return services;
     }
 
@@ -55,6 +56,20 @@ public static class DependencyInjection
 
         services.Configure<EmailOptions>(section);
         services.AddHttpClient<INotifier, BrevoEmailNotifier>();
+    }
+
+    /// <summary>Activa los recordatorios si Reminders:HoursBefore es mayor que cero.</summary>
+    private static void AddReminders(this IServiceCollection services, IConfiguration configuration)
+    {
+        IConfigurationSection section = configuration.GetSection(ReminderOptions.Section);
+        ReminderOptions settings = section.Get<ReminderOptions>() ?? new ReminderOptions();
+        if (settings.HoursBefore <= 0 || settings.IntervalMinutes <= 0)
+        {
+            return;
+        }
+
+        services.Configure<ReminderOptions>(section);
+        services.AddHostedService<ReminderWorker>();
     }
 
     /// <summary>Configura la lectura del pase de sesión en cada petición.</summary>

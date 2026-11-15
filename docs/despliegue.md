@@ -58,6 +58,9 @@ Si cambias `VITE_API_URL`, vuelve a publicar: la dirección queda fija al compil
    | `Email__SenderEmail` | El remitente verificado |
    | `Email__SenderName` | Nombre de la barbería |
    | `Email__PublicWebUrl` | La dirección de la web, para el enlace del turno |
+   | `Reminders__HoursBefore` | Opcional. Horas antes del turno en que llega el recordatorio (por defecto 3; 0 lo apaga) |
+
+   **Recordatorios en el plan gratis de Render:** la API se duerme tras 15 minutos sin visitas y, dormida, no manda recordatorios. Para que lleguen siempre, usa un plan pago o un monitor gratuito (por ejemplo UptimeRobot) que visite `/api/health` cada 10 minutos.
 
 Sin estas variables el sistema funciona igual; solo no envía correos. Los recordatorios por WhatsApp salen desde la agenda con un botón y no necesitan configuración.
 

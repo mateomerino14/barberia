@@ -31,6 +31,18 @@ public sealed class BookingRepository(BarberiaDbContext context) : IBookingRepos
         return await query.OrderBy(booking => booking.Range.Start).ToListAsync(cancellationToken);
     }
 
+    /// <summary>Lista los turnos reservados que empiezan antes de esa hora y todavía no tienen recordatorio.</summary>
+    public async Task<IReadOnlyList<Booking>> ListPendingRemindersAsync(DateTimeOffset from, DateTimeOffset until, CancellationToken cancellationToken)
+    {
+        DateTimeOffset start = from.ToUniversalTime();
+        DateTimeOffset end = until.ToUniversalTime();
+        return await context.Bookings
+            .Where(booking => booking.Status == BookingStatus.Booked && !booking.IsWalkIn && booking.RemindedAt == null)
+            .Where(booking => booking.Range.Start > start && booking.Range.Start <= end)
+            .OrderBy(booking => booking.Range.Start)
+            .ToListAsync(cancellationToken);
+    }
+
     /// <summary>Agrega un turno.</summary>
     public void Add(Booking booking)
     {

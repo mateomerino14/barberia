@@ -182,6 +182,10 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("price_cents");
 
+                    b.Property<DateTimeOffset?>("RemindedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("reminded_at");
+
                     b.Property<Guid>("ServiceId")
                         .HasColumnType("uuid")
                         .HasColumnName("service_id");

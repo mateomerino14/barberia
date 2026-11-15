@@ -46,6 +46,9 @@ public sealed class Booking : Entity
     /// <summary>Cuándo se creó el turno.</summary>
     public DateTimeOffset CreatedAt { get; private init; }
 
+    /// <summary>Cuándo se le mandó el recordatorio al cliente; vacío si todavía no.</summary>
+    public DateTimeOffset? RemindedAt { get; private set; }
+
     /// <summary>Indica si el turno ocupa la agenda: reservado o atendido.</summary>
     public bool BlocksAgenda => Status is BookingStatus.Booked or BookingStatus.Attended;
 
@@ -112,6 +115,7 @@ public sealed class Booking : Entity
 
         BarberId = barberId;
         Range = range;
+        RemindedAt = null;
         return Result.Success();
     }
 
@@ -125,5 +129,14 @@ public sealed class Booking : Entity
 
         Status = status;
         return Result.Success();
+    }
+
+    /// <summary>Indica si toca recordarle el turno al cliente: sigue reservado, no llegó sin turno y aún no se le avisó.</summary>
+    public bool NeedsReminder => Status == BookingStatus.Booked && !IsWalkIn && RemindedAt is null;
+
+    /// <summary>Anota que ya se mandó el recordatorio para no repetirlo.</summary>
+    public void MarkReminded(DateTimeOffset now)
+    {
+        RemindedAt = now.ToUniversalTime();
     }
 }

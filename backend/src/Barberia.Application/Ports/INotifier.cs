@@ -13,6 +13,9 @@ public enum BookingEvent
 
     /// <summary>Se canceló.</summary>
     Cancelled,
+
+    /// <summary>Se acerca la hora del turno.</summary>
+    Reminder,
 }
 
 /// <summary>Aviso al cliente sobre su turno, con lo necesario para escribir el mensaje.</summary>
