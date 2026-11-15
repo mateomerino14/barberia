@@ -422,6 +422,12 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                                 .HasColumnType("integer")
                                 .HasColumnName("min_lead_minutes");
 
+                            b1.Property<int>("SlotStepMinutes")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer")
+                                .HasDefaultValue(15)
+                                .HasColumnName("slot_step_minutes");
+
                             b1.HasKey("ShopId");
 
                             b1.ToTable("shops");

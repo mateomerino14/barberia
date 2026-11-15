@@ -19,6 +19,7 @@ export interface BookingRules {
   minLeadMinutes: number;
   maxDaysAhead: number;
   cancelLimitMinutes: number;
+  slotStepMinutes: number;
 }
 
 /** Datos de la barbería. */

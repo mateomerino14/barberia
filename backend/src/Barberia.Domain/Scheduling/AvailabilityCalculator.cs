@@ -7,9 +7,6 @@ namespace Barberia.Domain.Scheduling;
 /// <summary>Calcula en qué horas entra un servicio completo en la agenda de un barbero.</summary>
 public static class AvailabilityCalculator
 {
-    /// <summary>Cada cuántos minutos se ofrece una hora de inicio.</summary>
-    public const int SlotStepMinutes = 15;
-
     /// <summary>Devuelve los inicios libres de un barbero en una fecha para un servicio de la duración dada.</summary>
     public static IReadOnlyList<DateTimeOffset> FreeStarts(
         Shop shop,
@@ -28,7 +25,8 @@ public static class AvailabilityCalculator
         DateTimeOffset earliest = now.ToUniversalTime().AddMinutes(shop.Rules.MinLeadMinutes);
         List<TimeRange> taken = [.. busy];
         List<DateTimeOffset> starts = [];
-        for (DateTimeOffset start = workday.Start; start.AddMinutes(durationMinutes) <= workday.End; start = start.AddMinutes(SlotStepMinutes))
+        int step = shop.Rules.SlotStepMinutes;
+        for (DateTimeOffset start = workday.Start; start.AddMinutes(durationMinutes) <= workday.End; start = start.AddMinutes(step))
         {
             TimeRange candidate = TimeRange.FromStart(start, durationMinutes);
             if (start >= earliest && !taken.Any(range => range.Overlaps(candidate)))
