@@ -1,0 +1,29 @@
+/* Estilos base de toda la aplicación. */
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: 1.45;
+}
+
+:focus-visible {
+  outline: var(--line-bold) solid var(--color-selected);
+  outline-offset: var(--line-bold);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

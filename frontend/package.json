@@ -1,0 +1,50 @@
+{
+  "name": "barberia-frontend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  },
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:deadcode": "knip",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.1",
+    "@stylistic/eslint-plugin": "^6.0.0",
+    "@sveltejs/adapter-vercel": "^7.0.3",
+    "@sveltejs/kit": "^3.0.0",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/svelte": "^5.4.2",
+    "eslint": "^10.15.0",
+    "eslint-plugin-jsdoc": "^65.4.7",
+    "eslint-plugin-svelte": "^3.24.1",
+    "globals": "^17.14.0",
+    "jsdom": "^31.0.1",
+    "knip": "^6.45.1",
+    "svelte": "^5.57.2",
+    "svelte-check": "^4.6.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.0",
+    "vitest": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0"
+  }
+}

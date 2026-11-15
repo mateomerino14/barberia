@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <clipPath id="pole"><rect x="10" y="3" width="12" height="26" rx="2"/></clipPath>
+  </defs>
+  <rect width="32" height="32" rx="6" fill="#1c1b19"/>
+  <g clip-path="url(#pole)">
+    <rect x="10" y="3" width="12" height="26" fill="#fbf9f4"/>
+    <path d="M4 12 22 -6v6L4 18zM4 24 22 6v6L4 30zM4 36 22 18v6L4 42z" fill="#b3261e"/>
+    <path d="M4 18 22 0v3L4 21zM4 30 22 12v3L4 33z" fill="#1e3a7b"/>
+  </g>
+  <rect x="10" y="3" width="12" height="26" rx="2" fill="none" stroke="#fbf9f4" stroke-width="1.5"/>
+</svg>
