@@ -1,12 +1,12 @@
 using System.Net;
-using System.Net.Http.Json;
 using Barberia.Api.Endpoints;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Barberia.Api.Tests.Support;
 
 namespace Barberia.Api.Tests.Endpoints;
 
 /// <summary>Pruebas de la ruta de salud de la API.</summary>
-public sealed class HealthEndpointsTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+[Collection(ApiTestGroup.Name)]
+public sealed class HealthEndpointsTests(ApiFactory factory)
 {
     private const string HealthPath = "/api/health";
     private const string OnlineStatus = "ok";
@@ -16,13 +16,10 @@ public sealed class HealthEndpointsTests(WebApplicationFactory<Program> factory)
     [Fact]
     public async Task GetHealth_ApiRunning_ReturnsOkWithLocalTime()
     {
-        HttpClient client = factory.CreateClient();
-
-        HttpResponseMessage response = await client.GetAsync(HealthPath, TestContext.Current.CancellationToken);
-        HealthResponse? body = await response.Content.ReadFromJsonAsync<HealthResponse>(TestContext.Current.CancellationToken);
+        HttpResponseMessage response = await factory.CreateClient().GetAsync(HealthPath, TestContext.Current.CancellationToken);
+        HealthResponse body = await response.ReadAsync<HealthResponse>();
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotNull(body);
         Assert.Equal(OnlineStatus, body.Status);
         Assert.Equal(BoliviaOffset, body.Time.Offset);
     }
