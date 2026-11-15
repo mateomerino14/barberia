@@ -210,6 +210,14 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(80)")
                         .HasColumnName("name");
 
+                    b.Property<string>("Palette")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Classic")
+                        .HasColumnName("palette");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(20)

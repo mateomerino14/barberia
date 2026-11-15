@@ -1,6 +1,7 @@
 using System.Net;
 using Barberia.Api.Contracts;
 using Barberia.Api.Tests.Support;
+using Barberia.Domain.Shops;
 
 namespace Barberia.Api.Tests.Endpoints;
 
@@ -41,13 +42,13 @@ public sealed class ShopEndpointsTests(ApiFactory factory)
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    /// <summary>El dueño cambia los datos y las reglas, y quedan guardados.</summary>
+    /// <summary>El dueño cambia los datos, las reglas y la paleta, y quedan guardados.</summary>
     [Fact]
     public async Task UpdateShop_Owner_SavesProfileAndRules()
     {
         HttpClient owner = await factory.CreateOwnerClientAsync();
         BookingRulesDto rules = new(HalfHour, ThreeWeeks, OneHour);
-        UpdateShopRequest request = new(ApiFactory.ShopName, NewAddress, "71234567", "Te esperamos", rules);
+        UpdateShopRequest request = new(ApiFactory.ShopName, NewAddress, "71234567", "Te esperamos", rules, ShopPalette.Wine);
 
         HttpResponseMessage response = await owner.PutJsonAsync(ShopPath, request);
         ShopResponse shop = await response.ReadAsync<ShopResponse>();
@@ -55,6 +56,7 @@ public sealed class ShopEndpointsTests(ApiFactory factory)
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(NewAddress, shop.Address);
         Assert.Equal(rules, shop.Rules);
+        Assert.Equal(ShopPalette.Wine, shop.Palette);
     }
 
     /// <summary>Un día cerrado se agrega una vez; repetirlo es un conflicto, y después se puede quitar.</summary>

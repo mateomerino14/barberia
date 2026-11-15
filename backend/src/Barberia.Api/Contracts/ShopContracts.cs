@@ -33,6 +33,7 @@ public sealed record ShopResponse(
     string Phone,
     string WelcomeMessage,
     BookingRulesDto Rules,
+    ShopPalette Palette,
     IReadOnlyList<HoursDto> OpeningHours,
     IReadOnlyList<ClosedDayDto> ClosedDays)
 {
@@ -45,6 +46,7 @@ public sealed record ShopResponse(
             shop.Phone,
             shop.WelcomeMessage,
             new BookingRulesDto(shop.Rules.MinLeadMinutes, shop.Rules.MaxDaysAhead, shop.Rules.CancelLimitMinutes),
+            shop.Palette,
             [.. shop.OpeningHours.Select(HoursDto.From)],
             [.. shop.ClosedDays.OrderBy(day => day.Date).Select(day => new ClosedDayDto(day.Date, day.Reason))]);
     }
@@ -56,7 +58,8 @@ public sealed record UpdateShopRequest(
     string? Address,
     string? Phone,
     string? WelcomeMessage,
-    BookingRulesDto Rules);
+    BookingRulesDto Rules,
+    ShopPalette Palette = ShopPalette.Classic);
 
 /// <summary>Horario semanal nuevo.</summary>
 public sealed record SetHoursRequest(IReadOnlyList<HoursDto> Hours);
