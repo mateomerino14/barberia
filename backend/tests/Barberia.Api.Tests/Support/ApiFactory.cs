@@ -27,6 +27,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private const string JwtKey = "clave-de-prueba-con-mas-de-32-caracteres";
     private const string BearerScheme = "Bearer";
     private const string LoginPath = "/api/auth/login";
+    private const string UnlimitedPermits = "100000";
 
     /// <summary>Avisos que la API habría enviado a los clientes.</summary>
     public CapturingNotifier Notifier { get; } = new();
@@ -72,6 +73,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Setup:ShopName", ShopName);
         builder.UseSetting("Setup:OwnerEmail", OwnerEmail);
         builder.UseSetting("Setup:OwnerPassword", OwnerPassword);
+        builder.UseSetting("RateLimits:PermitsPerMinute", UnlimitedPermits);
         builder.ConfigureTestServices(services =>
         {
             services.AddSingleton<IClock, FixedClock>();
