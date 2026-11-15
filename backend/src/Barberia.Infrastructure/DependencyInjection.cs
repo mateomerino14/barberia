@@ -1,3 +1,4 @@
+using Barberia.Application.Features.Access;
 using Barberia.Application.Ports;
 using Barberia.Infrastructure.Notifications;
 using Barberia.Infrastructure.Persistence;
@@ -77,7 +78,20 @@ public static class DependencyInjection
                 RoleClaimType = StaffClaims.Role,
                 NameClaimType = StaffClaims.Email,
             };
+            options.Events = new JwtBearerEvents { OnTokenValidated = RejectClosedSessionAsync };
         });
+    }
+
+    /// <summary>Rechaza el pase si la cuenta ya no existe, cambió su contraseña o fue dada de baja.</summary>
+    private static async Task RejectClosedSessionAsync(TokenValidatedContext context)
+    {
+        string? accountId = context.Principal?.FindFirst(StaffClaims.AccountId)?.Value;
+        string? stamp = context.Principal?.FindFirst(StaffClaims.Stamp)?.Value;
+        CheckSessionHandler check = context.HttpContext.RequestServices.GetRequiredService<CheckSessionHandler>();
+        if (!Guid.TryParse(accountId, out Guid id) || !await check.HandleAsync(id, stamp, context.HttpContext.RequestAborted))
+        {
+            context.Fail("La sesión ya no es válida.");
+        }
     }
 
     /// <summary>Aplica las migraciones pendientes de la base de datos.</summary>

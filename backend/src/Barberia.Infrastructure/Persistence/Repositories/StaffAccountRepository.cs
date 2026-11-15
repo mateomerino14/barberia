@@ -13,6 +13,12 @@ public sealed class StaffAccountRepository(BarberiaDbContext context) : IStaffAc
         return context.StaffAccounts.FirstOrDefaultAsync(account => account.Email == email, cancellationToken);
     }
 
+    /// <summary>Busca una cuenta por su id.</summary>
+    public Task<StaffAccount?> GetAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return context.StaffAccounts.FirstOrDefaultAsync(account => account.Id == id, cancellationToken);
+    }
+
     /// <summary>Busca la cuenta vinculada a un barbero.</summary>
     public Task<StaffAccount?> FindByBarberAsync(Guid barberId, CancellationToken cancellationToken)
     {

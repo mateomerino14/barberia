@@ -14,6 +14,7 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddPanelPolicies();
 builder.Services.AddPublicRateLimits(builder.Configuration);
+builder.Services.AddProxySupport(builder.Configuration);
 builder.Services.AddProblemDetails();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -24,6 +25,13 @@ builder.Services.AddCors(options => options.AddPolicy(CorsPolicy, policy =>
     policy.WithOrigins(origins).AllowAnyHeader().AllowAnyMethod()));
 
 WebApplication app = builder.Build();
+app.UseForwardedHeaders();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
+app.UseSecurityHeaders();
 app.UseExceptionHandler();
 app.UseCors(CorsPolicy);
 app.UseAuthentication();

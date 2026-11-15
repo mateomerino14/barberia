@@ -11,7 +11,7 @@ public sealed record LoginCommand(string? Email, string? Password);
 public sealed record LoginResult(IssuedToken Token, StaffAccount Account);
 
 /// <summary>Verifica el correo y la contraseña y emite el pase de sesión.</summary>
-public sealed class LoginHandler(IStaffAccountRepository accounts, IPasswordHasher hasher, ITokenIssuer issuer)
+public sealed class LoginHandler(IStaffAccountRepository accounts, IBarberRepository barbers, IPasswordHasher hasher, ITokenIssuer issuer)
 {
     /// <summary>Abre la sesión si las credenciales coinciden.</summary>
     public async Task<Result<LoginResult>> HandleAsync(LoginCommand command, CancellationToken cancellationToken)
@@ -23,7 +23,14 @@ public sealed class LoginHandler(IStaffAccountRepository accounts, IPasswordHash
         }
 
         StaffAccount? account = await accounts.FindByEmailAsync(email.Value, cancellationToken);
-        if (account is null || !hasher.Verify(account.PasswordHash, command.Password))
+        if (account is null)
+        {
+            // Se calcula igual un hash para tardar lo mismo y no revelar qué correos existen.
+            hasher.Hash(command.Password);
+            return AccessErrors.InvalidCredentials;
+        }
+
+        if (!hasher.Verify(account.PasswordHash, command.Password) || !await AccountAccess.IsAllowedAsync(account, barbers, cancellationToken))
         {
             return AccessErrors.InvalidCredentials;
         }

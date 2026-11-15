@@ -24,6 +24,7 @@ public sealed class TokenIssuer(IOptions<JwtOptions> options, TimeProvider timeP
             new(StaffClaims.AccountId, account.Id.ToString()),
             new(StaffClaims.Role, account.Role.ToString()),
             new(StaffClaims.Email, account.Email),
+            new(StaffClaims.Stamp, account.SessionStamp),
         ];
         if (account.BarberId is not null)
         {

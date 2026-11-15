@@ -10,7 +10,7 @@ public static class AccessEndpoints
     /// <summary>Registra la ruta de inicio de sesión.</summary>
     public static IEndpointRouteBuilder MapAccessEndpoints(this IEndpointRouteBuilder routes)
     {
-        routes.MapPost("/api/auth/login", LoginAsync).RequireRateLimiting(RateLimits.PublicWrites);
+        routes.MapPost("/api/auth/login", LoginAsync).RequireRateLimiting(RateLimits.Login);
         return routes;
     }
 
