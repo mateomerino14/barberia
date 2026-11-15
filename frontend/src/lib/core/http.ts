@@ -1,6 +1,9 @@
 const defaultApiUrl = 'http://localhost:5000';
 const noContent = 204;
 const networkStatus = 0;
+const unauthorized = 401;
+
+let sessionEnded: (() => void) | null = null;
 
 /** Error de la API tal como lo muestra la interfaz. */
 export interface ApiError {
@@ -18,6 +21,11 @@ export interface RequestOptions {
   body?: unknown;
   token?: string | null;
   fetcher?: typeof fetch;
+}
+
+/** Registra qué hacer cuando la API rechaza la sesión: vencida, cerrada o dada de baja. */
+export function onSessionEnded(handler: (() => void) | null): void {
+  sessionEnded = handler;
 }
 
 /** Devuelve la dirección base de la API. */
@@ -49,6 +57,9 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     return {ok: false, error: {status: networkStatus, code: 'network', message: 'No pudimos conectarnos. Revisa tu internet.'}};
   }
   if (!response.ok) {
+    if (response.status === unauthorized && options.token) {
+      sessionEnded?.();
+    }
     return {ok: false, error: await readProblem(response)};
   }
   if (response.status === noContent) {

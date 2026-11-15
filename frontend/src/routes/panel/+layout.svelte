@@ -4,6 +4,7 @@
   import {resolve} from '$app/paths';
   import {page} from '$app/state';
   import {onMount} from 'svelte';
+  import {onSessionEnded} from '#lib/core/http.ts';
   import {session} from '#lib/core/session.svelte.ts';
   import {theme} from '#lib/core/theme.svelte.ts';
   import {getShop} from '#lib/features/shop/api.ts';
@@ -21,6 +22,7 @@
     {href: '/panel/ajustes', label: 'Mi barbería'},
   ];
   const barberLinks = [{href: '/panel/agenda', label: 'Mi agenda'}];
+  const barberPages = ['/panel', '/panel/agenda'];
 
   let shopName = $state('Barbería');
   let ready = $state(false);
@@ -31,12 +33,21 @@
       goto(resolve('/ingresar'));
       return;
     }
+    onSessionEnded(logout);
     ready = true;
     getShop().then((result) => {
       if (result.ok) {
         shopName = result.data.name;
       }
     });
+    return () => onSessionEnded(null);
+  });
+
+  // Un barbero solo tiene su agenda: si escribe a mano otra dirección del panel, vuelve a ella.
+  $effect(() => {
+    if (ready && !session.isOwner && !barberPages.includes(page.url.pathname)) {
+      goto(resolve('/panel/agenda'), {replace: true});
+    }
   });
 
   /** Menú que corresponde al rol de la sesión. */
