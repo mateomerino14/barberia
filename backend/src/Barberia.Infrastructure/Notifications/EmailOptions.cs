@@ -12,9 +12,6 @@ public sealed class EmailOptions
     /// <summary>Correo remitente verificado en Brevo.</summary>
     public string SenderEmail { get; init; } = string.Empty;
 
-    /// <summary>Nombre que ve el cliente como remitente.</summary>
-    public string SenderName { get; init; } = "Barbería";
-
     /// <summary>Dirección pública de la web, para armar el enlace del turno.</summary>
     public string PublicWebUrl { get; init; } = string.Empty;
 }

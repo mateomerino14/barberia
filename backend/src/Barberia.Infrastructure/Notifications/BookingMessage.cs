@@ -5,10 +5,11 @@ using Barberia.Domain.Common;
 
 namespace Barberia.Infrastructure.Notifications;
 
-/// <summary>Texto del aviso al cliente, en español y con el enlace para manejar su turno.</summary>
-public sealed record BookingMessage(string Subject, string Text, string Html)
+/// <summary>Texto del aviso al cliente, en español, con el enlace para manejar su turno y el nombre de la barbería como remitente.</summary>
+public sealed record BookingMessage(string SenderName, string Subject, string Text, string Html)
 {
     private const string NumberFormat = "D4";
+    private const string DefaultSender = "Barbería";
     private static readonly CultureInfo Spanish = CultureInfo.GetCultureInfo("es-BO");
 
     /// <summary>Arma el mensaje según lo que le pasó al turno.</summary>
@@ -45,7 +46,18 @@ public sealed record BookingMessage(string Subject, string Text, string Html)
         string text = $"Hola, {notice.Booking.Customer.Name}.\n\n{lead}\n{place}.\n\nPara ver, cambiar o cancelar tu turno: {link}";
         string html = $"<p>Hola, {Encode(notice.Booking.Customer.Name)}.</p><p>{Encode(lead)}<br>{Encode(place)}.</p>"
             + $"<p><a href=\"{Encode(link)}\">Ver, cambiar o cancelar mi turno</a></p>";
-        return new BookingMessage(subject, text, html);
+        return new BookingMessage(Sender(notice.ShopName), subject, text, html);
+    }
+
+    /// <summary>El remitente es el nombre que el dueño puso en "Mi barbería", o "Barbería" si está vacío.</summary>
+    private static string Sender(string shopName)
+    {
+        if (string.IsNullOrWhiteSpace(shopName))
+        {
+            return DefaultSender;
+        }
+
+        return shopName.Trim();
     }
 
     /// <summary>Escapa el texto para ponerlo dentro del HTML del correo.</summary>
