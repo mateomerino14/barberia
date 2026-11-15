@@ -4,28 +4,26 @@ Sistema de reservas para barberías: los clientes conocen la barbería en una po
 
 ## Capturas
 
-| Reservar (celular) | Turno del cliente | Agenda del panel |
-|---|---|---|
-| ![Página de reservas](docs/capturas/reservar.png) | ![Turno del cliente](docs/capturas/turno.png) | ![Agenda del día](docs/capturas/agenda.png) |
+<p>
+  <img src="docs/manual/01_inicio.webp" width="240" alt="Portada de la barbería">
+  <img src="docs/manual/04_reservar_hora.webp" width="240" alt="Elegir día y hora">
+  <img src="docs/manual/06_turno.webp" width="240" alt="Talón del turno">
+</p>
 
-Más capturas en [`docs/capturas`](docs/capturas): ingresar, servicios, barberos y horarios.
+![Agenda del panel](docs/manual/12_agenda_turno.webp)
+
+Todas las pantallas, paso a paso, en el [manual de usuario](docs/manual.md).
 
 ## Estado
 
-Los siete días de trabajo están completos: los clientes reservan desde el celular y manejan su turno con un enlace, y el equipo maneja la agenda, los horarios, los servicios y los avisos desde el panel.
-
-| Entrega | Contenido | Estado |
-|---|---|---|
-| 1. Base | Documentos, reglas, esqueleto de API y web, CI | Lista |
-| 2. Barbería y equipo | Acceso, datos de la barbería, servicios y barberos | Lista |
-| 3. Horas libres | Cálculo de disponibilidad y reservas | Lista |
-| 4. Reserva pública | Página para el cliente, cambiar y cancelar | Lista |
-| 5. Agenda | Panel del barbero y del dueño, bloqueos y avisos | Lista |
-| 6. Pulido | Detalles visuales, celular y datos de demostración | Lista |
-| 7. Publicación | Pruebas de punta a punta, despliegue y capturas | Lista |
+| Versión | Contenido |
+|---|---|
+| 1.0 | Reserva desde el celular, turno con enlace para cambiar o cancelar, agenda del panel, servicios, barberos, horarios, bloqueos y avisos por correo |
+| 1.1 | Presentación con poste en 3D, paletas y modo oscuro, recordar datos del cliente, cambio de contraseñas, logo y fotos, recordatorio antes del turno y revisión de seguridad |
 
 ## Documentos
 
+- [Manual de usuario](docs/manual.md)
 - [Qué hace el sistema](docs/sistema.md)
 - [Arquitectura](docs/arquitectura.md)
 - [Reglas de desarrollo](reglas.md)

@@ -2,10 +2,15 @@
 <script lang="ts">
   import {formatPrice} from '#lib/core/money.ts';
   import {formatDuration} from '#lib/core/time.ts';
-  import type {PublicService} from '#lib/features/booking/types.ts';
+  interface PriceItem {
+    id: string;
+    name: string;
+    durationMinutes: number;
+    priceCents: number;
+  }
 
   interface Props {
-    services: PublicService[];
+    services: PriceItem[];
   }
 
   const {services}: Props = $props();

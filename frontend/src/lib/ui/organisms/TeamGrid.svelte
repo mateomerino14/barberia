@@ -1,25 +1,29 @@
 <!-- El equipo de barberos, cada uno con su foto o, si no tiene, sus iniciales en un retrato. -->
 <script lang="ts">
-  import type {PublicBarber} from '#lib/features/booking/types.ts';
-  import {initials} from '#lib/features/landing/opening.ts';
-  import {imageUrl} from '#lib/features/media/api.ts';
+  import {initials} from '#lib/core/text.ts';
 
-  interface Props {
-    barbers: PublicBarber[];
+  interface Member {
+    id: string;
+    name: string;
+    photoSrc: string | null;
   }
 
-  const {barbers}: Props = $props();
+  interface Props {
+    members: Member[];
+  }
+
+  const {members}: Props = $props();
 </script>
 
 <ul class="team">
-  {#each barbers as barber (barber.id)}
+  {#each members as member (member.id)}
     <li class="member">
-      {#if barber.photoImageId}
-        <img class="portrait photo" src={imageUrl(barber.photoImageId)} alt="" loading="lazy" />
+      {#if member.photoSrc}
+        <img class="portrait photo" src={member.photoSrc} alt="" loading="lazy" />
       {:else}
-        <span class="portrait" aria-hidden="true">{initials(barber.name)}</span>
+        <span class="portrait" aria-hidden="true">{initials(member.name)}</span>
       {/if}
-      <span class="name">{barber.name}</span>
+      <span class="name">{member.name}</span>
     </li>
   {/each}
 </ul>

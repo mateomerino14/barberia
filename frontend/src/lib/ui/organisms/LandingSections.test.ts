@@ -14,14 +14,14 @@ describe('secciones de la presentación', () => {
   });
 
   it('muestra al equipo con sus nombres', () => {
-    render(TeamGrid, {barbers: [{id: 'b', name: 'Diego Mamani', serviceIds: [], photoImageId: null}]});
+    render(TeamGrid, {members: [{id: 'b', name: 'Diego Mamani', photoSrc: null}]});
 
     expect(screen.getByText('Diego Mamani')).toBeInTheDocument();
     expect(screen.getByText('DM')).toBeInTheDocument();
   });
 
   it('muestra la foto del barbero cuando la tiene', () => {
-    render(TeamGrid, {barbers: [{id: 'c', name: 'Marco', serviceIds: [], photoImageId: 'foto-1'}]});
+    render(TeamGrid, {members: [{id: 'c', name: 'Marco', photoSrc: 'https://api.test/api/images/foto-1'}]});
 
     expect(document.querySelector('img')?.getAttribute('src')).toContain('/api/images/foto-1');
     expect(screen.queryByText('MA')).toBeNull();
