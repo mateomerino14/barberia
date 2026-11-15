@@ -66,11 +66,10 @@ Si cambias `VITE_API_URL`, vuelve a publicar: la dirección queda fija al compil
    |---|---|
    | `Email__BrevoApiKey` | La clave de Brevo |
    | `Email__SenderEmail` | El remitente verificado |
-   | `Email__SenderName` | Nombre de la barbería |
    | `Email__PublicWebUrl` | La dirección de la web, para el enlace del turno |
    | `Reminders__HoursBefore` | Opcional. Horas antes del turno en que llega el recordatorio (por defecto 3; 0 lo apaga) |
 
-   **Recordatorios en el plan gratis de Render:** la API se duerme tras 15 minutos sin visitas y, dormida, no manda recordatorios. Para que lleguen siempre, usa un plan pago o un monitor gratuito (por ejemplo UptimeRobot) que visite `/api/health` cada 10 minutos.
+   **Recordatorios en el plan gratis de Render:** la API se duerme tras 15 minutos sin visitas y, dormida, no manda recordatorios. Para que lleguen, mantenla despierta en horario de la barbería (sección 5) o pasa la API a un plan pago.
 
 Sin estas variables el sistema funciona igual; solo no envía correos. Los recordatorios por WhatsApp salen desde la agenda con un botón y no necesitan configuración.
 
@@ -78,3 +77,18 @@ Sin estas variables el sistema funciona igual; solo no envía correos. Los recor
 
 - Entra a `/ingresar` con la cuenta del dueño, revisa **Ajustes** y **Horarios**, y carga servicios y barberos.
 - Comparte el enlace de la raíz de la web en Instagram, WhatsApp o un código QR en el local.
+
+## 5. Mantener la API despierta en horario de la barbería (opcional)
+
+En el plan gratis, Render apaga la API tras 15 minutos sin visitas: la primera visita después tarda alrededor de un minuto y los recordatorios no salen mientras está apagada. Render da 750 horas gratis al mes **para todos los servicios gratis de la cuenta juntos**; si una API queda despierta las 24 horas usa unas 720, y al acabarse las horas Render apaga todos los servicios gratis hasta el mes siguiente.
+
+Por eso el repositorio trae el flujo `Mantener la API despierta` (`.github/workflows/despertar_api.yml`), que visita `/api/health` cada 10 minutos solo de 06:00 a 21:00 en La Paz: unas 450 horas al mes. De noche la API duerme.
+
+**Viene apagado.** Para encenderlo:
+
+1. En GitHub, **Settings → Secrets and variables → Actions → Variables**, crea `API_URL` con la dirección de la API, por ejemplo `https://TU-API.onrender.com`.
+2. En **Actions**, elige **Mantener la API despierta** y toca **Enable workflow**.
+
+Para apagarlo, **Disable workflow** en la misma pantalla. GitHub pausa los flujos programados de un repositorio público si pasan 60 días sin actividad; en ese caso se vuelve a activar igual.
+
+Con una barbería real conviene más un plan pago de Render para la API: no se duerme y no gasta las horas gratis de otros proyectos.
