@@ -13,6 +13,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddPanelPolicies();
+builder.Services.AddPublicRateLimits(builder.Configuration);
 builder.Services.AddProblemDetails();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -27,6 +28,7 @@ app.UseExceptionHandler();
 app.UseCors(CorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapHealthEndpoints();
 app.MapAccessEndpoints();
@@ -47,6 +49,12 @@ using (IServiceScope scope = app.Services.CreateScope())
     if (initialized.IsFailure)
     {
         throw new InvalidOperationException($"No se pudo preparar la barbería: {initialized.Error!.Message}");
+    }
+
+    if (setup.GetValue<bool>("DemoData"))
+    {
+        SeedDemoHandler demo = scope.ServiceProvider.GetRequiredService<SeedDemoHandler>();
+        await demo.HandleAsync(CancellationToken.None);
     }
 }
 

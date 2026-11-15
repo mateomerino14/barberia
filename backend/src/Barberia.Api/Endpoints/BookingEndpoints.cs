@@ -13,10 +13,10 @@ public static class BookingEndpoints
     public static IEndpointRouteBuilder MapBookingEndpoints(this IEndpointRouteBuilder routes)
     {
         routes.MapGet("/api/availability", GetAvailabilityAsync);
-        routes.MapPost("/api/bookings", CreateAsync);
+        routes.MapPost("/api/bookings", CreateAsync).RequireRateLimiting(RateLimits.PublicWrites);
         routes.MapGet("/api/bookings/{token}", GetAsync);
-        routes.MapPost("/api/bookings/{token}/cancel", CancelAsync);
-        routes.MapPut("/api/bookings/{token}", RescheduleAsync);
+        routes.MapPost("/api/bookings/{token}/cancel", CancelAsync).RequireRateLimiting(RateLimits.PublicWrites);
+        routes.MapPut("/api/bookings/{token}", RescheduleAsync).RequireRateLimiting(RateLimits.PublicWrites);
         return routes;
     }
 

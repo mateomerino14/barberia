@@ -76,7 +76,7 @@ public sealed class Shop : Entity
         }
 
         _openingHours.Clear();
-        _openingHours.AddRange(hours.OrderBy(item => item.Day));
+        _openingHours.AddRange(hours.OrderBy(item => item.Day).Select(item => item with { }));
         return Result.Success();
     }
 

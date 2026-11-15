@@ -84,7 +84,7 @@ public sealed class Barber : Entity
         }
 
         _schedule.Clear();
-        _schedule.AddRange(schedule.OrderBy(item => item.Day));
+        _schedule.AddRange(schedule.OrderBy(item => item.Day).Select(item => item with { }));
         return Result.Success();
     }
 

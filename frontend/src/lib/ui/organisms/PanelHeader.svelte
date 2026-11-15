@@ -90,6 +90,32 @@
     color: var(--color-rule);
   }
 
+  @media (max-width: 48rem) {
+    .bar {
+      padding: var(--space-2) var(--space-4) 0;
+    }
+
+    .user {
+      margin-left: auto;
+    }
+
+    .user span {
+      display: none;
+    }
+
+    .nav {
+      order: 3;
+      flex: 1 1 100%;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+
+    .link {
+      padding: var(--space-3) var(--space-3);
+      white-space: nowrap;
+    }
+  }
+
   .logout {
     min-height: var(--touch-min);
     padding: 0 var(--space-3);
