@@ -6,15 +6,23 @@ Las cuentas en Supabase, Render, Vercel y Brevo se crean a nombre del dueño del
 
 ## 1. Base de datos en Supabase
 
-1. Crea un proyecto nuevo en Supabase, en la región más cercana (São Paulo para Bolivia).
-2. En **Connect**, copia la cadena de conexión del **Session pooler** (puerto 5432). Es la que funciona desde servicios que solo tienen IPv4, como Render.
-3. Pásala al formato de .NET:
+1. Crea un proyecto nuevo en Supabase. Conviene la misma región que la API: si la API va en Render Virginia, el proyecto va en **us-east-1**.
+2. En el **SQL Editor**, crea un usuario solo para la aplicación, con una contraseña larga y aleatoria, y la extensión que impide los choques de horario:
+
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA public;
+   CREATE ROLE barberia_app LOGIN PASSWORD 'UNA_CONTRASEÑA_LARGA';
+   GRANT USAGE, CREATE ON SCHEMA public TO barberia_app;
+   ```
+
+   Así la aplicación no usa el usuario administrador, y las tablas que crea no quedan expuestas en la API automática de Supabase (los roles `anon` y `authenticated` no reciben permisos sobre ellas).
+3. En **Connect**, mira el host del **Session pooler** (puerto 5432), que funciona desde servicios que solo tienen IPv4, como Render. Arma la cadena en el formato de .NET, con el usuario del paso anterior seguido de un punto y el identificador del proyecto:
 
    ```
-   Host=aws-0-sa-east-1.pooler.supabase.com;Port=5432;Database=postgres;Username=postgres.TU_PROYECTO;Password=TU_CONTRASEÑA;SSL Mode=Require
+   Host=aws-1-us-east-1.pooler.supabase.com;Port=5432;Database=postgres;Username=barberia_app.TU_PROYECTO;Password=UNA_CONTRASEÑA_LARGA;SSL Mode=Require
    ```
 
-No hace falta crear tablas: la API aplica las migraciones sola al arrancar, incluida la extensión `btree_gist` que impide los choques de horario.
+No hace falta crear tablas: la API aplica las migraciones sola al arrancar.
 
 En el plan gratuito, Supabase pausa el proyecto si pasa una semana sin uso; se reactiva desde su panel.
 
@@ -42,7 +50,9 @@ En el plan gratuito, Render duerme el servicio tras unos minutos sin visitas y l
 
 1. En Vercel, importa el repositorio con **Root Directory** `frontend`. Detecta SvelteKit solo.
 2. Agrega la variable `VITE_API_URL` con la dirección de la API, por ejemplo `https://TU-API.onrender.com`.
-3. Publica. La presentación de la barbería queda en la raíz, la reserva en `/reservar` y el panel en `/ingresar`.
+3. En **Settings → Deployment Protection**, deja la protección solo para las vistas previas: si cubre producción, los clientes tendrían que tener cuenta en Vercel para ver la página.
+4. Publica. La presentación de la barbería queda en la raíz, la reserva en `/reservar` y el panel en `/ingresar`.
+5. En Render, pon esa dirección en `Cors__Origins__0` para que la web pueda hablar con la API.
 
 Si cambias `VITE_API_URL`, vuelve a publicar: la dirección queda fija al compilar.
 
