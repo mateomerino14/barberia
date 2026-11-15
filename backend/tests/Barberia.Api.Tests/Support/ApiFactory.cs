@@ -28,6 +28,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private const string BearerScheme = "Bearer";
     private const string LoginPath = "/api/auth/login";
 
+    /// <summary>Avisos que la API habría enviado a los clientes.</summary>
+    public CapturingNotifier Notifier { get; } = new();
+
     private readonly PostgreSqlContainer _database = new PostgreSqlBuilder(PostgresImage).Build();
 
     /// <summary>Arranca la base de datos antes de la primera prueba.</summary>
@@ -69,7 +72,11 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Setup:ShopName", ShopName);
         builder.UseSetting("Setup:OwnerEmail", OwnerEmail);
         builder.UseSetting("Setup:OwnerPassword", OwnerPassword);
-        builder.ConfigureTestServices(services => services.AddSingleton<IClock, FixedClock>());
+        builder.ConfigureTestServices(services =>
+        {
+            services.AddSingleton<IClock, FixedClock>();
+            services.AddSingleton<INotifier>(Notifier);
+        });
     }
 }
 

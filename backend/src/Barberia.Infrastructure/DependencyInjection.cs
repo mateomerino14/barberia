@@ -1,4 +1,5 @@
 using Barberia.Application.Ports;
+using Barberia.Infrastructure.Notifications;
 using Barberia.Infrastructure.Persistence;
 using Barberia.Infrastructure.Persistence.Repositories;
 using Barberia.Infrastructure.Security;
@@ -36,7 +37,22 @@ public static class DependencyInjection
         services.AddSingleton<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<ITokenIssuer, TokenIssuer>();
         services.AddPanelAuthentication(configuration);
+        services.AddEmailNotifications(configuration);
         return services;
+    }
+
+    /// <summary>Activa los avisos por correo solo si hay una clave de Brevo configurada.</summary>
+    private static void AddEmailNotifications(this IServiceCollection services, IConfiguration configuration)
+    {
+        IConfigurationSection section = configuration.GetSection(EmailOptions.Section);
+        EmailOptions settings = section.Get<EmailOptions>() ?? new EmailOptions();
+        if (string.IsNullOrWhiteSpace(settings.BrevoApiKey))
+        {
+            return;
+        }
+
+        services.Configure<EmailOptions>(section);
+        services.AddHttpClient<INotifier, BrevoEmailNotifier>();
     }
 
     /// <summary>Configura la lectura del pase de sesión en cada petición.</summary>

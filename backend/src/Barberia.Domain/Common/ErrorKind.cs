@@ -14,4 +14,7 @@ public enum ErrorKind
 
     /// <summary>Las credenciales no son válidas.</summary>
     Unauthorized,
+
+    /// <summary>La cuenta no tiene permiso sobre eso.</summary>
+    Forbidden,
 }

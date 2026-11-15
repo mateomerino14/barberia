@@ -1,7 +1,6 @@
 using System.Net;
 using Barberia.Api.Contracts;
 using Barberia.Api.Tests.Support;
-using Barberia.Domain.Common;
 
 namespace Barberia.Api.Tests.Endpoints;
 
@@ -13,8 +12,6 @@ public sealed class BookingEndpointsTests(ApiFactory factory)
     private const string SlotTakenCode = "booking.slot_unavailable";
     private const string TooLateCode = "booking.too_late";
     private const string CancelledStatus = "Cancelled";
-    private const int FortyFive = 45;
-    private const int FiftyBolivianos = 5000;
     private const int SameTimeRequests = 6;
     private static readonly TimeOnly EightThirty = new(8, 30);
     private static readonly TimeOnly Nine = new(9, 0);
@@ -25,29 +22,28 @@ public sealed class BookingEndpointsTests(ApiFactory factory)
     private static readonly TimeOnly Six = new(18, 0);
     private static readonly TimeOnly Eight = new(20, 0);
     private static readonly DateOnly Tomorrow = FixedClock.Today.AddDays(1);
-    private static readonly BookingRulesDto DefaultRules = new(60, 14, 120);
 
     /// <summary>Una reserva saca la hora de la lista de libres para ese barbero.</summary>
     [Fact]
     public async Task Create_ThenAvailability_HourIsGone()
     {
-        Setup setup = await PrepareAsync();
-        DateTimeOffset start = Local(Tomorrow, Ten);
+        Scenario setup = await Scenario.CreateAsync(factory);
+        DateTimeOffset start = Scenario.Local(Tomorrow, Ten);
 
         HttpResponseMessage created = await factory.CreateClient().PostJsonAsync(BookingsPath, Request(setup, setup.BarberId, start));
         List<SlotDto> slots = await GetSlotsAsync(setup, setup.BarberId);
 
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
         Assert.DoesNotContain(slots, slot => slot.Start == start);
-        Assert.Contains(slots, slot => slot.Start == Local(Tomorrow, TenFortyFive));
+        Assert.Contains(slots, slot => slot.Start == Scenario.Local(Tomorrow, TenFortyFive));
     }
 
     /// <summary>Si varias personas reservan la misma hora a la vez, solo una se la queda.</summary>
     [Fact]
     public async Task Create_SameHourAtOnce_OnlyOneWins()
     {
-        Setup setup = await PrepareAsync();
-        DateTimeOffset start = Local(Tomorrow, Eleven);
+        Scenario setup = await Scenario.CreateAsync(factory);
+        DateTimeOffset start = Scenario.Local(Tomorrow, Eleven);
         CreateBookingRequest request = Request(setup, setup.BarberId, start);
 
         HttpResponseMessage[] responses = await Task.WhenAll(Enumerable.Range(0, SameTimeRequests)
@@ -61,9 +57,9 @@ public sealed class BookingEndpointsTests(ApiFactory factory)
     [Fact]
     public async Task Create_AnyBarber_AssignsOneThatOffersTheService()
     {
-        Setup setup = await PrepareAsync();
+        Scenario setup = await Scenario.CreateAsync(factory);
 
-        HttpResponseMessage created = await factory.CreateClient().PostJsonAsync(BookingsPath, Request(setup, null, Local(Tomorrow, Nine)));
+        HttpResponseMessage created = await factory.CreateClient().PostJsonAsync(BookingsPath, Request(setup, null, Scenario.Local(Tomorrow, Nine)));
         BookingConfirmation booking = await created.ReadAsync<BookingConfirmation>();
 
         Assert.Equal(HttpStatusCode.Created, created.StatusCode);
@@ -74,10 +70,10 @@ public sealed class BookingEndpointsTests(ApiFactory factory)
     [Fact]
     public async Task ManageWithToken_RescheduleAndCancel_FreesTheHour()
     {
-        Setup setup = await PrepareAsync();
+        Scenario setup = await Scenario.CreateAsync(factory);
         HttpClient client = factory.CreateClient();
-        BookingConfirmation booking = await (await client.PostJsonAsync(BookingsPath, Request(setup, setup.BarberId, Local(Tomorrow, Six)))).ReadAsync<BookingConfirmation>();
-        DateTimeOffset newStart = Local(Tomorrow, Six).AddMinutes(-FortyFive);
+        BookingConfirmation booking = await (await client.PostJsonAsync(BookingsPath, Request(setup, setup.BarberId, Scenario.Local(Tomorrow, Six)))).ReadAsync<BookingConfirmation>();
+        DateTimeOffset newStart = Scenario.Local(Tomorrow, Six).AddMinutes(-Scenario.ServiceMinutes);
 
         HttpResponseMessage moved = await client.PutJsonAsync($"{BookingsPath}/{booking.Token}", new RescheduleBookingRequest(newStart, null));
         CustomerBookingResponse afterMove = await moved.ReadAsync<CustomerBookingResponse>();
@@ -102,10 +98,10 @@ public sealed class BookingEndpointsTests(ApiFactory factory)
     [Fact]
     public async Task Create_HourOutsideRules_IsRejected()
     {
-        Setup setup = await PrepareAsync();
+        Scenario setup = await Scenario.CreateAsync(factory);
 
-        HttpResponseMessage past = await factory.CreateClient().PostJsonAsync(BookingsPath, Request(setup, setup.BarberId, Local(FixedClock.Today, EightThirty)));
-        HttpResponseMessage late = await factory.CreateClient().PostJsonAsync(BookingsPath, Request(setup, setup.BarberId, Local(Tomorrow, Eight)));
+        HttpResponseMessage past = await factory.CreateClient().PostJsonAsync(BookingsPath, Request(setup, setup.BarberId, Scenario.Local(FixedClock.Today, EightThirty)));
+        HttpResponseMessage late = await factory.CreateClient().PostJsonAsync(BookingsPath, Request(setup, setup.BarberId, Scenario.Local(Tomorrow, Eight)));
 
         Assert.Equal(SlotTakenCode, await past.ReadErrorCodeAsync());
         Assert.Equal(SlotTakenCode, await late.ReadErrorCodeAsync());
@@ -115,8 +111,8 @@ public sealed class BookingEndpointsTests(ApiFactory factory)
     [Fact]
     public async Task Cancel_TooCloseToStart_IsRejected()
     {
-        Setup setup = await PrepareAsync();
-        DateTimeOffset soon = Local(FixedClock.Today, NineThirty);
+        Scenario setup = await Scenario.CreateAsync(factory);
+        DateTimeOffset soon = Scenario.Local(FixedClock.Today, NineThirty);
         HttpClient client = factory.CreateClient();
         BookingConfirmation booking = await (await client.PostJsonAsync(BookingsPath, Request(setup, setup.BarberId, soon))).ReadAsync<BookingConfirmation>();
 
@@ -125,39 +121,16 @@ public sealed class BookingEndpointsTests(ApiFactory factory)
         Assert.Equal(TooLateCode, await cancelled.ReadErrorCodeAsync());
     }
 
-    /// <summary>Datos creados para cada prueba: un servicio propio y un barbero que solo hace ese servicio.</summary>
-    private sealed record Setup(Guid ServiceId, Guid BarberId);
-
-    /// <summary>Abre la barbería toda la semana y crea un servicio y un barbero nuevos para la prueba.</summary>
-    private async Task<Setup> PrepareAsync()
-    {
-        HttpClient owner = await factory.CreateOwnerClientAsync();
-        List<HoursDto> week = [.. Enum.GetValues<DayOfWeek>().Select(day => new HoursDto(day, Nine, Eight))];
-        await owner.PutJsonAsync("/api/shop/hours", new SetHoursRequest(week));
-        await owner.PutJsonAsync("/api/shop", new UpdateShopRequest(ApiFactory.ShopName, "", "", "", DefaultRules));
-        ServiceResponse service = await (await owner.PostJsonAsync("/api/services", new SaveServiceRequest($"Servicio {Guid.NewGuid():N}", FortyFive, FiftyBolivianos))).ReadAsync<ServiceResponse>();
-        BarberResponse barber = await (await owner.PostJsonAsync("/api/barbers", new SaveBarberRequest("Barbero", [service.Id]))).ReadAsync<BarberResponse>();
-        List<HoursDto> shift = [.. Enum.GetValues<DayOfWeek>().Select(day => new HoursDto(day, Nine, Eight))];
-        await owner.PutJsonAsync($"/api/barbers/{barber.Id}/schedule", new SetHoursRequest(shift));
-        return new Setup(service.Id, barber.Id);
-    }
-
     /// <summary>Pide las horas libres de mañana para el servicio de la prueba.</summary>
-    private async Task<List<SlotDto>> GetSlotsAsync(Setup setup, Guid barberId)
+    private async Task<List<SlotDto>> GetSlotsAsync(Scenario setup, Guid barberId)
     {
         string path = $"/api/availability?date={Tomorrow:yyyy-MM-dd}&serviceId={setup.ServiceId}&barberId={barberId}";
         return await (await factory.CreateClient().GetAsync(path, TestContext.Current.CancellationToken)).ReadAsync<List<SlotDto>>();
     }
 
     /// <summary>Arma una reserva de prueba.</summary>
-    private static CreateBookingRequest Request(Setup setup, Guid? barberId, DateTimeOffset start)
+    private static CreateBookingRequest Request(Scenario setup, Guid? barberId, DateTimeOffset start)
     {
         return new CreateBookingRequest(setup.ServiceId, barberId, start, "Diego", "71234567", null);
-    }
-
-    /// <summary>Hora de La Paz con su desfase, como la manda la web.</summary>
-    private static DateTimeOffset Local(DateOnly date, TimeOnly time)
-    {
-        return BusinessTime.ToLocal(BusinessTime.At(date, time));
     }
 }

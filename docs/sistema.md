@@ -53,7 +53,8 @@ Barbería es un sistema de reservas para una barbería: los clientes sacan turno
 ### 5. Avisos
 
 - Confirmación por correo al reservar, cambiar o cancelar, si el cliente dejó correo.
-- Botón de WhatsApp en el panel que abre el chat con el mensaje listo: confirmación o recordatorio.
+- Botón de WhatsApp en la agenda que abre el chat con el recordatorio listo.
+- Si un aviso falla (por ejemplo, el servicio de correo no responde), la reserva igual se guarda y el error queda registrado.
 - Los canales son intercambiables: más adelante se puede sumar la API de WhatsApp Business sin tocar la agenda.
 
 ## Pantallas
