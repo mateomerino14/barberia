@@ -27,9 +27,11 @@ const blocks = [
   },
 ];
 
+const base = {columns, items, blocks, nowTime: null, selectedId: null};
+
 describe('DayAgenda', () => {
   it('muestra las columnas, el horario y quién no trabaja', () => {
-    render(DayAgenda, {columns, items, blocks, nowTime: null, selectedId: null, onSelect: vi.fn(), onRemoveBlock: vi.fn()});
+    render(DayAgenda, {...base, onSelect: vi.fn(), onRemoveBlock: vi.fn()});
 
     expect(screen.getByText('09:00 – 19:00')).toBeInTheDocument();
     expect(screen.getByText('No trabaja')).toBeInTheDocument();
@@ -38,7 +40,7 @@ describe('DayAgenda', () => {
 
   it('ubica el turno en su fila y avisa al elegirlo', async () => {
     const onSelect = vi.fn();
-    render(DayAgenda, {columns, items, blocks, nowTime: null, selectedId: null, onSelect, onRemoveBlock: vi.fn()});
+    render(DayAgenda, {...base, onSelect, onRemoveBlock: vi.fn()});
 
     const booking = screen.getByRole('button', {name: /Degradado/});
     expect(booking.style.gridRow).toBe('5 / span 3');
@@ -59,7 +61,7 @@ describe('DayAgenda', () => {
 
   it('permite quitar un bloqueo', async () => {
     const onRemoveBlock = vi.fn();
-    render(DayAgenda, {columns, items, blocks, nowTime: null, selectedId: null, onSelect: vi.fn(), onRemoveBlock});
+    render(DayAgenda, {...base, onSelect: vi.fn(), onRemoveBlock});
 
     await fireEvent.click(screen.getByRole('button', {name: /Quitar bloqueo/}));
     expect(onRemoveBlock).toHaveBeenCalledWith('k');
