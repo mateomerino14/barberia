@@ -14,4 +14,7 @@ public static class StaffClaims
 
     /// <summary>Correo de la cuenta.</summary>
     public const string Email = "email";
+
+    /// <summary>Huella de la contraseña con la que se abrió la sesión.</summary>
+    public const string Stamp = "stamp";
 }

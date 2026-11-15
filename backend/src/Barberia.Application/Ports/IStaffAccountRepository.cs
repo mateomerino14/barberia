@@ -8,6 +8,9 @@ public interface IStaffAccountRepository
     /// <summary>Busca una cuenta por su correo ya normalizado.</summary>
     Task<StaffAccount?> FindByEmailAsync(string email, CancellationToken cancellationToken);
 
+    /// <summary>Busca una cuenta por su id.</summary>
+    Task<StaffAccount?> GetAsync(Guid id, CancellationToken cancellationToken);
+
     /// <summary>Busca la cuenta vinculada a un barbero.</summary>
     Task<StaffAccount?> FindByBarberAsync(Guid barberId, CancellationToken cancellationToken);
 
