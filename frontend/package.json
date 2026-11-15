@@ -15,10 +15,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:deadcode": "knip",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.1",
     "@stylistic/eslint-plugin": "^6.0.0",
     "@sveltejs/adapter-vercel": "^7.0.3",
     "@sveltejs/kit": "^3.0.0",
