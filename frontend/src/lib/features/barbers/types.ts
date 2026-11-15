@@ -25,3 +25,9 @@ export interface BarberInput {
   serviceIds: string[];
   account?: {email: string; password: string} | null;
 }
+
+/** Barbero con acceso al panel y el correo con que entra. */
+export interface BarberAccess {
+  barberId: string;
+  email: string;
+}

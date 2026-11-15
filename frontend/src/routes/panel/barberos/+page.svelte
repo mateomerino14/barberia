@@ -8,6 +8,7 @@
   import Notice from '#lib/ui/atoms/Notice.svelte';
   import PageTitle from '#lib/ui/molecules/PageTitle.svelte';
   import BarberForm from '#lib/ui/organisms/BarberForm.svelte';
+  import PanelAccessForm from '#lib/ui/organisms/PanelAccessForm.svelte';
   import DateEntriesEditor from '#lib/ui/organisms/DateEntriesEditor.svelte';
   import WeekHoursEditor from '#lib/ui/organisms/WeekHoursEditor.svelte';
 
@@ -109,6 +110,16 @@
           saving={team.saving}
           onSave={(hours) => team.saveSchedule(hours)}
         />
+      </section>
+      <section class="block">
+        <h2 class="subtitle">Acceso al panel</h2>
+        {#key team.selectedId}
+          <PanelAccessForm
+            email={team.selectedEmail}
+            saving={team.saving}
+            onSubmit={(email, password) => team.saveAccess(email, password)}
+          />
+        {/key}
       </section>
       <section class="block">
         <h2 class="subtitle">Ausencias</h2>

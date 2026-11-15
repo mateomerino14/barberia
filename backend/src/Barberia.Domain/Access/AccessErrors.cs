@@ -14,6 +14,12 @@ public static class AccessErrors
     /// <summary>Ya hay una cuenta con ese correo.</summary>
     public static readonly Error EmailTaken = Error.Conflict("access.email_taken", "Ya hay una cuenta con ese correo.");
 
+    /// <summary>La contraseña actual no es la correcta.</summary>
+    public static readonly Error WrongCurrentPassword = Error.Validation("access.wrong_current_password", "La contraseña actual no es correcta.");
+
+    /// <summary>La cuenta ya no existe.</summary>
+    public static readonly Error AccountNotFound = Error.NotFound("access.account_not_found", "No encontramos esa cuenta.");
+
     /// <summary>Un barbero necesita estar vinculado a su ficha.</summary>
     public static readonly Error BarberRequired = Error.Validation("access.barber_required", "La cuenta de un barbero tiene que estar vinculada a su ficha.");
 }
