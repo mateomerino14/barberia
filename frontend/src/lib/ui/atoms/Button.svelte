@@ -1,4 +1,4 @@
-<!-- Botón de texto: rojo para la acción principal, tinta para confirmar, contorno para lo secundario. -->
+<!-- Botón o enlace con forma de botón: rojo para lo principal, tinta para confirmar, contorno para lo demás. -->
 <script lang="ts">
   import type {Snippet} from 'svelte';
   import type {HTMLButtonAttributes} from 'svelte/elements';
@@ -8,20 +8,33 @@
   interface Props extends HTMLButtonAttributes {
     variant?: Variant;
     wide?: boolean;
+    href?: string;
+    target?: string;
+    rel?: string;
+    download?: string;
     children: Snippet;
   }
 
-  const {variant = 'primary', wide = false, type = 'button', children, ...rest}: Props = $props();
+  const {variant = 'primary', wide = false, type = 'button', href, target, rel, download, children, ...rest}: Props = $props();
 </script>
 
-<button class="button {variant}" class:wide {type} {...rest}>
-  {@render children()}
-</button>
+{#if href}
+  <a class="button {variant}" class:wide {href} {target} {rel} {download}>
+    {@render children()}
+  </a>
+{:else}
+  <button class="button {variant}" class:wide {type} {...rest}>
+    {@render children()}
+  </button>
+{/if}
 
 <style>
   .button {
     min-height: var(--touch-min);
-    padding: 0 var(--space-5);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--space-4);
     border: var(--line-firm) solid var(--color-ink);
     border-radius: 0;
     font-family: var(--font-sans);
@@ -31,6 +44,8 @@
     letter-spacing: 0.04em;
     line-height: 1;
     text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
     white-space: nowrap;
     cursor: pointer;
   }
