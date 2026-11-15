@@ -36,10 +36,10 @@
     nowTime: string | null;
     selectedId: string | null;
     onSelect: (id: string) => void;
-    onRemoveBlock: (id: string) => void;
+    onSelectBlock: (id: string) => void;
   }
 
-  const {columns, items, blocks, nowTime, selectedId, onSelect, onRemoveBlock}: Props = $props();
+  const {columns, items, blocks, nowTime, selectedId, onSelect, onSelectBlock}: Props = $props();
 
   const stepMinutes = 15;
   const hourMinutes = 60;
@@ -137,18 +137,16 @@
       {/each}
 
       {#each blocks as block (block.id)}
-        <div class="block" style={place(block.barberId, block.start, block.end)}>
+        <button
+          class="block"
+          class:selected={block.id === selectedId}
+          type="button"
+          style={place(block.barberId, block.start, block.end)}
+          onclick={() => onSelectBlock(block.id)}
+        >
           <span class="time">{clockTime(block.start)}–{clockTime(block.end)}</span>
           <span>{block.reason || 'Bloqueado'}</span>
-          <button
-            class="unblock"
-            type="button"
-            aria-label="Quitar bloqueo de las {clockTime(block.start)}"
-            onclick={() => onRemoveBlock(block.id)}
-          >
-            Quitar
-          </button>
-        </div>
+        </button>
       {/each}
 
       {#each items as item (item.id)}
@@ -283,28 +281,19 @@
     text-decoration: line-through;
   }
 
-  .item.selected {
+  .item.selected,
+  .block.selected {
     outline: var(--line-bold) solid var(--color-action);
     outline-offset: 1px;
   }
 
   .block {
     border: var(--line-thin) dashed var(--color-disabled);
+    cursor: pointer;
     background: repeating-linear-gradient(45deg, var(--color-rule) 0 6px, var(--color-paper) 6px 12px);
     color: var(--color-ink-soft);
   }
 
-  .unblock {
-    align-self: flex-start;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--color-action);
-    font-family: var(--font-sans);
-    font-size: var(--text-xs);
-    text-decoration: underline;
-    cursor: pointer;
-  }
 
   .top {
     display: flex;

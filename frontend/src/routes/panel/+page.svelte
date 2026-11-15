@@ -5,6 +5,6 @@
   import {resolve} from '$app/paths';
 
   onMount(() => {
-    goto(resolve('/panel/agenda'), {replaceState: true});
+    goto(resolve('/panel/agenda'), {replace: true});
   });
 </script>

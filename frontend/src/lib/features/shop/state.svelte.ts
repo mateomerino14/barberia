@@ -36,7 +36,7 @@ export class ShopState {
 
   /** Guarda los datos y las reglas. */
   saveProfile(input: ShopProfileInput): Promise<void> {
-    return this.run(updateShop(input, session.token), 'Ajustes guardados.');
+    return this.run(updateShop(input, session.token), 'Cambios guardados.');
   }
 
   /** Guarda el horario semanal. */

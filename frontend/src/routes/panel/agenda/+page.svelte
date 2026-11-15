@@ -9,6 +9,7 @@
   import Button from '#lib/ui/atoms/Button.svelte';
   import Notice from '#lib/ui/atoms/Notice.svelte';
   import PageTitle from '#lib/ui/molecules/PageTitle.svelte';
+  import BlockDetail from '#lib/ui/organisms/BlockDetail.svelte';
   import BlockForm from '#lib/ui/organisms/BlockForm.svelte';
   import BookingDetail from '#lib/ui/organisms/BookingDetail.svelte';
   import DayAgenda from '#lib/ui/organisms/DayAgenda.svelte';
@@ -134,9 +135,9 @@
         items={items()}
         blocks={agenda.agenda.blocks}
         nowTime={nowTime()}
-        selectedId={agenda.selectedId}
+        selectedId={agenda.selectedId ?? agenda.selectedBlockId}
         onSelect={(id) => agenda.select(id)}
-        onRemoveBlock={(id) => agenda.unblock(id)}
+        onSelectBlock={(id) => agenda.selectBlock(id)}
       />
     {:else}
       <p class="muted">
@@ -149,7 +150,18 @@
     {/if}
   </div>
   <aside class="side">
-    {#if agenda.focused}
+    {#if agenda.selectedBlock}
+      {@const block = agenda.selectedBlock}
+      <BlockDetail
+        barberName={agenda.barberName(block.barberId)}
+        start={block.start}
+        end={block.end}
+        reason={block.reason}
+        busy={agenda.busy}
+        onRemove={() => agenda.unblock(block.id)}
+        onClose={() => agenda.selectBlock(null)}
+      />
+    {:else if agenda.focused}
       {@const booking = agenda.focused}
       <BookingDetail
         heading={detailHeading()}

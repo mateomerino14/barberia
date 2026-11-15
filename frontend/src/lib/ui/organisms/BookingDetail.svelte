@@ -3,6 +3,7 @@
   import {formatPrice} from '#lib/core/money.ts';
   import {clockTime} from '#lib/core/time.ts';
   import Badge from '#lib/ui/atoms/Badge.svelte';
+  import Button from '#lib/ui/atoms/Button.svelte';
 
   interface Detail {
     number: number;
@@ -43,13 +44,17 @@
   {/if}
   {#if detail.status === 'Booked'}
     <div class="pair">
-      <button class="done" type="button" disabled={busy} onclick={onAttended}>Atendido</button>
-      <button class="missed" type="button" disabled={busy} onclick={onNoShow}>No vino</button>
+      <Button variant="dark" wide disabled={busy} onclick={onAttended}>Atendido</Button>
+      <Button variant="danger" wide disabled={busy} onclick={onNoShow}>No vino</Button>
     </div>
-    <button class="text" type="button" disabled={busy} onclick={onCancel}>Cancelar turno</button>
+    <div class="row">
+      <Button variant="secondary" wide disabled={busy} onclick={onCancel}>Cancelar turno</Button>
+    </div>
   {:else}
     <Badge tone="selected">{#if detail.status === 'Attended'}Atendido{:else}No vino{/if}</Badge>
-    <button class="text" type="button" disabled={busy} onclick={onUndo}>Deshacer</button>
+    <div class="row">
+      <Button variant="secondary" wide disabled={busy} onclick={onUndo}>Deshacer</Button>
+    </div>
   {/if}
 </section>
 
@@ -103,35 +108,7 @@
     gap: var(--space-2);
   }
 
-  .done,
-  .missed {
-    min-height: var(--touch-min);
-    font-family: var(--font-sans);
-    font-size: var(--text-md);
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .done {
-    border: 0;
-    background: var(--color-ink);
-    color: var(--color-sheet);
-  }
-
-  .missed {
-    border: var(--line-thin) solid var(--color-action);
-    background: transparent;
-    color: var(--color-action);
-  }
-
-  .text {
-    min-height: var(--touch-min);
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--color-action);
-    font-family: var(--font-sans);
-    text-decoration: underline;
-    cursor: pointer;
+  .row {
+    align-self: stretch;
   }
 </style>

@@ -9,6 +9,7 @@
   --color-action: #b3261e;
   --color-action-dark: #8a1c16;
   --color-selected: #1e3a7b;
+  --color-on-accent: #fbf9f4;
 
   --font-sans: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
