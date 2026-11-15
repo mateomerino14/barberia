@@ -40,6 +40,8 @@ Barbería es un sistema de reservas para una barbería: los clientes sacan turno
   - el servicio termina antes de que cierre;
   - no choca con otro turno ni con un bloqueo;
   - respeta la anticipación mínima y el límite de días.
+
+  Las horas de inicio se ofrecen cada 15 minutos, así se aprovechan los huecos que dejan servicios de distinta duración.
 - **Reservar:** el cliente deja nombre y celular (el correo es opcional). El turno recibe un número correlativo y un enlace secreto para cambiarlo o cancelarlo.
 - **"Cualquiera":** si el cliente no elige barbero, el turno va al barbero libre con menos turnos ese día.
 - **Cambiar y cancelar:** desde el enlace del cliente, dentro del plazo permitido, o desde el panel en cualquier momento.

@@ -1,6 +1,7 @@
 using Barberia.Application.Ports;
 using Barberia.Domain.Access;
 using Barberia.Domain.Catalog;
+using Barberia.Domain.Common;
 using Barberia.Domain.Shops;
 using Barberia.Domain.Staff;
 
@@ -109,5 +110,12 @@ public sealed class InMemoryStore : IShopRepository, IServiceRepository, IBarber
     {
         Saves++;
         return Task.CompletedTask;
+    }
+
+    /// <summary>Cuenta la confirmación de cambios de agenda; en memoria no hay choques concurrentes.</summary>
+    public Task<Result> SaveScheduleChangesAsync(CancellationToken cancellationToken)
+    {
+        Saves++;
+        return Task.FromResult(Result.Success());
     }
 }

@@ -1,8 +1,11 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Barberia.Api.Contracts;
+using Barberia.Application.Ports;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 
 namespace Barberia.Api.Tests.Support;
@@ -66,6 +69,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         builder.UseSetting("Setup:ShopName", ShopName);
         builder.UseSetting("Setup:OwnerEmail", OwnerEmail);
         builder.UseSetting("Setup:OwnerPassword", OwnerPassword);
+        builder.ConfigureTestServices(services => services.AddSingleton<IClock, FixedClock>());
     }
 }
 

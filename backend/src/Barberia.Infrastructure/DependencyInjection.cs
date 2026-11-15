@@ -28,6 +28,8 @@ public static class DependencyInjection
         services.AddScoped<IServiceRepository, ServiceRepository>();
         services.AddScoped<IBarberRepository, BarberRepository>();
         services.AddScoped<IStaffAccountRepository, StaffAccountRepository>();
+        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IBlockRepository, BlockRepository>();
 
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IClock, SystemClock>();

@@ -20,7 +20,10 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "btree_gist");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.HasSequence<int>("booking_numbers");
 
             modelBuilder.Entity("Barberia.Domain.Access.StaffAccount", b =>
                 {
@@ -94,6 +97,100 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                     b.ToTable("services", (string)null);
                 });
 
+            modelBuilder.Entity("Barberia.Domain.Scheduling.Block", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("BarberId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("barber_id");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
+                        .HasColumnName("reason");
+
+                    b.HasKey("Id")
+                        .HasName("pk_blocks");
+
+                    b.HasIndex("BarberId")
+                        .HasDatabaseName("ix_blocks_barber_id");
+
+                    b.ToTable("blocks", (string)null);
+                });
+
+            modelBuilder.Entity("Barberia.Domain.Scheduling.Booking", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("BarberId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("barber_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsWalkIn")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_walk_in");
+
+                    b.Property<string>("ManageToken")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("manage_token");
+
+                    b.Property<int>("Number")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("number")
+                        .HasDefaultValueSql("nextval('booking_numbers')");
+
+                    b.Property<int>("PriceCents")
+                        .HasColumnType("integer")
+                        .HasColumnName("price_cents");
+
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("service_id");
+
+                    b.Property<string>("ServiceName")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("service_name");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.HasKey("Id")
+                        .HasName("pk_bookings");
+
+                    b.HasIndex("BarberId")
+                        .HasDatabaseName("ix_bookings_barber_id");
+
+                    b.HasIndex("ManageToken")
+                        .IsUnique()
+                        .HasDatabaseName("ix_bookings_manage_token");
+
+                    b.HasIndex("Number")
+                        .IsUnique()
+                        .HasDatabaseName("ix_bookings_number");
+
+                    b.ToTable("bookings", (string)null);
+                });
+
             modelBuilder.Entity("Barberia.Domain.Shops.Shop", b =>
                 {
                     b.Property<Guid>("Id")
@@ -157,6 +254,103 @@ namespace Barberia.Infrastructure.Persistence.Migrations
                         .HasName("pk_barbers");
 
                     b.ToTable("barbers", (string)null);
+                });
+
+            modelBuilder.Entity("Barberia.Domain.Scheduling.Block", b =>
+                {
+                    b.OwnsOne("Barberia.Domain.Scheduling.TimeRange", "Range", b1 =>
+                        {
+                            b1.Property<Guid>("BlockId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<DateTimeOffset>("End")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("end_at");
+
+                            b1.Property<DateTimeOffset>("Start")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("start_at");
+
+                            b1.HasKey("BlockId");
+
+                            b1.ToTable("blocks");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BlockId")
+                                .HasConstraintName("fk_blocks_blocks_id");
+                        });
+
+                    b.Navigation("Range")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Barberia.Domain.Scheduling.Booking", b =>
+                {
+                    b.OwnsOne("Barberia.Domain.Scheduling.TimeRange", "Range", b1 =>
+                        {
+                            b1.Property<Guid>("BookingId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<DateTimeOffset>("End")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("end_at");
+
+                            b1.Property<DateTimeOffset>("Start")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("start_at");
+
+                            b1.HasKey("BookingId");
+
+                            b1.HasIndex("Start")
+                                .HasDatabaseName("ix_bookings_start_at");
+
+                            b1.ToTable("bookings");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookingId")
+                                .HasConstraintName("fk_bookings_bookings_id");
+                        });
+
+                    b.OwnsOne("Barberia.Domain.Scheduling.Customer", "Customer", b1 =>
+                        {
+                            b1.Property<Guid>("BookingId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("Email")
+                                .IsRequired()
+                                .HasMaxLength(120)
+                                .HasColumnType("character varying(120)")
+                                .HasColumnName("customer_email");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasMaxLength(80)
+                                .HasColumnType("character varying(80)")
+                                .HasColumnName("customer_name");
+
+                            b1.Property<string>("Phone")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("customer_phone");
+
+                            b1.HasKey("BookingId");
+
+                            b1.ToTable("bookings");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookingId")
+                                .HasConstraintName("fk_bookings_bookings_id");
+                        });
+
+                    b.Navigation("Customer")
+                        .IsRequired();
+
+                    b.Navigation("Range")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Barberia.Domain.Shops.Shop", b =>

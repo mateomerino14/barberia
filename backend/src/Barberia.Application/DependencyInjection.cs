@@ -1,3 +1,4 @@
+using Barberia.Application.Features.Bookings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Barberia.Application;
@@ -17,6 +18,7 @@ public static class DependencyInjection
             services.AddScoped(handler);
         }
 
+        services.AddScoped<ScheduleReader>();
         return services;
     }
 }
