@@ -2,7 +2,7 @@ using Barberia.Domain.Common;
 
 namespace Barberia.Domain.Shops;
 
-/// <summary>Reglas de reserva de la barbería: anticipación mínima, días hacia adelante y plazo para cancelar.</summary>
+/// <summary>Reglas de reserva de la barbería: anticipación, días hacia adelante, plazo para cancelar y cada cuánto empiezan los turnos.</summary>
 public sealed record BookingRules
 {
     private const int DefaultMinLeadMinutes = 60;
@@ -10,6 +10,16 @@ public sealed record BookingRules
     private const int DefaultCancelLimitMinutes = 120;
     private const int MaxDaysAheadLimit = 90;
     private const int MaxCancelLimitMinutes = 2 * Limits.MinutesPerDay;
+    private const int QuarterHour = 15;
+    private const int TwentyMinutes = 20;
+    private const int HalfHour = 30;
+    private const int OneHour = 60;
+
+    /// <summary>Intervalos que se pueden elegir para el inicio de los turnos.</summary>
+    public static readonly IReadOnlyList<int> AllowedSlotSteps = [QuarterHour, TwentyMinutes, HalfHour, OneHour];
+
+    /// <summary>Intervalo con que empieza una barbería nueva.</summary>
+    public const int DefaultSlotStepMinutes = QuarterHour;
 
     /// <summary>Constructor para la base de datos.</summary>
     private BookingRules()
@@ -25,16 +35,20 @@ public sealed record BookingRules
     /// <summary>Hasta cuántos minutos antes del turno el cliente puede cancelar o cambiar.</summary>
     public int CancelLimitMinutes { get; private init; }
 
+    /// <summary>Cada cuántos minutos se ofrece una hora de inicio: 15, 20, 30 o 60.</summary>
+    public int SlotStepMinutes { get; private init; } = DefaultSlotStepMinutes;
+
     /// <summary>Reglas con que empieza una barbería nueva.</summary>
     public static BookingRules Default { get; } = new()
     {
         MinLeadMinutes = DefaultMinLeadMinutes,
         MaxDaysAhead = DefaultMaxDaysAhead,
         CancelLimitMinutes = DefaultCancelLimitMinutes,
+        SlotStepMinutes = DefaultSlotStepMinutes,
     };
 
     /// <summary>Crea reglas verificando que estén dentro de rangos razonables.</summary>
-    public static Result<BookingRules> Create(int minLeadMinutes, int maxDaysAhead, int cancelLimitMinutes)
+    public static Result<BookingRules> Create(int minLeadMinutes, int maxDaysAhead, int cancelLimitMinutes, int slotStepMinutes)
     {
         if (minLeadMinutes < 0 || minLeadMinutes > Limits.MinutesPerDay)
         {
@@ -51,11 +65,17 @@ public sealed record BookingRules
             return Error.Validation("rules.cancel_limit", "El plazo para cancelar va de 0 minutos a 2 días.");
         }
 
+        if (!AllowedSlotSteps.Contains(slotStepMinutes))
+        {
+            return Error.Validation("rules.slot_step", "Los turnos pueden empezar cada 15, 20, 30 o 60 minutos.");
+        }
+
         return new BookingRules
         {
             MinLeadMinutes = minLeadMinutes,
             MaxDaysAhead = maxDaysAhead,
             CancelLimitMinutes = cancelLimitMinutes,
+            SlotStepMinutes = slotStepMinutes,
         };
     }
 }

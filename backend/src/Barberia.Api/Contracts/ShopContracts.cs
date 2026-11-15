@@ -24,7 +24,11 @@ public sealed record HoursDto(DayOfWeek Day, TimeOnly Opens, TimeOnly Closes)
 public sealed record ClosedDayDto(DateOnly Date, string Reason);
 
 /// <summary>Reglas de reserva en la API.</summary>
-public sealed record BookingRulesDto(int MinLeadMinutes, int MaxDaysAhead, int CancelLimitMinutes);
+public sealed record BookingRulesDto(
+    int MinLeadMinutes,
+    int MaxDaysAhead,
+    int CancelLimitMinutes,
+    int SlotStepMinutes = BookingRules.DefaultSlotStepMinutes);
 
 /// <summary>La barbería tal como la ven el cliente y el panel.</summary>
 public sealed record ShopResponse(
@@ -47,7 +51,7 @@ public sealed record ShopResponse(
             shop.Address,
             shop.Phone,
             shop.WelcomeMessage,
-            new BookingRulesDto(shop.Rules.MinLeadMinutes, shop.Rules.MaxDaysAhead, shop.Rules.CancelLimitMinutes),
+            new BookingRulesDto(shop.Rules.MinLeadMinutes, shop.Rules.MaxDaysAhead, shop.Rules.CancelLimitMinutes, shop.Rules.SlotStepMinutes),
             shop.Palette,
             [.. shop.OpeningHours.Select(HoursDto.From)],
             [.. shop.ClosedDays.OrderBy(day => day.Date).Select(day => new ClosedDayDto(day.Date, day.Reason))],

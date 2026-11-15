@@ -26,6 +26,18 @@ public sealed class ScheduleReader(IBookingRepository bookings, IBlockRepository
         ];
     }
 
+    /// <summary>Devuelve lo ocupado de todos los barberos en un intervalo de varios días, agrupado por barbero, con dos consultas.</summary>
+    public async Task<ILookup<Guid, TimeRange>> BusyByBarberAsync(TimeRange range, CancellationToken cancellationToken)
+    {
+        IReadOnlyList<Booking> rangeBookings = await bookings.ListAsync(range, null, cancellationToken);
+        IReadOnlyList<Block> rangeBlocks = await blocks.ListAsync(range, null, cancellationToken);
+        return rangeBookings
+            .Where(booking => booking.BlocksAgenda)
+            .Select(booking => (booking.BarberId, booking.Range))
+            .Concat(rangeBlocks.Select(block => (block.BarberId, block.Range)))
+            .ToLookup(item => item.BarberId, item => item.Range);
+    }
+
     /// <summary>Cuenta los turnos activos de un barbero en un día, para repartir los de "cualquiera".</summary>
     public async Task<int> CountActiveAsync(Guid barberId, DateOnly date, CancellationToken cancellationToken)
     {

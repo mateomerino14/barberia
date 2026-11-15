@@ -9,6 +9,7 @@ namespace Barberia.Domain.Tests.Scheduling;
 public sealed class AvailabilityCalculatorTests
 {
     private const int FortyFive = 45;
+    private const int HalfHourStep = 30;
     private static readonly DateOnly Saturday = new(2026, 11, 14);
     private static readonly DateOnly Friday = new(2026, 11, 13);
     private static readonly TimeOnly Nine = new(9, 0);
@@ -41,7 +42,19 @@ public sealed class AvailabilityCalculatorTests
 
         Assert.Equal(At(Saturday, Ten), starts[0]);
         Assert.Equal(At(Saturday, FourFifteen), starts[^1]);
-        Assert.All(starts.Zip(starts.Skip(1)), pair => Assert.Equal(TimeSpan.FromMinutes(AvailabilityCalculator.SlotStepMinutes), pair.Second - pair.First));
+        Assert.All(starts.Zip(starts.Skip(1)), pair => Assert.Equal(TimeSpan.FromMinutes(BookingRules.DefaultSlotStepMinutes), pair.Second - pair.First));
+    }
+
+    /// <summary>Con turnos cada 30 minutos, las horas de inicio van de media en media hora.</summary>
+    [Fact]
+    public void FreeStarts_HalfHourStep_StartsEveryThirtyMinutes()
+    {
+        _shop.UpdateRules(BookingRules.Create(0, BookingRules.Default.MaxDaysAhead, 0, HalfHourStep).Value);
+
+        IReadOnlyList<DateTimeOffset> starts = Calculate([], At(Friday, Noon));
+
+        Assert.Equal([At(Saturday, Ten), At(Saturday, TenThirty), At(Saturday, Eleven)], starts.Take(3));
+        Assert.All(starts.Zip(starts.Skip(1)), pair => Assert.Equal(TimeSpan.FromMinutes(HalfHourStep), pair.Second - pair.First));
     }
 
     /// <summary>Un turno ocupado saca las horas que chocan, pero no las que solo lo tocan en el borde.</summary>

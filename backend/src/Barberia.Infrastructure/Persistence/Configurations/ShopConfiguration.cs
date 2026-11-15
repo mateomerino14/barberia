@@ -26,6 +26,7 @@ public sealed class ShopConfiguration : IEntityTypeConfiguration<Shop>
             rules.Property(item => item.MinLeadMinutes).HasColumnName("min_lead_minutes");
             rules.Property(item => item.MaxDaysAhead).HasColumnName("max_days_ahead");
             rules.Property(item => item.CancelLimitMinutes).HasColumnName("cancel_limit_minutes");
+            rules.Property(item => item.SlotStepMinutes).HasColumnName("slot_step_minutes").HasDefaultValue(BookingRules.DefaultSlotStepMinutes);
         });
         builder.Navigation(shop => shop.Rules).IsRequired();
         builder.OwnsMany(shop => shop.OpeningHours, hours =>
