@@ -1,6 +1,7 @@
 import {addDays, todayInBolivia, weekdayOf} from '#lib/core/time.ts';
 import {getShop} from '#lib/features/shop/api.ts';
 import type {Shop} from '#lib/features/shop/types.ts';
+import {forgetCustomer, recallCustomer, rememberCustomer} from './customer-memory.ts';
 import {createBooking, getAvailability, listBarbers, listServices} from './api.ts';
 import type {BookingConfirmation, CustomerInput, PublicBarber, PublicService, Slot} from './types.ts';
 
@@ -21,6 +22,7 @@ export class BookingFlow {
   slots = $state<Slot[]>([]);
   start = $state<string | null>(null);
   customer = $state<CustomerInput>({name: '', phone: '', email: ''});
+  remember = $state(true);
   loading = $state(true);
   loadingSlots = $state(false);
   sending = $state(false);
@@ -78,6 +80,10 @@ export class BookingFlow {
     this.shop = shop.data;
     this.services = services.data;
     this.barbers = barbers.data;
+    const saved = recallCustomer();
+    if (saved) {
+      this.customer = saved;
+    }
     const firstOpen = this.days.find((day) => day.open);
     if (firstOpen) {
       this.date = firstOpen.date;
@@ -142,6 +148,7 @@ export class BookingFlow {
     const result = await createBooking(serviceId, this.barberId, start, this.customer);
     this.sending = false;
     if (result.ok) {
+      this.keepCustomer();
       return result.data;
     }
     this.error = result.error.message;
@@ -150,5 +157,15 @@ export class BookingFlow {
       this.error = result.error.message;
     }
     return null;
+  }
+
+  /** Guarda o borra los datos del cliente según lo que eligió. */
+  private keepCustomer(): void {
+    if (this.remember) {
+      rememberCustomer(this.customer);
+    }
+    else {
+      forgetCustomer();
+    }
   }
 }
