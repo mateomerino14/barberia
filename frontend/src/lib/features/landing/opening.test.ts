@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest';
 import type {Shop} from '#lib/features/shop/types.ts';
-import {directionsHref, initials, openStatus, weekSchedule} from './opening.ts';
+import {openStatus, weekSchedule} from './opening.ts';
 
 const monday = '2026-11-16';
 const tuesday = '2026-11-17';
@@ -48,15 +48,5 @@ describe('weekSchedule', () => {
     expect(rows).toHaveLength(daysInWeek);
     expect(rows[0]).toMatchObject({day: 'monday', today: true});
     expect(rows.at(-1)).toMatchObject({day: 'sunday', hours: null, today: false});
-  });
-});
-
-describe('helpers', () => {
-  it('arma el enlace de mapas con la dirección', () => {
-    expect(directionsHref('Av. 20 de Octubre')).toBe('https://www.google.com/maps/search/?api=1&query=Av.%2020%20de%20Octubre');
-  });
-
-  it('toma hasta dos iniciales', () => {
-    expect(initials('Diego  Mamani Quispe')).toBe('DM');
   });
 });

@@ -1,7 +1,7 @@
 <!-- Dónde queda la barbería: un plano dibujado, la dirección y botones para llegar o escribir. -->
 <script lang="ts">
   import {whatsappHref} from '#lib/core/whatsapp.ts';
-  import {directionsHref} from '#lib/features/landing/opening.ts';
+  import {directionsHref} from '#lib/core/maps.ts';
   import Button from '#lib/ui/atoms/Button.svelte';
 
   interface Props {

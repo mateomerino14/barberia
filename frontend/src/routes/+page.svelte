@@ -48,6 +48,17 @@
     return (landing.shop?.galleryImageIds ?? []).map(imageUrl);
   }
 
+  /** Equipo con la dirección de la foto de cada uno. */
+  function team() {
+    return landing.barbers.map((barber) => {
+      let photoSrc: string | null = null;
+      if (barber.photoImageId) {
+        photoSrc = imageUrl(barber.photoImageId);
+      }
+      return {id: barber.id, name: barber.name, photoSrc};
+    });
+  }
+
   /** Logo de la barbería, o null. */
   function logo(): string | null {
     const id = landing.shop?.logoImageId;
@@ -88,7 +99,7 @@
     {#if landing.barbers.length > 0}
       <section class="section">
         <StepTitle step={step('team')} title="El equipo" />
-        <TeamGrid barbers={landing.barbers} />
+        <TeamGrid members={team()} />
       </section>
     {/if}
 

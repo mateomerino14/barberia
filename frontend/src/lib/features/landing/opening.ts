@@ -42,18 +42,3 @@ export function weekSchedule(shop: Shop, today: string): ScheduleRow[] {
     today: day === todayName,
   }));
 }
-
-/** Enlace de Google Maps para llegar a la dirección. */
-export function directionsHref(address: string): string {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-}
-
-/** Iniciales de un nombre, para el retrato del barbero. */
-export function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
-    .join('');
-}
