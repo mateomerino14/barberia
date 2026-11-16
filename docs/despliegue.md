@@ -77,7 +77,7 @@ Sin estas variables el sistema funciona igual; solo no envía correos. Los recor
 
 En el plan gratis, Render apaga la API tras 15 minutos sin visitas: la primera visita después tarda alrededor de un minuto y los recordatorios no salen mientras está apagada. Render da 750 horas gratis al mes **para todos los servicios gratis de la cuenta juntos**; si una API queda despierta las 24 horas usa unas 720, y al acabarse las horas Render apaga todos los servicios gratis hasta el mes siguiente.
 
-Por eso el repositorio trae el flujo `Mantener la API despierta` (`.github/workflows/despertar_api.yml`), que visita `/api/health` cada 10 minutos solo de 06:00 a 21:00 en La Paz: unas 450 horas al mes. De noche la API duerme.
+Por eso el repositorio trae el flujo `Mantener la API despierta` (`.github/workflows/keep_api_awake.yml`), que visita `/api/health` cada 10 minutos solo de 06:00 a 21:00 en La Paz: unas 450 horas al mes. De noche la API duerme.
 
 **Viene apagado.** Para encenderlo:
 
