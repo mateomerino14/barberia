@@ -100,7 +100,12 @@
 
     <section class="step">
       <StepTitle step="03" title="¿Cuándo?" />
-      <DayStrip days={flow.days} selected={flow.date} onSelect={(date) => flow.chooseDate(date)} />
+      <DayStrip
+        days={flow.days}
+        selected={flow.date}
+        showCounts={Boolean(flow.serviceId)}
+        onSelect={(date) => flow.chooseDate(date)}
+      />
       <p class="muted date">{formatLongDate(flow.date)}</p>
       <SlotGrid
         slots={flow.slots}

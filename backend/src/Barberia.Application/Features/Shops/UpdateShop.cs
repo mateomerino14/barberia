@@ -13,7 +13,8 @@ public sealed record UpdateShopCommand(
     int MinLeadMinutes,
     int MaxDaysAhead,
     int CancelLimitMinutes,
-    ShopPalette Palette);
+    ShopPalette Palette,
+    int SlotStepMinutes = BookingRules.DefaultSlotStepMinutes);
 
 /// <summary>Actualiza los datos de la barbería y sus reglas de reserva.</summary>
 public sealed class UpdateShopHandler(IShopRepository shops, IUnitOfWork unitOfWork)
@@ -27,7 +28,7 @@ public sealed class UpdateShopHandler(IShopRepository shops, IUnitOfWork unitOfW
             return ShopErrors.NotConfigured;
         }
 
-        Result<BookingRules> rules = BookingRules.Create(command.MinLeadMinutes, command.MaxDaysAhead, command.CancelLimitMinutes);
+        Result<BookingRules> rules = BookingRules.Create(command.MinLeadMinutes, command.MaxDaysAhead, command.CancelLimitMinutes, command.SlotStepMinutes);
         if (rules.IsFailure)
         {
             return rules.Error!;

@@ -2,13 +2,14 @@ import {addDays, todayInBolivia, weekdayOf} from '#lib/core/time.ts';
 import {getShop} from '#lib/features/shop/api.ts';
 import type {Shop} from '#lib/features/shop/types.ts';
 import {forgetCustomer, recallCustomer, rememberCustomer} from './customer-memory.ts';
-import {createBooking, getAvailability, listBarbers, listServices} from './api.ts';
+import {createBooking, getAvailability, getDaySummary, listBarbers, listServices} from './api.ts';
 import type {BookingConfirmation, CustomerInput, PublicBarber, PublicService, Slot} from './types.ts';
 
-/** Día que se puede elegir en la tira de fechas. */
+/** Día que se puede elegir en la tira de fechas; sin resumen todavía, las horas libres son null. */
 export interface DayOption {
   date: string;
   open: boolean;
+  freeStarts: number | null;
 }
 
 /** Estado del flujo de reserva del cliente: servicio, barbero, día, hora y datos. */
@@ -20,6 +21,7 @@ export class BookingFlow {
   barberId = $state<string | null>(null);
   date = $state(todayInBolivia());
   slots = $state<Slot[]>([]);
+  freeByDate = $state<Record<string, number> | null>(null);
   start = $state<string | null>(null);
   customer = $state<CustomerInput>({name: '', phone: '', email: ''});
   remember = $state(true);
@@ -59,7 +61,11 @@ export class BookingFlow {
     const options: DayOption[] = [];
     for (let offset = 0; offset <= shop.rules.maxDaysAhead; offset++) {
       const date = addDays(today, offset);
-      options.push({date, open: openDays.includes(weekdayOf(date)) && !closedDates.includes(date)});
+      let freeStarts: number | null = null;
+      if (this.freeByDate) {
+        freeStarts = this.freeByDate[date] ?? 0;
+      }
+      options.push({date, open: openDays.includes(weekdayOf(date)) && !closedDates.includes(date), freeStarts});
     }
     return options;
   }
@@ -84,25 +90,37 @@ export class BookingFlow {
     if (saved) {
       this.customer = saved;
     }
-    const firstOpen = this.days.find((day) => day.open);
-    if (firstOpen) {
-      this.date = firstOpen.date;
-    }
+    await this.loadDays();
   }
 
-  /** Elige el servicio y vuelve a buscar horas. */
-  chooseService(serviceId: string): Promise<void> {
+  /** Elige el servicio, actualiza los días llenos y vuelve a buscar horas. */
+  async chooseService(serviceId: string): Promise<void> {
     this.serviceId = serviceId;
     if (this.barberId && !this.availableBarbers.some((barber) => barber.id === this.barberId)) {
       this.barberId = null;
     }
-    return this.loadSlots();
+    await this.loadDays();
+    await this.loadSlots();
   }
 
-  /** Elige un barbero, o null para cualquiera, y vuelve a buscar horas. */
-  chooseBarber(barberId: string | null): Promise<void> {
+  /** Elige un barbero, o null para cualquiera, actualiza los días llenos y vuelve a buscar horas. */
+  async chooseBarber(barberId: string | null): Promise<void> {
     this.barberId = barberId;
-    return this.loadSlots();
+    await this.loadDays();
+    await this.loadSlots();
+  }
+
+  /** Trae cuántas horas libres le quedan a cada día y, si el elegido no tiene lugar, pasa al primero que sí. */
+  async loadDays(): Promise<void> {
+    const result = await getDaySummary(this.serviceId, this.barberId);
+    this.freeByDate = null;
+    if (result.ok) {
+      this.freeByDate = Object.fromEntries(result.data.map((day) => [day.date, day.freeStarts]));
+    }
+    const current = this.days.find((day) => day.date === this.date);
+    if (!current || !hasRoom(current)) {
+      this.date = this.days.find(hasRoom)?.date ?? this.date;
+    }
   }
 
   /** Elige el día y vuelve a buscar horas. */
@@ -168,4 +186,9 @@ export class BookingFlow {
       forgetCustomer();
     }
   }
+}
+
+/** Indica si un día abre y no está lleno; sin resumen, basta con que abra. */
+function hasRoom(day: DayOption): boolean {
+  return day.open && day.freeStarts !== 0;
 }

@@ -13,11 +13,23 @@ public static class BookingEndpoints
     public static IEndpointRouteBuilder MapBookingEndpoints(this IEndpointRouteBuilder routes)
     {
         routes.MapGet("/api/availability", GetAvailabilityAsync).RequireRateLimiting(RateLimits.PublicReads);
+        routes.MapGet("/api/availability/days", GetDaysAsync).RequireRateLimiting(RateLimits.PublicReads);
         routes.MapPost("/api/bookings", CreateAsync).RequireRateLimiting(RateLimits.PublicWrites);
         routes.MapGet("/api/bookings/{token}", GetAsync).RequireRateLimiting(RateLimits.PublicReads);
         routes.MapPost("/api/bookings/{token}/cancel", CancelAsync).RequireRateLimiting(RateLimits.PublicWrites);
         routes.MapPut("/api/bookings/{token}", RescheduleAsync).RequireRateLimiting(RateLimits.PublicWrites);
         return routes;
+    }
+
+    /// <summary>Resume los días que se pueden reservar, con cuántas horas libres le quedan a cada uno.</summary>
+    private static async Task<IResult> GetDaysAsync(
+        Guid? serviceId,
+        Guid? barberId,
+        GetDaySummaryHandler handler,
+        CancellationToken cancellationToken)
+    {
+        Result<IReadOnlyList<DaySummary>> days = await handler.HandleAsync(new GetDaySummaryQuery(serviceId, barberId), cancellationToken);
+        return ApiResults.Ok(days, list => list.Select(day => new DaySummaryDto(day.Date, day.Open, day.FreeStarts)));
     }
 
     /// <summary>Devuelve las horas libres de un día para un servicio.</summary>

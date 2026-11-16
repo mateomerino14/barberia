@@ -82,3 +82,6 @@ public sealed record CustomerBookingResponse(
 
 /// <summary>Nueva hora para un turno, y opcionalmente otro barbero.</summary>
 public sealed record RescheduleBookingRequest(DateTimeOffset Start, Guid? BarberId);
+
+/// <summary>Día que se puede reservar, con cuántas horas libres le quedan.</summary>
+public sealed record DaySummaryDto(DateOnly Date, bool Open, int FreeStarts);

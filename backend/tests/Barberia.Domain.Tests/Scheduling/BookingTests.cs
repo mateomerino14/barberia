@@ -1,4 +1,5 @@
 using Barberia.Domain.Scheduling;
+using Barberia.Domain.Shops;
 
 namespace Barberia.Domain.Tests.Scheduling;
 
@@ -18,7 +19,7 @@ public sealed class BookingTests
     {
         TimeRange first = TimeRange.FromStart(Start, FortyFive);
         TimeRange next = TimeRange.FromStart(first.End, FortyFive);
-        TimeRange inside = TimeRange.FromStart(Start.AddMinutes(AvailabilityCalculator.SlotStepMinutes), FortyFive);
+        TimeRange inside = TimeRange.FromStart(Start.AddMinutes(BookingRules.DefaultSlotStepMinutes), FortyFive);
 
         Assert.False(first.Overlaps(next));
         Assert.True(first.Overlaps(inside));

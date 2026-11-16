@@ -1,4 +1,4 @@
-import {formatDuration} from '#lib/core/time.ts';
+import {formatDuration, fromMinutes} from '#lib/core/time.ts';
 
 /** Opción de una lista desplegable. */
 interface RuleOption {
@@ -6,15 +6,18 @@ interface RuleOption {
   label: string;
 }
 
-// Las tres listas son las opciones que ve el dueño; cada número es un valor de la lista, no un valor suelto.
+// Las cuatro listas son las opciones que ve el dueño; cada número es un valor de la lista, no un valor suelto.
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 const leadMinutes = [0, 15, 30, 60, 120, 180, 360, 720, 1440];
 const cancelMinutes = [0, 30, 60, 120, 180, 360, 720, 1440, 2880];
 const aheadDays = [7, 14, 21, 30, 60, 90];
+const slotSteps = [15, 20, 30, 60];
 /* eslint-enable @typescript-eslint/no-magic-numbers */
 const daysPerWeek = 7;
 const daysPerMonth = 30;
 const minutesPerDay = 1440;
+const minutesPerHour = 60;
+const nineInMinutes = 540;
 
 /** Muestra minutos como texto corto: "1 h", "1 día", "2 días". */
 function minutesLabel(minutes: number): string {
@@ -79,4 +82,18 @@ export function cancelOptions(current: number): RuleOption[] {
     }
     return `Hasta ${minutesLabel(value)} antes`;
   });
+}
+
+/** Opciones de cada cuánto empiezan los turnos, con un ejemplo de horas. */
+export function stepOptions(): RuleOption[] {
+  return slotSteps.map((value) => ({value: String(value), label: stepLabel(value)}));
+}
+
+/** Texto de un intervalo con las primeras horas que daría desde las 9:00. */
+function stepLabel(minutes: number): string {
+  const examples = [0, 1, 2].map((index) => fromMinutes(nineInMinutes + index * minutes)).join(', ');
+  if (minutes === minutesPerHour) {
+    return `Cada hora (${examples}…)`;
+  }
+  return `Cada ${minutes} minutos (${examples}…)`;
 }
