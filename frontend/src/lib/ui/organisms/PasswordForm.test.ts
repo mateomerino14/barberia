@@ -32,6 +32,20 @@ describe('PasswordForm', () => {
   });
 });
 
+describe('PasswordForm sin la contraseña actual', () => {
+  it('con el enlace del correo solo pide la nueva y repetirla', async () => {
+    const onSubmit = vi.fn(async () => true);
+    render(PasswordForm, {askCurrent: false, onSubmit});
+
+    await fireEvent.input(screen.getByLabelText('Contraseña nueva'), {target: {value: 'nueva-1234'}});
+    await fireEvent.input(screen.getByLabelText('Repite la contraseña nueva'), {target: {value: 'nueva-1234'}});
+    await fireEvent.click(screen.getByRole('button', {name: 'Cambiar contraseña'}));
+
+    expect(screen.queryByLabelText('Contraseña actual')).toBeNull();
+    expect(onSubmit).toHaveBeenCalledWith('', 'nueva-1234');
+  });
+});
+
 describe('PanelAccessForm', () => {
   it('pide correo solo cuando el barbero todavía no tiene acceso', async () => {
     const {default: PanelAccessForm} = await import('./PanelAccessForm.svelte');

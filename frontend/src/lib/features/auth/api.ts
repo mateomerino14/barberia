@@ -14,3 +14,19 @@ export function changePassword(
 ): Promise<ApiResult<SessionData>> {
   return request<SessionData>('/api/auth/password', {method: 'POST', body: {currentPassword, newPassword}, token});
 }
+
+/** Indica si esta barbería puede mandar el enlace para recuperar la contraseña. */
+export async function passwordResetAvailable(): Promise<boolean> {
+  const result = await request<{available: boolean}>('/api/auth/password-reset');
+  return result.ok && result.data.available;
+}
+
+/** Pide el enlace para crear una contraseña nueva; la respuesta es la misma exista o no la cuenta. */
+export function requestPasswordReset(email: string): Promise<ApiResult<undefined>> {
+  return request<undefined>('/api/auth/password-reset', {method: 'POST', body: {email}});
+}
+
+/** Pone la contraseña nueva con la clave del enlace que llegó por correo. */
+export function confirmPasswordReset(token: string, password: string): Promise<ApiResult<undefined>> {
+  return request<undefined>('/api/auth/password-reset/confirm', {method: 'POST', body: {token, password}});
+}

@@ -1,15 +1,16 @@
-<!-- Cambio de la propia contraseña: la actual, la nueva y repetirla. -->
+<!-- Contraseña nueva y repetirla; pide también la actual cuando se cambia desde Mi cuenta. -->
 <script lang="ts">
   import Button from '#lib/ui/atoms/Button.svelte';
   import Input from '#lib/ui/atoms/Input.svelte';
   import FormField from '#lib/ui/molecules/FormField.svelte';
 
   interface Props {
+    askCurrent?: boolean;
     saving?: boolean;
     onSubmit: (current: string, next: string) => Promise<boolean>;
   }
 
-  const {saving = false, onSubmit}: Props = $props();
+  const {askCurrent = true, saving = false, onSubmit}: Props = $props();
 
   const passwordMinLength = 8;
 
@@ -42,9 +43,11 @@
 </script>
 
 <form class="password" onsubmit={submit}>
-  <FormField label="Contraseña actual" id="password-current">
-    <Input id="password-current" type="password" required autocomplete="current-password" bind:value={current} />
-  </FormField>
+  {#if askCurrent}
+    <FormField label="Contraseña actual" id="password-current">
+      <Input id="password-current" type="password" required autocomplete="current-password" bind:value={current} />
+    </FormField>
+  {/if}
   <FormField label="Contraseña nueva" id="password-new" hint="Al menos 8 caracteres">
     <Input
       id="password-new"
