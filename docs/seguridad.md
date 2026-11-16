@@ -19,13 +19,14 @@ La web solo decide qué pantalla mostrar. **Quien decide de verdad es la API**: 
 - El pase de sesión está firmado (JWT, HMAC-SHA256) y dura 12 horas.
 - En cada petición la API revisa que la cuenta siga existiendo, que el barbero no haya sido dado de baja y que la contraseña no haya cambiado. Si algo de eso pasó, el pase deja de valer al instante y la web vuelve a `/ingresar`.
 - El inicio de sesión responde igual, y tarda lo mismo, exista o no el correo: no revela qué cuentas hay.
+- **Recuperar la contraseña por correo:** el pedido responde siempre lo mismo, exista o no la cuenta. El enlace lleva una clave aleatoria de 256 bits; en la base solo se guarda su huella SHA-256. Sirve una sola vez, vence en 30 minutos, anula los demás enlaces de la cuenta y cierra sus sesiones. Un barbero dado de baja no recibe enlace.
 - Las contraseñas se guardan con el hash de ASP.NET Identity (PBKDF2), nunca en texto.
 
 ## Límites de intentos (por IP, por minuto)
 
 | Qué | Límite | Variable para ajustarlo |
 |---|---|---|
-| Iniciar sesión | 5 | `RateLimits__LoginsPerMinute` |
+| Iniciar sesión y recuperar la contraseña | 5 | `RateLimits__LoginsPerMinute` |
 | Reservar, cambiar o cancelar | 20 | `RateLimits__PermitsPerMinute` |
 | Horas libres, días libres, imágenes y ver un turno por enlace | 120 | `RateLimits__ReadsPerMinute` |
 

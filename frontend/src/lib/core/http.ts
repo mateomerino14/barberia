@@ -1,5 +1,4 @@
 const defaultApiUrl = 'http://localhost:5000';
-const noContent = 204;
 const networkStatus = 0;
 const unauthorized = 401;
 
@@ -67,10 +66,11 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     }
     return {ok: false, error: await readProblem(response)};
   }
-  if (response.status === noContent) {
+  const text = await response.text();
+  if (!text) {
     return {ok: true, data: undefined as T};
   }
-  return {ok: true, data: (await response.json()) as T};
+  return {ok: true, data: JSON.parse(text) as T};
 }
 
 /** Lee el ProblemDetails de una respuesta fallida. */

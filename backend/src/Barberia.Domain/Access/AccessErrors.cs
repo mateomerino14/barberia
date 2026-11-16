@@ -17,6 +17,9 @@ public static class AccessErrors
     /// <summary>La contraseña actual no es la correcta.</summary>
     public static readonly Error WrongCurrentPassword = Error.Validation("access.wrong_current_password", "La contraseña actual no es correcta.");
 
+    /// <summary>El enlace para cambiar la contraseña no existe, venció o ya se usó.</summary>
+    public static readonly Error ResetLinkInvalid = Error.Validation("access.reset_link_invalid", "Este enlace ya no sirve. Pide otro desde Ingresar.");
+
     /// <summary>La cuenta ya no existe.</summary>
     public static readonly Error AccountNotFound = Error.NotFound("access.account_not_found", "No encontramos esa cuenta.");
 

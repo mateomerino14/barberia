@@ -56,7 +56,9 @@ En el plan gratuito, Render duerme el servicio tras unos minutos sin visitas y l
 
 Si cambias `VITE_API_URL`, vuelve a publicar: la dirección queda fija al compilar.
 
-## 4. Correos de confirmación (opcional)
+## 4. Correos (opcional)
+
+Con los correos configurados salen las confirmaciones y los recordatorios de los turnos, y en Ingresar aparece **¿Olvidaste tu contraseña?** para el dueño y los barberos.
 
 1. Crea una cuenta en Brevo y verifica el correo remitente.
 2. Genera una clave de API (SMTP & API → API Keys).
@@ -66,12 +68,12 @@ Si cambias `VITE_API_URL`, vuelve a publicar: la dirección queda fija al compil
    |---|---|
    | `Email__BrevoApiKey` | La clave de Brevo |
    | `Email__SenderEmail` | El remitente verificado |
-   | `Email__PublicWebUrl` | La dirección de la web, para el enlace del turno |
+   | `Email__PublicWebUrl` | La dirección de la web, para el enlace del turno y el de la contraseña nueva |
    | `Reminders__HoursBefore` | Opcional. Horas antes del turno en que llega el recordatorio (por defecto 3; 0 lo apaga) |
 
    **Recordatorios en el plan gratis de Render:** la API se duerme tras 15 minutos sin visitas y, dormida, no manda recordatorios. Para que lleguen, mantenla despierta en horario de la barbería (sección 5) o pasa la API a un plan pago.
 
-Sin estas variables el sistema funciona igual; solo no envía correos. Los recordatorios por WhatsApp salen desde la agenda con un botón y no necesitan configuración.
+Sin estas variables el sistema funciona igual; solo no envía correos ni ofrece recuperar la contraseña por correo. Los recordatorios por WhatsApp salen desde la agenda con un botón y no necesitan configuración.
 
 ## 5. Mantener la API despierta en horario de la barbería (opcional)
 

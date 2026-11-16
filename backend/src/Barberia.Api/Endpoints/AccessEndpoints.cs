@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Barberia.Api.Contracts;
 using Barberia.Api.Http;
 using Barberia.Application.Features.Access;
+using Barberia.Domain.Common;
 
 namespace Barberia.Api.Endpoints;
 
@@ -12,6 +13,9 @@ public static class AccessEndpoints
     public static IEndpointRouteBuilder MapAccessEndpoints(this IEndpointRouteBuilder routes)
     {
         routes.MapPost("/api/auth/login", LoginAsync).RequireRateLimiting(RateLimits.Login);
+        routes.MapGet("/api/auth/password-reset", GetResetStatus);
+        routes.MapPost("/api/auth/password-reset", RequestResetAsync).RequireRateLimiting(RateLimits.Login);
+        routes.MapPost("/api/auth/password-reset/confirm", ConfirmResetAsync).RequireRateLimiting(RateLimits.Login);
         routes.MapPost("/api/auth/password", ChangePasswordAsync)
             .RequireAuthorization(Policies.Staff)
             .RequireRateLimiting(RateLimits.Login);
@@ -24,6 +28,31 @@ public static class AccessEndpoints
         return ApiResults.Ok(
             await handler.HandleAsync(new LoginCommand(request.Email, request.Password), cancellationToken),
             ToResponse);
+    }
+
+    /// <summary>Dice si la web debe ofrecer "¿Olvidaste tu contraseña?".</summary>
+    private static IResult GetResetStatus(PasswordResetStatusHandler handler)
+    {
+        return Results.Ok(new PasswordResetStatusResponse(handler.Handle()));
+    }
+
+    /// <summary>Pide el enlace por correo; responde siempre lo mismo para no revelar qué correos tienen cuenta.</summary>
+    private static async Task<IResult> RequestResetAsync(PasswordResetRequest request, RequestPasswordResetHandler handler, CancellationToken cancellationToken)
+    {
+        await handler.HandleAsync(request.Email, cancellationToken);
+        return Results.Accepted();
+    }
+
+    /// <summary>Pone la contraseña nueva con la clave del enlace.</summary>
+    private static async Task<IResult> ConfirmResetAsync(PasswordResetConfirmRequest request, ResetPasswordHandler handler, CancellationToken cancellationToken)
+    {
+        Result result = await handler.HandleAsync(new ResetPasswordCommand(request.Token, request.Password), cancellationToken);
+        if (result.IsFailure)
+        {
+            return ApiResults.Problem(result.Error!);
+        }
+
+        return Results.NoContent();
     }
 
     /// <summary>Cambia la contraseña propia y devuelve un pase nuevo; las otras sesiones se cierran.</summary>

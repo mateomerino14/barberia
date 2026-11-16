@@ -48,4 +48,12 @@ describe('request', () => {
 
     expect(ended).toHaveBeenCalledTimes(1);
   });
+
+  it('acepta respuestas sin contenido, como un 202', async () => {
+    const fetcher = vi.fn(async () => new Response(null, {status: 202}));
+
+    const result = await request('/api/auth/password-reset', {method: 'POST', body: {}, fetcher});
+
+    expect(result).toEqual({ok: true, data: undefined});
+  });
 });
