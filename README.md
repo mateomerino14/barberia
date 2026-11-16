@@ -2,6 +2,8 @@
 
 Sistema de reservas para barberías: los clientes conocen la barbería en una portada con un poste en 3D y sacan turno desde el celular, sin crear cuenta, y el equipo administra la agenda, los horarios y los servicios desde un panel.
 
+**Demo en línea:** [barberia-mat13.vercel.app](https://barberia-mat13.vercel.app). La API está en el plan gratis de Render: si nadie entró en un rato, la primera carga tarda alrededor de un minuto.
+
 ## Capturas
 
 <p>
@@ -20,6 +22,7 @@ Todas las pantallas, paso a paso, en el [manual de usuario](docs/manual.md).
 |---|---|
 | 1.0 | Reserva desde el celular, turno con enlace para cambiar o cancelar, agenda del panel, servicios, barberos, horarios, bloqueos y avisos por correo |
 | 1.1 | Presentación con poste en 3D, paletas y modo oscuro, recordar datos del cliente, cambio de contraseñas, logo y fotos, recordatorio antes del turno y revisión de seguridad |
+| 1.2 | Días llenos marcados en la reserva con las horas libres de cada día, e intervalo de turnos configurable (15, 20, 30 o 60 minutos) |
 
 ## Documentos
 
@@ -50,14 +53,16 @@ La API lee su configuración de `appsettings.json` o de variables de entorno (co
 | `Jwt__Key` | Clave secreta de al menos 32 caracteres para firmar las sesiones |
 | `Setup__ShopName` | Nombre de la barbería al arrancar por primera vez |
 | `Setup__OwnerEmail` y `Setup__OwnerPassword` | Cuenta del dueño que se crea al primer arranque |
-| `Cors__Origins__0` | Dirección de la web que puede llamar a la API |
-| `Email__BrevoApiKey` | Clave de Brevo para mandar las confirmaciones por correo; sin ella no se envían correos |
-| `Email__SenderEmail` y `Email__SenderName` | Remitente de los correos, verificado en Brevo |
+| `Cors__Origins__0`, `Cors__Origins__1`… | Direcciones de la web que pueden llamar a la API |
+| `Proxy__TrustForwardedHeaders` | `true` detrás del proxy de Render, para contar los límites por cliente real |
+| `Email__BrevoApiKey` | Clave de Brevo para mandar los correos; sin ella no se envían |
+| `Email__SenderEmail` | Correo remitente, verificado en Brevo; el nombre del remitente es el de la barbería |
 | `Email__PublicWebUrl` | Dirección pública de la web, para el enlace del turno en el correo |
+| `Reminders__HoursBefore` | Horas antes del turno en que sale el recordatorio (3 por defecto; 0 lo apaga) |
 
 En desarrollo ya vienen valores locales en `appsettings.Development.json`: el dueño es `dueno@barberia.local` con la contraseña `barberia-local`. Para empezar con servicios, barberos y horarios de ejemplo, arranca la API con `Setup__DemoData=true`.
 
-Reservar, cambiar turnos e iniciar sesión tienen un límite de peticiones por dirección IP (`RateLimits__PermitsPerMinute`, 20 por minuto por defecto).
+Las rutas públicas tienen límites de peticiones por cliente: 5 por minuto para iniciar sesión, 20 para reservar, cambiar o cancelar y 120 para las consultas. Se ajustan con `RateLimits__*`; el detalle está en [Seguridad](docs/seguridad.md).
 
 ## Desarrollo
 
