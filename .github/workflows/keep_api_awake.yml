@@ -12,7 +12,7 @@ on:
 permissions: {}
 
 jobs:
-  despertar:
+  keep-awake:
     name: Visitar la API
     if: vars.API_URL != ''
     runs-on: ubuntu-latest
