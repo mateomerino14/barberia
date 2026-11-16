@@ -69,7 +69,7 @@ Barberia.Domain/
 Barberia.Application/
 ├── Ports/        Repositorios, IUnitOfWork, IClock, INotifier, IPasswordHasher, ITokenIssuer
 └── Features/
-    ├── Access/      Login, CheckSession, Passwords (cambiar la propia, acceso de barberos)
+    ├── Access/      Login, CheckSession, Passwords (cambiar la propia, acceso de barberos), PasswordResets (recuperar por correo)
     ├── Shops/       InitializeShop, GetShop, UpdateShop, SetOpeningHours, ClosedDays, SeedDemo
     ├── Catalog/     ListServices, SaveService
     ├── Staff/       ListBarbers, SaveBarber, SetBarberSchedule, TimeOffChanges
