@@ -32,6 +32,9 @@ public sealed class BarberiaDbContext(DbContextOptions<BarberiaDbContext> option
     /// <summary>Bloqueos de la agenda.</summary>
     public DbSet<Block> Blocks => Set<Block>();
 
+    /// <summary>Enlaces para cambiar la contraseña.</summary>
+    public DbSet<PasswordReset> PasswordResets => Set<PasswordReset>();
+
     /// <summary>Imágenes subidas por el dueño.</summary>
     public DbSet<StoredImage> Images => Set<StoredImage>();
 

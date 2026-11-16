@@ -32,6 +32,9 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     /// <summary>Avisos que la API habría enviado a los clientes.</summary>
     public CapturingNotifier Notifier { get; } = new();
 
+    /// <summary>Enlaces para cambiar la contraseña que la API habría enviado.</summary>
+    public CapturingAccessNotifier AccessNotifier { get; } = new();
+
     private readonly PostgreSqlContainer _database = new PostgreSqlBuilder(PostgresImage).Build();
 
     /// <summary>Arranca la base de datos antes de la primera prueba.</summary>
@@ -81,6 +84,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         {
             services.AddSingleton<IClock, FixedClock>();
             services.AddSingleton<INotifier>(Notifier);
+            services.AddSingleton<IAccessNotifier>(AccessNotifier);
         });
     }
 }

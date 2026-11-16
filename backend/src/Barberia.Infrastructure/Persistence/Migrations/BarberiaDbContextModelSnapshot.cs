@@ -25,6 +25,44 @@ namespace Barberia.Infrastructure.Persistence.Migrations
 
             modelBuilder.HasSequence<int>("booking_numbers");
 
+            modelBuilder.Entity("Barberia.Domain.Access.PasswordReset", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("account_id");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("token_hash");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("used_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_password_resets");
+
+                    b.HasIndex("AccountId")
+                        .HasDatabaseName("ix_password_resets_account_id");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique()
+                        .HasDatabaseName("ix_password_resets_token_hash");
+
+                    b.ToTable("password_resets", (string)null);
+                });
+
             modelBuilder.Entity("Barberia.Domain.Access.StaffAccount", b =>
                 {
                     b.Property<Guid>("Id")

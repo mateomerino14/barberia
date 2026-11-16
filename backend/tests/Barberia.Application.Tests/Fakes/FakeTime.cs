@@ -28,3 +28,20 @@ public sealed class CapturingNotifier : INotifier
         return Task.CompletedTask;
     }
 }
+
+/// <summary>Canal de correos de acceso de prueba: se puede apagar y guarda lo que se habría enviado.</summary>
+public sealed class CapturingAccessNotifier : IAccessNotifier
+{
+    /// <summary>Si hay correos configurados.</summary>
+    public bool IsAvailable { get; set; } = true;
+
+    /// <summary>Enlaces enviados.</summary>
+    public List<PasswordResetNotice> Sent { get; } = [];
+
+    /// <summary>Guarda el enlace.</summary>
+    public Task SendPasswordResetAsync(PasswordResetNotice notice, CancellationToken cancellationToken)
+    {
+        Sent.Add(notice);
+        return Task.CompletedTask;
+    }
+}
