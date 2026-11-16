@@ -73,11 +73,6 @@ Si cambias `VITE_API_URL`, vuelve a publicar: la dirección queda fija al compil
 
 Sin estas variables el sistema funciona igual; solo no envía correos. Los recordatorios por WhatsApp salen desde la agenda con un botón y no necesitan configuración.
 
-## Después de publicar
-
-- Entra a `/ingresar` con la cuenta del dueño, revisa **Ajustes** y **Horarios**, y carga servicios y barberos.
-- Comparte el enlace de la raíz de la web en Instagram, WhatsApp o un código QR en el local.
-
 ## 5. Mantener la API despierta en horario de la barbería (opcional)
 
 En el plan gratis, Render apaga la API tras 15 minutos sin visitas: la primera visita después tarda alrededor de un minuto y los recordatorios no salen mientras está apagada. Render da 750 horas gratis al mes **para todos los servicios gratis de la cuenta juntos**; si una API queda despierta las 24 horas usa unas 720, y al acabarse las horas Render apaga todos los servicios gratis hasta el mes siguiente.
@@ -92,3 +87,8 @@ Por eso el repositorio trae el flujo `Mantener la API despierta` (`.github/workf
 Para apagarlo, **Disable workflow** en la misma pantalla. GitHub pausa los flujos programados de un repositorio público si pasan 60 días sin actividad; en ese caso se vuelve a activar igual.
 
 Con una barbería real conviene más un plan pago de Render para la API: no se duerme y no gasta las horas gratis de otros proyectos.
+
+## Después de publicar
+
+- Entra a `/ingresar` con la cuenta del dueño, revisa **Mi barbería** y **Horarios**, cambia la contraseña en **Mi cuenta** y carga servicios y barberos.
+- Comparte el enlace de la raíz de la web en Instagram, WhatsApp o un código QR en el local.

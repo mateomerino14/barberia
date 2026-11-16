@@ -73,7 +73,7 @@ Barberia.Application/
     ├── Shops/       InitializeShop, GetShop, UpdateShop, SetOpeningHours, ClosedDays, SeedDemo
     ├── Catalog/     ListServices, SaveService
     ├── Staff/       ListBarbers, SaveBarber, SetBarberSchedule, TimeOffChanges
-    ├── Bookings/    GetAvailability, CreateBooking, ManageBooking, SendReminders
+    ├── Bookings/    GetAvailability, GetDaySummary, CreateBooking, ManageBooking, SendReminders
     ├── Agenda/      GetAgenda, StaffBookings, Blocks
     └── Media/       Images (subir, ver, logo, fotos del local y del barbero)
 

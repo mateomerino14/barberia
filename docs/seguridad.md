@@ -27,7 +27,7 @@ La web solo decide qué pantalla mostrar. **Quien decide de verdad es la API**: 
 |---|---|---|
 | Iniciar sesión | 5 | `RateLimits__LoginsPerMinute` |
 | Reservar, cambiar o cancelar | 20 | `RateLimits__PermitsPerMinute` |
-| Horas libres y ver un turno por enlace | 120 | `RateLimits__ReadsPerMinute` |
+| Horas libres, días libres, imágenes y ver un turno por enlace | 120 | `RateLimits__ReadsPerMinute` |
 
 Detrás del proxy de Render hay que poner `Proxy__TrustForwardedHeaders=true`; si no, todos los clientes se verían con la misma IP y compartirían el límite. Solo se toma el último salto de `X-Forwarded-For`, el que agrega Render, así que un cliente no puede inventarse otra IP.
 
