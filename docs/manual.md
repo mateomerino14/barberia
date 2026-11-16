@@ -97,6 +97,8 @@ Se entra por `/ingresar` con el correo y la contraseña. El dueño ve todo el pa
 
 La sesión dura 12 horas. Se cierra antes si alguien cambia la contraseña o si el dueño da de baja al barbero.
 
+**¿Olvidaste tu contraseña?** Si la barbería tiene los correos configurados, debajo de "Entrar" aparece este botón. Se escribe el correo con el que se entra y llega un enlace para crear una contraseña nueva. El enlace sirve una sola vez y vence en 30 minutos; al usarlo se cierran las sesiones abiertas. La página siempre responde lo mismo, tenga cuenta o no ese correo, para no revelar quién tiene acceso. Sin correos configurados el botón no aparece.
+
 ### 8. Agenda
 
 La agenda muestra un día con una columna por barbero. Cada turno dice la hora, el servicio y el cliente. Las horas rayadas están bloqueadas y la línea roja marca la hora actual.
@@ -174,9 +176,9 @@ Cada uno cambia aquí su propia contraseña: la actual, la nueva y repetirla. Al
 
 **Un cliente perdió el enlace de su turno.** Si dejó correo, lo tiene en la confirmación. Si no, la barbería ve el turno en la agenda y puede cambiarlo o cancelarlo desde ahí.
 
-**Un barbero olvidó su contraseña.** El dueño le pone una nueva en Barberos → Acceso al panel.
+**Alguien olvidó su contraseña.** Con los correos configurados, la recupera solo con **¿Olvidaste tu contraseña?** en Ingresar. Si no, el dueño le pone una nueva a un barbero en Barberos → Acceso al panel.
 
-**El dueño olvidó su contraseña.** Se cambia la variable `Setup__OwnerPassword` en el servidor solo la primera vez; después hay que pedir ayuda técnica para restablecerla. Por eso conviene cambiarla en Mi cuenta por una que se recuerde.
+**El dueño olvidó su contraseña y no hay correos configurados.** Hay que pedir ayuda técnica para restablecerla: la variable `Setup__OwnerPassword` solo se usa al crear la cuenta la primera vez. Por eso conviene configurar los correos.
 
 **¿Por qué no aparece una hora?** Porque ya pasó o no cumple la anticipación mínima, porque está ocupada o bloqueada, porque el servicio no entra completo antes del siguiente turno o del cierre, porque no coincide con el intervalo de turnos que eligió la barbería o porque el barbero está ausente ese día.
 

@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IBookingRepository, BookingRepository>();
         services.AddScoped<IBlockRepository, BlockRepository>();
         services.AddScoped<IImageRepository, ImageRepository>();
+        services.AddScoped<IPasswordResetRepository, PasswordResetRepository>();
 
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IClock, SystemClock>();
@@ -44,18 +45,21 @@ public static class DependencyInjection
         return services;
     }
 
-    /// <summary>Activa los avisos por correo solo si hay una clave de Brevo configurada.</summary>
+    /// <summary>Activa los correos solo si hay una clave de Brevo configurada; sin ella no se recupera la contraseña por correo.</summary>
     private static void AddEmailNotifications(this IServiceCollection services, IConfiguration configuration)
     {
         IConfigurationSection section = configuration.GetSection(EmailOptions.Section);
         EmailOptions settings = section.Get<EmailOptions>() ?? new EmailOptions();
         if (string.IsNullOrWhiteSpace(settings.BrevoApiKey))
         {
+            services.AddSingleton<IAccessNotifier, NoAccessNotifier>();
             return;
         }
 
         services.Configure<EmailOptions>(section);
-        services.AddHttpClient<INotifier, BrevoEmailNotifier>();
+        services.AddHttpClient<BrevoMailer>();
+        services.AddScoped<INotifier, BrevoEmailNotifier>();
+        services.AddScoped<IAccessNotifier, BrevoAccessNotifier>();
     }
 
     /// <summary>Activa los recordatorios si Reminders:HoursBefore es mayor que cero.</summary>

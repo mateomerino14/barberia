@@ -18,6 +18,7 @@ public sealed class InMemoryStore :
     IBookingRepository,
     IBlockRepository,
     IImageRepository,
+    IPasswordResetRepository,
     IUnitOfWork
 {
     /// <summary>Barbería guardada.</summary>
@@ -40,6 +41,9 @@ public sealed class InMemoryStore :
 
     /// <summary>Imágenes guardadas.</summary>
     public List<StoredImage> Images { get; } = [];
+
+    /// <summary>Enlaces para cambiar la contraseña.</summary>
+    public List<PasswordReset> Resets { get; } = [];
 
     /// <summary>Cuántas veces se confirmaron cambios.</summary>
     public int Saves { get; private set; }
@@ -221,6 +225,24 @@ public sealed class InMemoryStore :
     {
         Images.RemoveAll(image => ids.Contains(image.Id));
         return Task.CompletedTask;
+    }
+
+    /// <summary>Busca un enlace por su huella.</summary>
+    public Task<PasswordReset?> FindByFingerprintAsync(string fingerprint, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(Resets.FirstOrDefault(reset => reset.TokenHash == fingerprint));
+    }
+
+    /// <summary>Lista los enlaces sin usar de una cuenta.</summary>
+    public Task<IReadOnlyList<PasswordReset>> ListUnusedAsync(Guid accountId, CancellationToken cancellationToken)
+    {
+        return Task.FromResult<IReadOnlyList<PasswordReset>>([.. Resets.Where(reset => reset.AccountId == accountId && reset.UsedAt is null)]);
+    }
+
+    /// <summary>Guarda un enlace.</summary>
+    public void Add(PasswordReset reset)
+    {
+        Resets.Add(reset);
     }
 
     /// <summary>Cuenta la confirmación.</summary>

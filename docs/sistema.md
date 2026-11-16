@@ -59,6 +59,7 @@ Barbería es un sistema de reservas para una barbería: los clientes sacan turno
 ### 5. Avisos
 
 - Confirmación por correo al reservar, cambiar o cancelar, si el cliente dejó correo.
+- Recuperar la contraseña del panel por correo: un enlace de un solo uso que vence en 30 minutos. Solo se ofrece si hay correos configurados.
 - Los correos salen con el nombre de la barbería como remitente, tomado de "Mi barbería".
 - Recordatorio por correo unas horas antes del turno (3 por defecto), una sola vez; si cambia la hora, se vuelve a recordar.
 - Botón de WhatsApp en la agenda que abre el chat con el recordatorio listo.
